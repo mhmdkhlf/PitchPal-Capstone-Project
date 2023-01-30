@@ -26,3 +26,6 @@ app.listen(5000, () => {
     console.log('Hello from PitchPal')
 });
 
+// Connecting AppReviewRoute to express server
+const playerReviewRoutes = require('./routes/player-review.route.ts');
+app.use('/api', playerReviewRoutes);
