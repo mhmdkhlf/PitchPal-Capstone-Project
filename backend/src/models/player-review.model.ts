@@ -25,6 +25,7 @@ const PlayerReviewSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     }
-});
+}, { collection: 'PlayerReview' }
+);
 
 module.exports = mongoose.model('PlayerReview', PlayerReviewSchema);
