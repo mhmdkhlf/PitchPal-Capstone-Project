@@ -4,6 +4,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 
 // DB initialization and connection
+mongoose.set('strictQuery', true);
 const mongoString = process.env.DATABASE_URL;
 
 mongoose.connect(mongoString!);
