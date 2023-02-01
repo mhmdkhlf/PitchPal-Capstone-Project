@@ -32,6 +32,8 @@ app.listen(5000, () => {
 
 // Connecting AppReviewRoute to express server
 const playerReviewRoutes = require('./routes/player-review.route.ts');
+const distanceRoutes = require('./routes/distance.route.ts');
 app.use('/api/reviews', playerReviewRoutes);
-const SportCenterRoutes = require('./routes/sport-center.route.ts');
-app.use('/api/sportCenters', SportCenterRoutes);
+app.use('/api',distanceRoutes);
+// const SportCenterRoutes = require('./routes/sport-center.route.ts');
+// app.use('/api/sportCenters', SportCenterRoutes);

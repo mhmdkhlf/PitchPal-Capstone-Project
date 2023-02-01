@@ -1,7 +1,7 @@
 import {Request, Response} from 'express';
 
 const PlayerReviewModel = require('../models/player-review.model.ts');
-module.exports= class player_review_table_API{
+module.exports = class player_review_table_API{
     //add reviews
     static  async newPlayerReview (req: Request, res: Response) {
         const playerReviewData = new PlayerReviewModel({
@@ -23,7 +23,9 @@ module.exports= class player_review_table_API{
     }
     //read reviews
     static  async getPlayerReviews (req: Request, res: Response) {
-        res.send(PlayerReviewModel.find().json())
+        //res.send(PlayerReviewModel.find());
+        //console.log(PlayerReviewModel.find());
+        res.status(200).json(await PlayerReviewModel.find());
     }
 
 
