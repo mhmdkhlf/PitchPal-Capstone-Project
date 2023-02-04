@@ -35,8 +35,8 @@ app.listen(5000, () => {
 const playerReviewRoutes = require('./routes/player-review.route.ts');
 const distanceRoutes = require('./routes/distance.route.ts');
 const authenticationRoutes = require('./routes/authentication.route.ts');
+const SportCenterRoutes = require('./routes/sport-center.route.ts');
 app.use('/api/reviews', playerReviewRoutes);
 app.use('/api',distanceRoutes);
 app.use('/api',authenticationRoutes);
-// const SportCenterRoutes = require('./routes/sport-center.route.ts');
-// app.use('/api/sportCenters', SportCenterRoutes);
+app.use('/api/sportCenters', SportCenterRoutes);

@@ -1,2 +1,8 @@
-//import the controller
-//specify the routes and associate each route with specific method from controller
+import express from 'express';
+const sportCenterController = require('../controllers/sport-center.controller.ts');
+
+const router = express.Router();
+
+router.post('/newSportCenter', sportCenterController.newSportCenter);
+
+module.exports = router;
