@@ -3,7 +3,7 @@ import {Request, Response} from 'express';
 const PlayerReviewModel = require('../models/player-review.model.ts');
 module.exports = class player_review_table_API{
     //add reviews
-    static  async newPlayerReview (req: Request, res: Response) {
+    static async newPlayerReview (req: Request, res: Response) {
         const playerReviewData = new PlayerReviewModel({
             player_id: req.body.player_id,
             reviewer_id: req.body.reviewer_id,

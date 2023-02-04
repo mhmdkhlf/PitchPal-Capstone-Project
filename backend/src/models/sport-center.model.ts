@@ -1,0 +1,1 @@
+//create the table and specify the fields
