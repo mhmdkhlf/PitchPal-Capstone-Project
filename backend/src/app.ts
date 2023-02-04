@@ -2,6 +2,8 @@ require('dotenv').config()
 
 import express from 'express';
 import mongoose from 'mongoose';
+const bodyParser = require('body-parser');
+const cors=require('cors');
 
 // DB initialization and connection
 mongoose.set('strictQuery', true);
@@ -21,11 +23,20 @@ database.once('connected', () => {
 // Starting up Express application
 const app = express();
 app.use(express.json());
-
+app.use(bodyParser.urlencoded({ extended: false })); // Parses urlencoded bodies
+app.use(bodyParser.json()); // Send JSON responses
+app.use(cors());
 app.listen(5000, () => {
     console.log('Hello from PitchPal')
 });
 
-// Connecting AppReviewRoute to express server
+
+//routes
 const playerReviewRoutes = require('./routes/player-review.route.ts');
-app.use('/api', playerReviewRoutes);
+const distanceRoutes = require('./routes/distance.route.ts');
+const authenticationRoutes = require('./routes/authentication.route.ts');
+app.use('/api/reviews', playerReviewRoutes);
+app.use('/api',distanceRoutes);
+app.use('/api',authenticationRoutes);
+// const SportCenterRoutes = require('./routes/sport-center.route.ts');
+// app.use('/api/sportCenters', SportCenterRoutes);
