@@ -4,7 +4,7 @@ const AuthenticationSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        unique:true
+        unique: true
     },
     password: {
         type: String,
@@ -13,7 +13,7 @@ const AuthenticationSchema = new mongoose.Schema({
     role: {
         type: String,
         required: true,
-        enum:['admin','player','field manager']
+        enum: ['admin','player','field manager']
     }
 }, { collection: 'Authentication' }
 );
