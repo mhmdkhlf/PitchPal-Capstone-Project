@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const validator = require('validator');
 const AuthenticationModel = require('../models/authentication.model.ts');
 
+
 async function tryLogIn(req: Request, res: Response) {
     try{
         const {email, password, role} = req.body
@@ -52,7 +53,7 @@ async function trySignUp(req: Request, res: Response) {
         const salt = await bcrypt.genSalt(10)
         const hash = await bcrypt.hash(password, salt)
         const user = await AuthenticationModel.create({ email, password: hash, role })
-        res.status(200).json({email, user})
+        
     }
     catch(error){
         res.status(400).json({error: error.message})
