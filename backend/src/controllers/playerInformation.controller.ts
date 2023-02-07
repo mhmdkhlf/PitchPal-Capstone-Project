@@ -31,5 +31,30 @@ async function updateProfileInformation(req: Request, res: Response){
     
 
 }
+async function getPlayerInformation(req: Request, res: Response){
+    try{
+        const player_id=req.params.id;
+        const playerInfo=await playerModel.findOne({player_id});
+        res.status(200).json(playerInfo);    
 
-module.exports = {updateProfileInformation};
+
+    }catch(error){
+        res.status(400).json(error.message);
+    }
+    
+
+}
+async function getAllPlayers(req: Request, res: Response){
+    try{
+        const playerInfo=await playerModel.find();
+        res.status(200).json(playerInfo);    
+
+
+    }catch(error){
+        res.status(400).json(error.message);
+    }
+    
+
+}
+
+module.exports = {updateProfileInformation,getPlayerInformation,getAllPlayers};
