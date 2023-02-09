@@ -37,9 +37,16 @@ const distanceRoutes = require('./routes/distance.route.ts');
 const authenticationRoutes = require('./routes/authentication.route.ts');
 const SportCenterRoutes = require('./routes/sport-center.route.ts');
 const playerInfoRoutes = require('./routes/playerInformation.route');
+const teamRoutes = require('./routes/teamFormation.route');
+const managerInfoRoutes = require('./routes/fieldManagerInformation.route');
+const adminInfoRoutes = require('./routes/adminInformation.route');
 app.use('/api', playerReviewRoutes);
 app.use('/api',distanceRoutes);
 app.use('/api',authenticationRoutes);
 app.use('/api', SportCenterRoutes);
 app.use('/api', playerInfoRoutes);
+app.use('/api', teamRoutes);
+app.use('/api', managerInfoRoutes);
+app.use('/api', adminInfoRoutes);
+
 

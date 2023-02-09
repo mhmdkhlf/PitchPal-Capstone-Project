@@ -14,9 +14,9 @@ async function tryLogIn(req: Request, res: Response) {
             throw Error("Invalid Role")
         }
 
-        const user = await AuthenticationModel.findOne({ email })
+        const user = await AuthenticationModel.findOne({ email, role })
         if (!user) {
-            throw Error('Incorrect email')
+            throw Error('Incorrect email or role')
         }
 
         const match = await bcrypt.compare(password, user.password)
@@ -33,7 +33,7 @@ async function tryLogIn(req: Request, res: Response) {
 async function trySignUp(req: Request, res: Response) {
     try{
         const {email, password, role} = req.body
-        const exists = await AuthenticationModel.findOne({ email })
+        const exists = await AuthenticationModel.findOne({ email ,role })
         // validation
         if (!email || !password) {
             throw Error('All fields must be filled')
@@ -53,6 +53,7 @@ async function trySignUp(req: Request, res: Response) {
         const salt = await bcrypt.genSalt(10)
         const hash = await bcrypt.hash(password, salt)
         const user = await AuthenticationModel.create({ email, password: hash, role })
+        res.status(200).json({user})
         
     }
     catch(error){

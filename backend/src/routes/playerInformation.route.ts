@@ -3,7 +3,9 @@ const playerController = require('../controllers/playerInformation.controller');
 
 const router = express.Router();
 
-router.post('/updateProfile', playerController.updateProfileInformation);
+router.post('/updatePlayerProfile', playerController.updateProfileInformation);
+router.get('/getPlayer/:id', playerController.getPlayerInformation);
+router.get('/getAllPlayers', playerController.getAllPlayers);
 
 
 module.exports = router;
