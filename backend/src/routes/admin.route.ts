@@ -1,5 +1,5 @@
 import express from 'express';
-const adminController = require('../controllers/adminInformation.controller');
+const adminController = require('../controllers/admin.controller');
 
 const router = express.Router();
 
