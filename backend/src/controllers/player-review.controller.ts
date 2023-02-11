@@ -11,7 +11,6 @@ async function newPlayerReview (req: Request, res: Response) {
         comment_text: req.body.comment_text,
         submission_date: req.body.submission_date,
     });
-
     try {
         const playerReviewToSave = await playerReviewData.save();
         res.status(200).json(playerReviewToSave);
@@ -22,9 +21,13 @@ async function newPlayerReview (req: Request, res: Response) {
 }
 
 async function getPlayerReviews(req: Request, res: Response) {
-    //res.send(PlayerReviewModel.find());
-    //console.log(PlayerReviewModel.find());
-    res.status(200).json(await PlayerReviewModel.find());
+    try{
+        const allPlayerReviews = await PlayerReviewModel.find();
+        res.status(200).json(allPlayerReviews);
+    }
+    catch(error){
+        res.status(500).json({message: error.message})
+    }
 }
 
 
