@@ -1,5 +1,5 @@
 import express from 'express';
-const managerController = require('../controllers/managerInformation.controller');
+const managerController = require('../controllers/field-manager.controller');
 
 const router = express.Router();
 

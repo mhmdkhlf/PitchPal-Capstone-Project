@@ -1,5 +1,5 @@
 import express from 'express';
-const teamController = require('../controllers/teamFormation.controller.ts');
+const teamController = require('../controllers/team-formation.controller.ts');
 
 const router = express.Router();
 

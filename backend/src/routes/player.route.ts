@@ -1,5 +1,5 @@
 import express from 'express';
-const playerController = require('../controllers/playerInformation.controller');
+const playerController = require('../controllers/player.controller');
 
 const router = express.Router();
 
