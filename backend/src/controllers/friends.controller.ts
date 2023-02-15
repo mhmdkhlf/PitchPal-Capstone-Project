@@ -1,5 +1,4 @@
 import {Request, Response} from 'express';
-import mongoose from 'mongoose';
 const FriendsModel = require('../models/friends.model.ts');
 
 async function addFriend(req: Request, res: Response) {
