@@ -40,6 +40,7 @@ const playerInfoRoutes = require('./routes/player.route');
 const teamRoutes = require('./routes/team-formation.route');
 const managerInfoRoutes = require('./routes/field-manager.route');
 const adminInfoRoutes = require('./routes/admin.route');
+const friendsRoutes = require('./routes/friends.route');
 app.use('/api', playerReviewRoutes);
 app.use('/api',distanceRoutes);
 app.use('/api',authenticationRoutes);
@@ -48,5 +49,6 @@ app.use('/api', playerInfoRoutes);
 app.use('/api', teamRoutes);
 app.use('/api', managerInfoRoutes);
 app.use('/api', adminInfoRoutes);
+app.use('/api', friendsRoutes);
 
 
