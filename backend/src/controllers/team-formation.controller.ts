@@ -5,14 +5,10 @@ const rating = require("../models/helpers/star-rating.schema.ts");
 const rateModel = mongoose.model('Rate', rating)
 
 async function newTeam(req: Request, res: Response) {
-    const MoralRateSchema = new rateModel({value:1}); //remove hardcoding...
-    const SkillRateSchema = new rateModel({value:1});
     const teamData = new teamModel({
         name: req.body.name,
         captainId: req.body.captainId,
-        playerIds:req.body.playerIds,
-        skillRating: SkillRateSchema,
-        moralRating: MoralRateSchema
+        playerIds: req.body.playerIds
     });
     try {
         const sportCenterToSave = await teamData.save();
@@ -24,7 +20,7 @@ async function newTeam(req: Request, res: Response) {
 }
 
 async function getTeamsByCaptain(req: Request, res: Response) {
-    const captainId=req.params.captainId
+    const captainId = req.params.captainId
     const teamData = await teamModel.find({captainId});
     try {
         res.status(200).json(teamData);

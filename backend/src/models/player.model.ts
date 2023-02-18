@@ -14,7 +14,7 @@ const PlayerSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique:true
-    }, 
+    },
     phoneNumber: {
         type: String,
         required: true
@@ -43,11 +43,13 @@ const PlayerSchema = new mongoose.Schema({
         required: true,
         enum: ["M","F"]
     },
-    moralityRating: {
-        type: Number
+    averageMoralityRating: {
+        type: Number,
+        default: 0
     },
-    skillRating: {
-        type: Number
+    averageSkillRating: {
+        type: Number,
+        default: 0
     },
     numberOfReviews: {
         type: Number,
