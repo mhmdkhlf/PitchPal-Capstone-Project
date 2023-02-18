@@ -14,11 +14,17 @@ const teamSchema = new mongoose.Schema({
         type: Array,
         required:true
     },
-    skillRating:{
-        type: StarRatingSchema
+    averageSkillRating:{
+        type: Number,
+        default: 0
     },
-    moralRating:{
-        type: StarRatingSchema
+    averageMoralRating:{
+        type: Number,
+        default: 0
+    },
+    numberOfRatings: {
+        type: Number,
+        default:0
     }
 }, { collection: 'Team' }
 );
