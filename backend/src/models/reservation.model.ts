@@ -15,6 +15,10 @@ const reservationSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    isPublic: {
+        type: Boolean,
+        required: true
+    },
     reservationTimeAndDate: {
         type: TimeSlotSchema,
         required: true
