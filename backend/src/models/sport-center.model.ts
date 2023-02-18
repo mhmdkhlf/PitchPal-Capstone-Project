@@ -28,11 +28,11 @@ const SportCenterSchema = new mongoose.Schema({
     },
     facilityQualityAverageRating: {
         type: Number,
-        value: 0
+        default: 0
     },
     staffServiceAverageRating: {
         type: Number,
-        value: 0
+        default: 0
     },
     nbOfRatings: {
         type: Number,
