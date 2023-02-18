@@ -3,7 +3,7 @@ const TimeSlotSchema = require('./helpers/time-slot.schema.ts')
 
 const reservationSchema = new mongoose.Schema({
     reserverID: {
-        type: Number,
+        type: String,
         required: true
     },
     reserverType: {
@@ -12,7 +12,7 @@ const reservationSchema = new mongoose.Schema({
         enum: ["Player", "FieldManager"]
     },
     fieldID: {
-        type: Number,
+        type: String,
         required: true
     },
     isPublic: {

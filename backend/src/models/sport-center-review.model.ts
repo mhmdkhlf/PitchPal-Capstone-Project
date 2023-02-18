@@ -7,7 +7,7 @@ const sportCenterReviewSchema = new mongoose.Schema({
         required: true,
     },
     reviewerID: {
-        type: Number,
+        type: String,
         required: true,
     },
     reviewText: {

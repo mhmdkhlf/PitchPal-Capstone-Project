@@ -2,11 +2,11 @@ import mongoose from 'mongoose';
 
 const PlayerReviewSchema = new mongoose.Schema({
     player_id: {
-        type: Number,
+        type: String,
         required: true
     },
     reviewer_id: {
-        type: Number,
+        type: String,
         required: true
     },
     morality_score: {

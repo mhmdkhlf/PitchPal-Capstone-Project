@@ -11,7 +11,7 @@ const teamSchema = new mongoose.Schema({
         required:true
     },
     playerIds:{
-        type: Array,
+        type: [String],
         required:true
     },
     averageSkillRating:{
