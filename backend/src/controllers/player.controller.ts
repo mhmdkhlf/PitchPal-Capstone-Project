@@ -17,8 +17,9 @@ async function randomNumberGenerator():Promise<Number>{
 async function updateProfileInformation(req: Request, res: Response){
     try{
         const id = await randomNumberGenerator();
-        const player_id = id.toString().substring(0,3)+"-"+id.toString().substring(3,6);
-        const playerInfo = await playerModel.create( { player_id,
+        const playerID = id.toString().substring(0,3)+"-"+id.toString().substring(3,6);
+        const playerInfo = await playerModel.create( {
+            playerID: playerID,
             name: req.body.name,
             email: req.body.email,
             phoneNumber: req.body.phoneNumber,

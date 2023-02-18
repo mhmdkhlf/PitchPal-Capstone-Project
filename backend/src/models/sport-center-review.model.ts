@@ -21,6 +21,10 @@ const sportCenterReviewSchema = new mongoose.Schema({
     facilityQualityScore: {
         type: StarRatingSchema,
         required: true
+    },
+    submissionDate: {
+        type: Date,
+        default: Date.now
     }
 }, { collection: 'SportCenterReview' }
 );

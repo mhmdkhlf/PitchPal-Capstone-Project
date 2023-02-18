@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 const LocationSchema = require('./helpers/location.schema.ts')
 const PlayerSchema = new mongoose.Schema({
-    player_id: {
+    playerID: {
         type: String,
         required: true,
         unique: true

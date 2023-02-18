@@ -1,27 +1,27 @@
 import mongoose from 'mongoose';
 
 const PlayerReviewSchema = new mongoose.Schema({
-    player_id: {
+    playerID: {
         type: String,
         required: true
     },
-    reviewer_id: {
+    reviewerID: {
         type: String,
         required: true
     },
-    morality_score: {
+    moralityScore: {
         type: Number,
         required: true
     },
-    skill_score: {
+    skillScore: {
         type: Number,
         required: true
     },
-    comment_text: {
+    commentText: {
         type: String,
         required: false
     },
-    submission_date: {
+    submissionDate: {
         type: Date,
         default: Date.now
     }
