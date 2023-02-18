@@ -1,0 +1,36 @@
+Functionalities to work on 
+--------------------------
+
+____
+
+Ali
+____
+
+-Authentication
+
+-Players in match
+
+-Admin
+-Field Manager
+-Player
+
+-Team
+-Friends
+
+
+*************************************************
+
+____
+
+Mhmd
+____
+
+-Sports Center 
+-Field
+
+-Reservation
+
+-Player-review
+-Team-review
+-Sport-Center-review
+

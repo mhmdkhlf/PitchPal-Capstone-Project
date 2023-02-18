@@ -7,7 +7,7 @@ const sportCenterReviewSchema = new mongoose.Schema({
         required: true,
     },
     reviewerID: {
-        type: Number,
+        type: String,
         required: true,
     },
     reviewText: {
@@ -21,6 +21,10 @@ const sportCenterReviewSchema = new mongoose.Schema({
     facilityQualityScore: {
         type: StarRatingSchema,
         required: true
+    },
+    submissionDate: {
+        type: Date,
+        default: Date.now
     }
 }, { collection: 'SportCenterReview' }
 );

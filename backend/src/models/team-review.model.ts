@@ -21,6 +21,10 @@ const teamReviewSchema = new mongoose.Schema({
     moralityScore: {
         type: StarRatingSchema,
         required: true
+    },
+    submissionDate: {
+        type: Date,
+        default: Date.now
     }
 }, { collection: 'TeamReview' }
 );

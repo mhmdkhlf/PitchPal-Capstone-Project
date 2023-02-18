@@ -3,7 +3,7 @@ require('dotenv').config()
 import express from 'express';
 import mongoose from 'mongoose';
 const bodyParser = require('body-parser');
-const cors=require('cors');
+const cors = require('cors');
 
 // DB initialization and connection
 mongoose.set('strictQuery', true);
