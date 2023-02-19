@@ -30,7 +30,6 @@ app.listen(5000, () => {
     console.log('Hello from PitchPal')
 });
 
-
 //routes
 const playerReviewRoutes = require('./routes/player-review.route.ts');
 const distanceRoutes = require('./routes/distance.route.ts');
@@ -42,6 +41,7 @@ const managerInfoRoutes = require('./routes/field-manager.route');
 const adminInfoRoutes = require('./routes/admin.route');
 const friendsRoutes = require('./routes/friends.route');
 const reservationRoutes = require('./routes/gameReservation.route');
+const fieldRoutes = require('./routes/field.route');
 app.use('/api', playerReviewRoutes);
 app.use('/api',distanceRoutes);
 app.use('/api',authenticationRoutes);
@@ -52,5 +52,5 @@ app.use('/api', managerInfoRoutes);
 app.use('/api', adminInfoRoutes);
 app.use('/api', friendsRoutes);
 app.use('/api', reservationRoutes);
-
+app.use('/api', fieldRoutes);
 
