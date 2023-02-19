@@ -26,6 +26,14 @@ const reservationSchema = new mongoose.Schema({
     comment: {
         type: String,
         default: ""
+    },
+    teamOneIds:{
+        type:Array,
+        required:true
+    },
+    teamTwoIds:{
+        type:Array,
+        required:true
     }
 }, { collection: 'Reservation' }
 );

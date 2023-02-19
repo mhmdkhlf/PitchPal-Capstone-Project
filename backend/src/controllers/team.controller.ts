@@ -1,8 +1,6 @@
 import {Request, Response} from 'express';
-import mongoose from 'mongoose';
 const teamModel = require('../models/team.model.ts');
 const rating = require("../models/helpers/star-rating.schema.ts");
-const rateModel = mongoose.model('Rate', rating)
 
 async function newTeam(req: Request, res: Response) {
     const teamData = new teamModel({
@@ -50,6 +48,20 @@ async function getAllTeams(req: Request, res: Response) {
         res.status(400).json({ message: error.message });
     }
 }
+async function addPlayerToTeam(req: Request, res: Response) {
+    const {teamName,playerId}=req.body
+    const teamDoc=await teamModel.findOne({name:teamName})
+        teamDoc.playerIds.push(playerId)
+    
+    try {
+        const teamInfo=await teamDoc.save();
+       res.status(200).json(teamInfo)
+    }
+    catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
 
 
-module.exports = {newTeam, getTeamByName, getTeamsByCaptain, getAllTeams};
+
+module.exports = {newTeam, getTeamByName, getTeamsByCaptain, getAllTeams,addPlayerToTeam};

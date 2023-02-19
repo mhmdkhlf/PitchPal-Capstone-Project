@@ -1,10 +1,5 @@
 import {Request, Response} from 'express';
-import mongoose from 'mongoose';
-const location = require("../models/helpers/location.schema.ts");
-const locationModel = mongoose.model('Location', location)
 const playerModel = require('../models/player.model.ts');
-
-
 async function randomNumberGenerator():Promise<Number>{
     var playerId = Math.floor(100000 + Math.random() * 900000);
     const user = await playerModel.findOne({playerId});
