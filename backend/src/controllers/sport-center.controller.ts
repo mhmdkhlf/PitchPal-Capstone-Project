@@ -25,15 +25,7 @@ async function newSportCenter(req: Request, res: Response) {
         res.status(400).json({ message: error.message });
     }
 }
-async function getFieldsBySportCenterName(req: Request, res: Response) {
-    const sportCenterName = req.params.sportCenterName
-    try{
-        const fields = await fieldModel.find({sportCenterName});
-        res.status(200).json(fields);
-    }catch(error){
-        res.status(400).json(error.message);
-    }
-}
+
 async function getAllSportCenters(req: Request, res: Response) {
     try{
         const sportCenters = await SportCenterModel.find();
@@ -43,4 +35,4 @@ async function getAllSportCenters(req: Request, res: Response) {
     }
 }
 
-module.exports = { newSportCenter, getFieldsBySportCenterName, getAllSportCenters };
+module.exports = { newSportCenter, getAllSportCenters };
