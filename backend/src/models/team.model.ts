@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-const StarRatingSchema = require('./helpers/star-rating.schema.ts')
 const teamSchema = new mongoose.Schema({
     name: {
         type: String,

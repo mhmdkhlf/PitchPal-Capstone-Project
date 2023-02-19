@@ -1,7 +1,7 @@
 import {Request, Response} from 'express';
 
 const SportCenterModel = require('../models/sport-center.model.ts');
-
+const fieldModel=require('../models/field.model')
 async function newSportCenter(req: Request, res: Response) {
     const sportCenterData = new SportCenterModel({
         name: req.body.name,
@@ -24,5 +24,14 @@ async function newSportCenter(req: Request, res: Response) {
         res.status(400).json({ message: error.message });
     }
 }
+async function getFieldsBySportCenterName(req: Request, res: Response) {
+    const sportCenterName = req.params.sportCenterName
+    try{
+        const fields = await fieldModel.find({sportCenterName});
+        res.status(200).json(fields);
+    }catch(error){
+        res.status(400).json(error.message);
+    }
+}
 
-module.exports = { newSportCenter };
+module.exports = { newSportCenter, getFieldsBySportCenterName };
