@@ -35,4 +35,31 @@ async function getAllSportCenters(req: Request, res: Response) {
     }
 }
 
-module.exports = { newSportCenter, getAllSportCenters };
+async function updateSportCenterById(req: Request, res: Response) {
+    try {
+        const id = req.params.id;
+        const updatedData = req.body;
+        const options = { new: true };
+        const result = await SportCenterModel.findByIdAndUpdate(
+            id, updatedData, options
+        )
+        res.send(result);
+    }
+    catch (error) {
+        res.status(400).json({ message: error.message })
+    }
+}
+
+async function deleteSportCenterById(req: Request, res: Response) {
+    try {
+        const id = req.params.id;
+        const dataInJson = await SportCenterModel.findByIdAndDelete(id);
+        const dataString = JSON.stringify(dataInJson);
+        res.send(`Document with ${dataString} has been deleted`);
+    }
+    catch (error) {
+        res.status(400).json({ message: error.message })
+    }
+}
+
+module.exports = { newSportCenter, getAllSportCenters, updateSportCenterById, deleteSportCenterById};
