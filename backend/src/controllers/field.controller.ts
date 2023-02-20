@@ -36,7 +36,7 @@ async function updateFieldById(req: Request, res: Response) {
         const result = await FieldModel.findByIdAndUpdate(
             id, updatedData, options
         )
-        res.send(result)
+        res.send(result);
     }
     catch (error) {
         res.status(400).json({ message: error.message })
