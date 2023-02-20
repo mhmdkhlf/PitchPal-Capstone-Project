@@ -42,5 +42,16 @@ async function updateFieldById(req: Request, res: Response) {
         res.status(400).json({ message: error.message })
     }
 }
+async function deleteFieldById(req: Request, res: Response) {
+    try {
+        const id = req.params.id;
+        const dataInJson = await FieldModel.findByIdAndDelete(id);
+        const dataString = JSON.stringify(dataInJson);
+        res.send(`Document with ${dataString} has been deleted`);
+    }
+    catch (error) {
+        res.status(400).json({ message: error.message })
+    }
+}
 
-module.exports = { newField, getFieldsBySportCenterName, updateFieldById};
+module.exports = { newField, getFieldsBySportCenterName, updateFieldById, deleteFieldById};
