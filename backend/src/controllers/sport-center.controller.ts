@@ -54,7 +54,7 @@ async function deleteSportCenterById(req: Request, res: Response) {
         const id = req.params.id;
         const dataInJson = await SportCenterModel.findByIdAndDelete(id);
         const dataString = JSON.stringify(dataInJson);
-        res.send(`Document with ${dataString} has been deleted`);
+        res.send(`Deleted sport center with the following content:\n${dataString}`);
     }
     catch (error) {
         res.status(400).json({ message: error.message })

@@ -47,7 +47,7 @@ async function deleteFieldById(req: Request, res: Response) {
         const id = req.params.id;
         const dataInJson = await FieldModel.findByIdAndDelete(id);
         const dataString = JSON.stringify(dataInJson);
-        res.send(`Document with ${dataString} has been deleted`);
+        res.send(`Deleted field with the following content:\n${dataString}`);
     }
     catch (error) {
         res.status(400).json({ message: error.message })
