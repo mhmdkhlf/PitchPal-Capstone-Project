@@ -75,7 +75,6 @@ async function getReservationsBySportCenterName(req: Request, res: Response) {
     try{
         const fieldInfo = await fieldModel.find({sportCenterName});
         const reservations = await Promise.all(fieldInfo.map(helper));
-        console.log(reservations);
         res.status(200).json(reservations);
     }catch(error){
         res.status(400).json(error.message);
