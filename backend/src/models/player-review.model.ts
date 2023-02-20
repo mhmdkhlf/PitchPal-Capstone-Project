@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+const StarRatingSchema = require('./helpers/star-rating.schema.ts')
 
 const PlayerReviewSchema = new mongoose.Schema({
     playerID: {
@@ -10,11 +11,11 @@ const PlayerReviewSchema = new mongoose.Schema({
         required: true
     },
     moralityScore: {
-        type: Number,
+        type: StarRatingSchema,
         required: true
     },
     skillScore: {
-        type: Number,
+        type: StarRatingSchema,
         required: true
     },
     commentText: {
