@@ -4,6 +4,6 @@ const playerReviewController = require('../controllers/player-review.controller.
 const router = express.Router();
 
 router.post('/newPlayerReview', playerReviewController.newPlayerReview);
-router.get('/getPlayerReviews', playerReviewController.getPlayerReviews);
-
+router.get('/getPlayerReviews', playerReviewController.getAllPlayerReviews);
+router.delete('/deletePlayerReview/:id', playerReviewController.deletePlayerReviewById);
 module.exports = router;

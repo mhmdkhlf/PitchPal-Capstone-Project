@@ -20,7 +20,7 @@ async function newPlayerReview (req: Request, res: Response) {
     }
 }
 
-async function getPlayerReviews(req: Request, res: Response) {
+async function getAllPlayerReviews(req: Request, res: Response) {
     try{
         const allPlayerReviews = await PlayerReviewModel.find();
         res.status(200).json(allPlayerReviews);
@@ -30,4 +30,16 @@ async function getPlayerReviews(req: Request, res: Response) {
     }
 }
 
-module.exports = {getPlayerReviews, newPlayerReview};
+async function deletePlayerReviewById(req: Request, res: Response) {
+    try {
+        const id = req.params.id;
+        const dataInJson = await PlayerReviewModel.findByIdAndDelete(id);
+        const dataString = JSON.stringify(dataInJson);
+        res.send(`Player review with ${dataString} has been deleted`);
+    }
+    catch (error) {
+        res.status(400).json({ message: error.message })
+    }
+}
+
+module.exports = {getAllPlayerReviews, newPlayerReview, deletePlayerReviewById};
