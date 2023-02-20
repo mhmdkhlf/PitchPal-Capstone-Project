@@ -51,8 +51,7 @@ async function getAllTeams(req: Request, res: Response) {
 async function addPlayerToTeam(req: Request, res: Response) {
     const {teamName,playerId}=req.body
     const teamDoc=await teamModel.findOne({name:teamName})
-        teamDoc.playerIds.push(playerId)
-    
+        teamDoc.playerIds.push(playerId);
     try {
         const teamInfo=await teamDoc.save();
        res.status(200).json(teamInfo)

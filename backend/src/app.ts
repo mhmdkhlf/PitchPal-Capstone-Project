@@ -40,7 +40,7 @@ const teamRoutes = require('./routes/teams.route');
 const managerInfoRoutes = require('./routes/field-manager.route');
 const adminInfoRoutes = require('./routes/admin.route');
 const friendsRoutes = require('./routes/friends.route');
-const reservationRoutes = require('./routes/gameReservation.route');
+const reservationRoutes = require('./routes/game-reservation.route');
 const fieldRoutes = require('./routes/field.route');
 app.use('/api', playerReviewRoutes);
 app.use('/api',distanceRoutes);
