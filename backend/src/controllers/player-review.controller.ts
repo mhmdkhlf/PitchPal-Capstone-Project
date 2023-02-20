@@ -35,7 +35,7 @@ async function deletePlayerReviewById(req: Request, res: Response) {
         const id = req.params.id;
         const dataInJson = await PlayerReviewModel.findByIdAndDelete(id);
         const dataString = JSON.stringify(dataInJson);
-        res.send(`Player review with ${dataString} has been deleted`);
+        res.send(`Deleted player review with the following content:\n${dataString}`);
     }
     catch (error) {
         res.status(400).json({ message: error.message })
