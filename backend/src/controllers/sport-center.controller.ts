@@ -1,7 +1,6 @@
 import {Request, Response} from 'express';
 
 const SportCenterModel = require('../models/sport-center.model.ts');
-const fieldModel = require('../models/field.model')
 
 async function newSportCenter(req: Request, res: Response) {
     const sportCenterData = new SportCenterModel({
