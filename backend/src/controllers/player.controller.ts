@@ -1,5 +1,6 @@
 import {Request, Response} from 'express';
 const playerModel = require('../models/player.model.ts');
+
 async function randomNumberGenerator():Promise<Number>{
     var playerId = Math.floor(100000 + Math.random() * 900000);
     const user = await playerModel.findOne({playerId});
