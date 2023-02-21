@@ -20,7 +20,7 @@ const PlayerReviewSchema = new mongoose.Schema({
     },
     commentText: {
         type: String,
-        required: false
+        default: ""
     },
     submissionDate: {
         type: Date,
