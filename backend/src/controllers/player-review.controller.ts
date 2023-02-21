@@ -30,6 +30,17 @@ async function getAllPlayerReviews(req: Request, res: Response) {
     }
 }
 
+async function getAPlayersReviews(req: Request, res: Response) {
+    const playerID = req.params.playerID;
+    try{
+        const aPlayersReviews = await PlayerReviewModel.find({playerID: playerID});
+        res.status(200).json(aPlayersReviews);
+    }
+    catch(error){
+        res.status(500).json({message: error.message})
+    }
+}
+
 async function deletePlayerReviewById(req: Request, res: Response) {
     try {
         const id = req.params.id;
@@ -42,4 +53,4 @@ async function deletePlayerReviewById(req: Request, res: Response) {
     }
 }
 
-module.exports = {getAllPlayerReviews, newPlayerReview, deletePlayerReviewById};
+module.exports = {getAllPlayerReviews, getAPlayersReviews, newPlayerReview, deletePlayerReviewById};

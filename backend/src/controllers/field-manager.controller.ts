@@ -1,5 +1,5 @@
 import {Request, Response} from 'express';
-const ManagerModel = require('../models/fieldManager.model');
+const ManagerModel = require('../models/field-manager.model');
 
 async function updateProfileInformation(req: Request, res: Response){
     try{
