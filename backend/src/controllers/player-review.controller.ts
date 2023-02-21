@@ -33,8 +33,8 @@ async function getAllPlayerReviews(req: Request, res: Response) {
 async function getAPlayersReviews(req: Request, res: Response) {
     const playerID = req.params.playerID;
     try{
-        const allPlayerReviews = await PlayerReviewModel.find({playerID: playerID});
-        res.status(200).json(allPlayerReviews);
+        const aPlayersReviews = await PlayerReviewModel.find({playerID: playerID});
+        res.status(200).json(aPlayersReviews);
     }
     catch(error){
         res.status(500).json({message: error.message})
