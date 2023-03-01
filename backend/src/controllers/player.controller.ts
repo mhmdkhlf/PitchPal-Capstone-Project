@@ -9,8 +9,22 @@ async function randomNumberGenerator():Promise<Number>{
     }
     return playerId;
 }
+async function updatePlayerById(req: Request, res: Response) {
+    try {
+        const id = req.params.id;
+        const updatedData = req.body;
+        const options = { new: true };
+        const result = await playerModel.findByIdAndUpdate(
+            id, updatedData, options
+        )
+        res.send(result);
+    }
+    catch (error) {
+        res.status(400).json({ message: error.message })
+    }
+}
 
-async function updateProfileInformation(req: Request, res: Response){
+async function createProfileInformation(req: Request, res: Response){
     try{
         const id = await randomNumberGenerator();
         const playerID = id.toString().substring(0,3)+"-"+id.toString().substring(3,6);
@@ -55,4 +69,4 @@ async function getAllPlayers(req: Request, res: Response){
     }
 }
 
-module.exports = {updateProfileInformation, getPlayerInformation, getAllPlayers};
+module.exports = {createProfileInformation, getPlayerInformation, getAllPlayers,updatePlayerById};

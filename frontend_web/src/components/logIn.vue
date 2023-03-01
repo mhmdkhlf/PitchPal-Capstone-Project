@@ -1,5 +1,11 @@
 <template>
-  <h1 class="logo">PitchPal</h1>
+  <button class="btn sign-up-button" type="button" @click="signUp()">
+    Sign Up
+  </button>
+  <div class="logo-div">
+    <img src="../assets/images/logo.png" alt="failed" />
+    <h1 class="logo">itchPal</h1>
+  </div>
   <div class="body-content">
     <div id="bg"></div>
     <form>
@@ -26,7 +32,6 @@
 
       <div class="form-field">
         <button class="btn" type="submit">Log in</button>
-        <button class="btn" type="button" @click="signUp()">Sign Up</button>
       </div>
     </form>
   </div>
@@ -55,22 +60,54 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 @import url("https://fonts.googleapis.com/css?family=Lato:400,700");
-.logo {
-  font-size: 48px;
-  font-weight: bold;
-  color: #00b300; /* Change to green color code */
-  margin: 0;
-  padding: 20px;
+.sign-up-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  z-index: 1;
+}
+.btn {
+  outline: none;
+  border: none;
+  cursor: pointer;
+  display: inline-block;
+  margin: 0 auto;
+  padding: 0.9rem 2.5rem;
+  text-align: center;
+  background-color: #47ab11;
+  color: #fff;
+  border-radius: 4px;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+  font-size: 17px;
+}
+.logo-div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   position: absolute;
   top: 0;
   left: 0;
-  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
-  letter-spacing: 2px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
-  transform: rotate(-15deg);
-  z-index: 1;
+  img {
+    width: 50px;
+    height: 50px;
+    z-index: 1;
+    mix-blend-mode: multiply;
+  }
+  .logo {
+    font-size: 40px;
+    font-weight: bold;
+    color: #0a870ac7; /* Change to green color code */
+    margin: 0;
+    // padding: 20px;
+
+    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+    letter-spacing: 2px;
+    //background-color: #fff;
+    border-radius: 10px;
+    //box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+    //transform: rotate(-15deg);
+    z-index: 1;
+  }
 }
 
 #bg {
@@ -88,6 +125,7 @@ export default {
   color: #4a4a4a;
   display: flex;
   justify-content: center;
+  flex-direction: column;
   align-items: center;
   min-height: 90vh;
   overflow: hidden;
@@ -152,21 +190,6 @@ form {
     font-size: 17px;
     color: #4a4a4a;
     text-indent: 40px;
-  }
-
-  .btn {
-    outline: none;
-    border: none;
-    cursor: pointer;
-    display: inline-block;
-    margin: 0 auto;
-    padding: 0.9rem 2.5rem;
-    text-align: center;
-    background-color: #47ab11;
-    color: #fff;
-    border-radius: 4px;
-    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
-    font-size: 17px;
   }
 }
 </style>
