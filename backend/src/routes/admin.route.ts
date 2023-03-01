@@ -3,7 +3,8 @@ const adminController = require('../controllers/admin.controller');
 
 const router = express.Router();
 
-router.post('/updateAdminProfile', adminController.updateProfileInformation);
+router.post('/newAdminProfile', adminController.createProfileInformation);
+router.patch('/updateAdmin/:id', adminController.updateAdminById);
 
 
 module.exports = router;
