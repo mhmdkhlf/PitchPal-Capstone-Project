@@ -1,0 +1,5 @@
+# Unwanted builds in frontend
+/frontend_mobile/linux
+/frontend_mobile/macos
+/frontend_mobile/windows
+/frontend_mobile/web
