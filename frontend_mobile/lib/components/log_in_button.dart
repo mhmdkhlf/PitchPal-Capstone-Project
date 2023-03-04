@@ -1,0 +1,33 @@
+import 'package:flutter/material.dart';
+import 'package:frontend_mobile/constants.dart';
+
+class MyButton extends StatelessWidget {
+  final Function() onTap;
+
+  const MyButton({super.key, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        margin: const EdgeInsets.symmetric(horizontal: 100, vertical: 20),
+        decoration: BoxDecoration(
+          color: kDarkGreen,
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: const Center(
+          child: Text(
+            'Log In',
+            style: TextStyle(
+              color: kLightColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
