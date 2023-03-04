@@ -6,17 +6,14 @@ const AuthenticationModel = require('../models/authentication.model.ts');
 
 async function tryLogIn(req: Request, res: Response) {
     try{
-        const {email, password, role} = req.body;
+        const {email, password} = req.body;
         if (!email || !password) {
             throw Error('All fields must be filled');
         }
-        if (role!=="admin" && role!=="player" && role!=="field manager"){
-            throw Error("Invalid Role");
-        }
 
-        const user = await AuthenticationModel.findOne({ email, role })
+        const user = await AuthenticationModel.findOne({ email })
         if (!user) {
-            throw Error('Incorrect email or role');
+            throw Error('Incorrect email');
         }
 
         const match = await bcrypt.compare(password, user.password)
@@ -32,7 +29,7 @@ async function tryLogIn(req: Request, res: Response) {
 async function trySignUp(req: Request, res: Response) {
     try{
         const {email, password, role} = req.body;
-        const exists = await AuthenticationModel.findOne({ email ,role });
+        const exists = await AuthenticationModel.findOne({ email, role });
         // validation
         if (!email || !password) {
             throw Error('All fields must be filled');
