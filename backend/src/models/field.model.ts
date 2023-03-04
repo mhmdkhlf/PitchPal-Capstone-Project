@@ -17,6 +17,10 @@ const fieldSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    reservation_price: {
+        type: Number,
+        required: true
+    },
     grassType: {
         type: String,
         required: true,
