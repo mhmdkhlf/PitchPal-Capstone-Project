@@ -1,18 +1,10 @@
 <template>
-  <button class="btn sign-up-button" type="button" @click="signUp()">
-    Sign Up
-  </button>
-  <div class="logo-div">
-    <img src="../assets/images/logo.png" alt="failed" />
-    <h1 class="logo">itchPal</h1>
-  </div>
   <div class="body-content">
     <div id="bg"></div>
     <form>
       <div class="form-field">
-        <input type="email" v-model="email" placeholder="Email" required />
+        <input type="text" v-model="email" placeholder="Name" required />
       </div>
-
       <div class="form-field">
         <input
           type="password"
@@ -21,7 +13,15 @@
           required
         />
       </div>
-      <div class="select-menu">
+      <div class="form-field">
+        <input
+          type="password"
+          v-model="rePassword"
+          placeholder="Confirm Password"
+          required
+        />
+      </div>
+      <div class="select-menu form-field">
         <select name="role" required v-model="role">
           <option value="">role</option>
           <option value="admin">admin</option>
@@ -29,9 +29,14 @@
           <option value="field manager">field manager</option>
         </select>
       </div>
-
+      <div class="form-field rmv-margin">
+        <button class="btn" type="submit">Sign Up</button>
+      </div>
+      <div class="button-seperator-text">
+        <h2>OR Having An Account?</h2>
+      </div>
       <div class="form-field">
-        <button class="btn" type="submit">Log in</button>
+        <button class="btn" type="button" @click="logIn()">Log In</button>
       </div>
     </form>
   </div>
@@ -39,19 +44,18 @@
 
 <script>
 export default {
-  name: "logInComponent",
+  name: "logInBody",
   data() {
     return {
       email: "",
       password: "",
+      rePassword: "",
       role: "",
     };
   },
   methods: {
-    signUp() {
-      //e.preventDefault();
-
-      this.$router.push("/signUp");
+    logIn() {
+      this.$router.push("/login");
     },
   },
 };
@@ -60,11 +64,16 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 @import url("https://fonts.googleapis.com/css?family=Lato:400,700");
-.sign-up-button {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  z-index: 1;
+.button-seperator-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin: 0;
+  color: #fff;
+}
+.rmv-margin {
+  margin-bottom: 0 !important;
 }
 .btn {
   outline: none;
@@ -79,35 +88,7 @@ export default {
   border-radius: 4px;
   box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
   font-size: 17px;
-}
-.logo-div {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: absolute;
-  top: 0;
-  left: 0;
-  img {
-    width: 50px;
-    height: 50px;
-    z-index: 1;
-    mix-blend-mode: multiply;
-  }
-  .logo {
-    font-size: 40px;
-    font-weight: bold;
-    color: #0a870ac7; /* Change to green color code */
-    margin: 0;
-    // padding: 20px;
-
-    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
-    letter-spacing: 2px;
-    //background-color: #fff;
-    border-radius: 10px;
-    //box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
-    //transform: rotate(-15deg);
-    z-index: 1;
-  }
+  width: 100%;
 }
 
 #bg {
@@ -133,15 +114,18 @@ export default {
   padding: 0;
 }
 form {
-  width: 350px;
-  position: relative;
   .select-menu {
     width: 100%;
     margin-bottom: 8px;
+
     select {
+      box-sizing: border-box;
       width: 100%;
+      height: 100%;
     }
   }
+  width: 350px;
+  position: relative;
   .form-field::before {
     font-size: 20px;
     position: absolute;
@@ -160,6 +144,11 @@ form {
     top: 15px;
   }
   .form-field:nth-child(2)::before {
+    background-image: url(../assets/images/lock-icon.png);
+    width: 16px;
+    height: 16px;
+  }
+  .form-field:nth-child(3)::before {
     background-image: url(../assets/images/lock-icon.png);
     width: 16px;
     height: 16px;
