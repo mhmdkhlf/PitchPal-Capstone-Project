@@ -8,6 +8,7 @@ async function newField(req: Request, res: Response) {
         fieldNumber: req.body.fieldNumber,
         fieldLength: req.body.fieldLength,
         fieldWidth: req.body.fieldWidth,
+        reservation_price: req.body.reservation_price,
         grassType: req.body.grassType,
         recommendedTeamSize: req.body.recommendedTeamSize
     });
