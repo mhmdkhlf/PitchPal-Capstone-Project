@@ -1,0 +1,5 @@
+# untracking unwante builds front flutter mobile frontend
+frontend_mobile/web/
+frontend_mobile/macos/
+frontend_mobile/windows/
+frontend_mobile/linux/
