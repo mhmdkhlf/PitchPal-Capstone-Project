@@ -23,7 +23,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .error-popup {
   position: fixed;
   top: 50%;

@@ -3,9 +3,9 @@
   <div class="body-content" :class="{ hidden: error }">
     <div id="bg"></div>
     <form>
-      <div class="form-field">
+      <!-- <div class="form-field">
         <input type="text" v-model="name" placeholder="Name" required />
-      </div>
+      </div> -->
       <div class="form-field">
         <input type="email" v-model="email" placeholder="Email" required />
       </div>
@@ -55,7 +55,7 @@ export default {
   name: "signUpBody",
   data() {
     return {
-      name: "",
+      // name: "",
       email: "",
       password: "",
       rePassword: "",
@@ -72,10 +72,12 @@ export default {
     },
     signUp(e) {
       e.preventDefault();
-      let { name, password, role, rePassword, email } = this;
-      if (name === "") {
-        this.error = "Name cannot be empty";
-      } else if (email === "") {
+      let { password, role, rePassword, email } = this;
+      // if (name === "") {
+      //   this.error = "Name cannot be empty";
+      // }
+      //else
+      if (email === "") {
         this.error = "Email cannot be empty";
       } else if (password === "") {
         this.error = "password cannot be empty";

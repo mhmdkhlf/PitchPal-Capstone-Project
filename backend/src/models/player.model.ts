@@ -25,18 +25,18 @@ const PlayerSchema = new mongoose.Schema({
     },
     age: {
         type: Number,
-        required: true
+       // required: true
     },
     picture: {
         type: String
     },
     height: {
         type: Number,
-        required: true
+       // required: true
     },
     weight: {
         type: Number,
-        required:true
+       // required:true
     },
     sex: {
         type: String,
@@ -60,6 +60,9 @@ const PlayerSchema = new mongoose.Schema({
         required: true,
         enum:["goal keeper","defender","midfielder","attacker"]
     },
+    description:{
+        type:String
+    }
 }, { collection: 'Player' }
 );
 
