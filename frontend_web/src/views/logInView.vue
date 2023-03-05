@@ -1,15 +1,16 @@
 <template>
-  <div>
-    <logInComponent />
-  </div>
+  <logo />
+  <logInBody />
 </template>
 
 <script>
-import logInComponent from "@/components/logIn.vue";
+import logInBody from "@/components/logInBody.vue";
+import logo from "../components/logo.vue";
 export default {
   name: "logInView",
   components: {
-    logInComponent,
+    logInBody,
+    logo,
   },
 };
 </script>
