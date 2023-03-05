@@ -1,27 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/constants.dart';
-import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:frontend_mobile/pages/sign_up.dart';
 import 'package:frontend_mobile/pages/welcome.dart';
 import '../components/submit_button.dart';
 import '../components/input_textfield.dart';
+import '../components/failed_auth_dialog.dart';
 import '../data/auth.dart';
 
-final dio = Dio();
-final String apiRoute = Platform.isAndroid
-    ? 'http://10.0.2.2:5000/api'
-    : 'http://localhost:5000/api';
-
 class LogInPage extends StatefulWidget {
-  const LogInPage({super.key});
+  const LogInPage({
+    super.key,
+    required this.apiRoute,
+    this.emailFromSignUp = '',
+  });
+
+  final String apiRoute;
+  final String emailFromSignUp;
 
   @override
   State<LogInPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LogInPage> {
-  final emailController = TextEditingController();
+  late TextEditingController emailController =
+      TextEditingController(text: widget.emailFromSignUp);
   final passwordController = TextEditingController();
+  late String apiRoute = widget.apiRoute;
 
   void logUserIn() async {
     showDialog(
@@ -32,51 +37,40 @@ class _LoginPageState extends State<LogInPage> {
         );
       },
     );
-    final Auth auth = Auth(
+    final LogInRequest auth = LogInRequest(
       email: emailController.text,
       password: passwordController.text,
     );
+    final dio = Dio();
     try {
       Response response = await dio.post(
         '$apiRoute/logIn',
         data: auth.toJsonMap(),
       );
-      if (response.statusCode == 200) {
-        String email = response.data['email'];
-        if (context.mounted) {
-          Navigator.pop(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => WelcomePage(
-                userEmail: email,
-              ),
+      String email = response.data['email'];
+      String role = response.data['user']['role'];
+      if (context.mounted) {
+        Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => WelcomePage(
+              userEmail: email,
+              role: role,
             ),
-          );
-        }
+          ),
+        );
       }
     } on DioError catch (e) {
       String error = e.response?.data['error'];
       Navigator.pop(context);
-      failedLogInMessage(error);
+      showDialog(
+        context: context,
+        builder: (context) {
+          return FailedAuthDialog(errorText: error);
+        },
+      );
     }
-  }
-
-  void failedLogInMessage(String error) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: kLightColor,
-          title: Center(
-            child: Text(
-              error,
-              style: const TextStyle(color: kDarkColor),
-            ),
-          ),
-        );
-      },
-    );
   }
 
   @override
@@ -99,7 +93,7 @@ class _LoginPageState extends State<LogInPage> {
                 const SizedBox(height: 50),
                 InputTextField(
                   controller: emailController,
-                  hintText: 'Username',
+                  hintText: 'Email',
                   obscureText: false,
                 ),
                 const SizedBox(height: 10),
@@ -116,19 +110,31 @@ class _LoginPageState extends State<LogInPage> {
                 const SizedBox(height: 15),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Text(
+                  children: [
+                    const Text(
                       'Don\'t have an account?',
                       style: TextStyle(color: kDarkColor),
                     ),
-                    SizedBox(width: 4),
-                    Text(
-                      'Register now',
-                      style: TextStyle(
-                        color: kDarkColor,
-                        fontWeight: FontWeight.bold,
+                    const SizedBox(width: 4),
+                    GestureDetector(
+                      onTap: () => {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SignUpPage(
+                              apiRoute: apiRoute,
+                            ),
+                          ),
+                        )
+                      },
+                      child: const Text(
+                        'Register now',
+                        style: TextStyle(
+                          color: kDarkColor,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
+                    )
                   ],
                 )
               ],

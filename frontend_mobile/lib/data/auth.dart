@@ -1,5 +1,5 @@
-class Auth {
-  const Auth({
+class LogInRequest {
+  const LogInRequest({
     required this.email,
     required this.password,
   });
@@ -7,17 +7,30 @@ class Auth {
   final String email;
   final String password;
 
-  factory Auth.fromJson(Map<String, dynamic> json) {
-    return Auth(
-      email: json['email'],
-      password: json['password'],
-    );
+  Map<String, dynamic> toJsonMap() {
+    return {
+      'email': email,
+      'password': password,
+    };
   }
+}
+
+class SignUpRequest {
+  const SignUpRequest({
+    required this.email,
+    required this.password,
+    required this.role,
+  });
+
+  final String email;
+  final String password;
+  final Role role;
 
   Map<String, dynamic> toJsonMap() {
     return {
       'email': email,
       'password': password,
+      'role': role.value,
     };
   }
 }
