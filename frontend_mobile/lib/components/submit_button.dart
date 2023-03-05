@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/constants.dart';
 
-class MyButton extends StatelessWidget {
+class SubmitButton extends StatelessWidget {
+  final String text;
   final Function() onTap;
 
-  const MyButton({super.key, required this.onTap});
+  const SubmitButton({super.key, required this.text, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -17,10 +18,10 @@ class MyButton extends StatelessWidget {
           color: kDarkGreen,
           borderRadius: BorderRadius.circular(15),
         ),
-        child: const Center(
+        child: Center(
           child: Text(
-            'Log In',
-            style: TextStyle(
+            text,
+            style: const TextStyle(
               color: kLightColor,
               fontWeight: FontWeight.bold,
               fontSize: 20,

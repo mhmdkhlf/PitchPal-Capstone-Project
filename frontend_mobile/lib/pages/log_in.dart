@@ -3,7 +3,7 @@ import 'package:frontend_mobile/constants.dart';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:frontend_mobile/pages/welcome.dart';
-import '../components/log_in_button.dart';
+import '../components/submit_button.dart';
 import '../components/input_textfield.dart';
 import '../data/auth.dart';
 
@@ -109,7 +109,8 @@ class _LoginPageState extends State<LogInPage> {
                   obscureText: true,
                 ),
                 const SizedBox(height: 30),
-                MyButton(
+                SubmitButton(
+                  text: 'Log In',
                   onTap: logUserIn,
                 ),
                 const SizedBox(height: 15),
