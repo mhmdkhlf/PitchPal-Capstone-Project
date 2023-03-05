@@ -5,8 +5,12 @@
 <script>
 export default {
   name: "HomeView",
-  //   components: {
-  //     testComponent,
-  //   },
+  created() {
+    //console.log(localStorage.getItem("user").data);
+    //user is not authorized
+    if (localStorage.getItem("user") === null) {
+      this.$router.push("/login");
+    }
+  },
 };
 </script>

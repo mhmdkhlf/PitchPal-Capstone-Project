@@ -1,0 +1,185 @@
+<template>
+  <errorPopup v-if="error" :errorMessage="error" />
+  <div class="body-content" :class="{ hidden: error }">
+    <div id="bg"></div>
+    <form>
+      <div class="form-field">
+        <input type="email" v-model="email" placeholder="Email" required />
+      </div>
+      <div class="form-field">
+        <input
+          type="password"
+          v-model="password"
+          placeholder="Password"
+          required
+        />
+      </div>
+      <div class="form-field login">
+        <button class="btn" type="submit" @click="logIn($event)">Log in</button>
+      </div>
+      <div class="button-seperator-text">
+        <h2>Don't Have An Account?</h2>
+      </div>
+      <div class="form-field">
+        <button class="btn" type="button" @click="signUp()">Sign Up</button>
+      </div>
+    </form>
+  </div>
+</template>
+
+<script>
+import axios from "axios";
+import errorPopup from "./errorPopup.vue";
+export default {
+  name: "logInBody",
+  data() {
+    return {
+      email: "",
+      password: "",
+      error: null,
+    };
+  },
+  components: {
+    errorPopup,
+  },
+  methods: {
+    signUp() {
+      this.$router.push("/signUp");
+    },
+    logIn(e) {
+      e.preventDefault();
+      let data = {
+        email: this.email,
+        password: this.password,
+      };
+      axios.post("http://localhost:5000/api/logIn", data).then(
+        (res) => {
+          if (res.status === 200) {
+            localStorage.setItem("user", JSON.stringify(res.data));
+            console.log(res.data);
+            this.$router.push("/");
+          }
+        },
+        (err) => {
+          this.error = err.response.data.error;
+        }
+      );
+    },
+    // logout() {
+    //   localStorage.clear();
+    //   this.$router.push('/login');
+    // }
+  },
+};
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="scss">
+@import url("https://fonts.googleapis.com/css?family=Lato:400,700");
+.hidden {
+  opacity: 0.07;
+}
+.login {
+  margin-bottom: 0 !important;
+}
+.button-seperator-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin: 0;
+  color: #fff;
+}
+
+.btn {
+  outline: none;
+  border: none;
+  cursor: pointer;
+  display: inline-block;
+  margin: 0 auto;
+  padding: 0.9rem 2.5rem;
+  text-align: center;
+  background-color: #47ab11;
+  color: #fff;
+  border-radius: 4px;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+  font-size: 17px;
+  width: 100%;
+}
+
+#bg {
+  background-image: url("../assets/images/background.jpg");
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+}
+
+.body-content {
+  font-family: "Lato", sans-serif;
+  color: #4a4a4a;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  min-height: 90vh;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+form {
+  width: 350px;
+  position: relative;
+  .form-field::before {
+    font-size: 20px;
+    position: absolute;
+    left: 15px;
+    top: 17px;
+    color: #888888;
+    content: " ";
+    display: block;
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+  .form-field:nth-child(1)::before {
+    background-image: url(../assets/images/email-icon.png);
+    width: 20px;
+    height: 20px;
+    top: 15px;
+  }
+  .form-field:nth-child(2)::before {
+    background-image: url(../assets/images/lock-icon.png);
+    width: 16px;
+    height: 16px;
+  }
+  .form-field {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    margin-bottom: 1rem;
+    position: relative;
+  }
+  input {
+    font-family: inherit;
+    width: 100%;
+    outline: none;
+    background-color: #fff;
+    border-radius: 4px;
+    border: none;
+    display: block;
+    padding: 0.9rem 0.7rem;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+    font-size: 17px;
+    color: #4a4a4a;
+    text-indent: 40px;
+  }
+}
+</style>
