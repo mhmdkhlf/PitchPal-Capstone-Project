@@ -90,7 +90,7 @@ class _SignUpPageState extends State<SignUpPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 100),
+                const SizedBox(height: 80),
                 const Image(
                   image: AssetImage('assets/logo.png'),
                   height: 100,
@@ -160,12 +160,11 @@ class _SignUpPageState extends State<SignUpPage> {
                     const SizedBox(width: 50),
                   ],
                 ),
-                const SizedBox(height: 10),
                 SubmitButton(
                   text: 'Sign Up',
                   onTap: signUpUser,
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 5),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -190,6 +189,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         style: TextStyle(
                           color: kDarkColor,
                           fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
                         ),
                       ),
                     )
