@@ -61,6 +61,7 @@ class _SignUpPageState extends State<SignUpPage> {
             builder: (context) => LogInPage(
               apiRoute: apiRoute,
               emailFromSignUp: email,
+              comingFromSignUp: true,
             ),
           ),
         );
