@@ -132,6 +132,7 @@ class _LoginPageState extends State<LogInPage> {
                         style: TextStyle(
                           color: kDarkColor,
                           fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
                         ),
                       ),
                     )
