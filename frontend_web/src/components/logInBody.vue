@@ -55,7 +55,7 @@ export default {
       axios.post("http://localhost:5000/api/logIn", data).then(
         (res) => {
           if (res.status === 200) {
-            localStorage.setItem("user", JSON.stringify(res.data));
+            sessionStorage.setItem("user", JSON.stringify(res.data.email));
             console.log(res.data);
             this.$router.push("/");
           }
@@ -66,7 +66,7 @@ export default {
       );
     },
     // logout() {
-    //   localStorage.clear();
+    //   sessionStorage.clear();
     //   this.$router.push('/login');
     // }
   },

@@ -6,9 +6,9 @@
 export default {
   name: "HomeView",
   created() {
-    //console.log(localStorage.getItem("user").data);
+    //console.log(JSON.parse(localStorage.getItem("user")));
     //user is not authorized
-    if (localStorage.getItem("user") === null) {
+    if (sessionStorage.getItem("user") === null) {
       this.$router.push("/login");
     }
   },
