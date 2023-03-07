@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../constants.dart';
 
-class InputTextField extends StatelessWidget {
-  const InputTextField({
+class NumberInputField extends StatelessWidget {
+  const NumberInputField({
     super.key,
     required this.controller,
     required this.hintText,
-    this.obscureText = false,
-    this.isMultiLine = false,
   });
 
   final TextEditingController controller;
   final String hintText;
-  final bool obscureText;
-  final bool isMultiLine;
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +19,15 @@ class InputTextField extends StatelessWidget {
       child: TextField(
         style: const TextStyle(color: kLightColor),
         controller: controller,
-        obscureText: obscureText,
-        keyboardType:
-            isMultiLine ? TextInputType.multiline : TextInputType.text,
-        maxLines: isMultiLine ? 3 : 1,
+        keyboardType: const TextInputType.numberWithOptions(decimal: false),
+        inputFormatters: <TextInputFormatter>[
+          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+          TextInputFormatter.withFunction(
+            (oldValue, newValue) => newValue.copyWith(
+              text: newValue.text.replaceAll('.', ','),
+            ),
+          ),
+        ],
         decoration: InputDecoration(
           enabledBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: kDarkGreen),

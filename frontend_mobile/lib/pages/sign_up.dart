@@ -111,7 +111,6 @@ class _SignUpPageState extends State<SignUpPage> {
                 InputTextField(
                   controller: emailController,
                   hintText: 'Email',
-                  obscureText: false,
                 ),
                 const SizedBox(height: 10),
                 InputTextField(
@@ -133,7 +132,6 @@ class _SignUpPageState extends State<SignUpPage> {
                     Expanded(
                       child: Column(
                         children: [
-                          // child:
                           RadioListTile<Role>(
                             title: const Text('Player'),
                             activeColor: kDarkGreen,
@@ -144,7 +142,6 @@ class _SignUpPageState extends State<SignUpPage> {
                               role = value!;
                             }),
                           ),
-                          // child:
                           RadioListTile<Role>(
                             title: const Text('Field Manager'),
                             activeColor: kDarkGreen,
@@ -195,7 +192,8 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                     )
                   ],
-                )
+                ),
+                const SizedBox(height: 10),
               ],
             ),
           ),

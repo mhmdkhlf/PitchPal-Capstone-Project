@@ -98,13 +98,11 @@ class _LoginPageState extends State<LogInPage> {
                       style: TextStyle(
                         color: kDarkGreen,
                         fontSize: 20,
-                        // fontWeight: FontWeight.bold,
                       )),
                 const SizedBox(height: 35),
                 InputTextField(
                   controller: emailController,
                   hintText: 'Email',
-                  obscureText: false,
                 ),
                 const SizedBox(height: 10),
                 InputTextField(
@@ -147,7 +145,8 @@ class _LoginPageState extends State<LogInPage> {
                       ),
                     )
                   ],
-                )
+                ),
+                const SizedBox(height: 10),
               ],
             ),
           ),
