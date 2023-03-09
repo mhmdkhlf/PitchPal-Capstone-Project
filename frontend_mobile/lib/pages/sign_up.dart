@@ -126,38 +126,30 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 const SizedBox(height: 15),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const SizedBox(width: 50),
-                    const Expanded(child: Text('User Type')),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          RadioListTile<Role>(
-                            title: const Text('Player'),
-                            activeColor: kDarkGreen,
-                            dense: true,
-                            groupValue: role,
-                            value: Role.player,
-                            onChanged: (value) => setState(() {
-                              role = value!;
-                            }),
-                          ),
-                          RadioListTile<Role>(
-                            title: const Text('Field Manager'),
-                            activeColor: kDarkGreen,
-                            dense: true,
-                            groupValue: role,
-                            value: Role.fieldManager,
-                            onChanged: (value) => setState(() {
-                              role = value!;
-                            }),
-                          ),
-                        ],
-                      ),
+                    const Text('User Type:'),
+                    Radio(
+                      activeColor: kDarkGreen,
+                      groupValue: role,
+                      value: Role.player,
+                      onChanged: (value) => setState(() {
+                        role = value!;
+                      }),
                     ),
-                    const SizedBox(width: 50),
+                    const Text('Player'),
+                    Radio(
+                      activeColor: kDarkGreen,
+                      groupValue: role,
+                      value: Role.fieldManager,
+                      onChanged: (value) => setState(() {
+                        role = value!;
+                      }),
+                    ),
+                    const Text('Field Manager'),
                   ],
                 ),
+                const SizedBox(width: 50),
                 SubmitButton(
                   text: 'Sign Up',
                   onTap: signUpUser,

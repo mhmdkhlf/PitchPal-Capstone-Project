@@ -1,0 +1,14 @@
+Input form:
+
+Picture profile input
+
+Full name
+date of birth
+phone number
+location
+
+Sex
+height | weight
+preferred position
+
+Optional bio

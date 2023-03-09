@@ -14,32 +14,31 @@ class NumberInputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25.0),
-      child: TextField(
-        style: const TextStyle(color: kLightColor),
-        controller: controller,
-        keyboardType: const TextInputType.numberWithOptions(decimal: false),
-        inputFormatters: <TextInputFormatter>[
-          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-          TextInputFormatter.withFunction(
-            (oldValue, newValue) => newValue.copyWith(
-              text: newValue.text.replaceAll('.', ','),
-            ),
+    return TextField(
+      style: const TextStyle(color: kLightColor),
+      controller: controller,
+      textAlign: TextAlign.center,
+      cursorColor: kPrimaryColor,
+      keyboardType: const TextInputType.numberWithOptions(decimal: false),
+      inputFormatters: <TextInputFormatter>[
+        FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+        TextInputFormatter.withFunction(
+          (oldValue, newValue) => newValue.copyWith(
+            text: newValue.text.replaceAll('.', ','),
           ),
-        ],
-        decoration: InputDecoration(
-          enabledBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: kDarkGreen),
-          ),
-          focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: kLightColor),
-          ),
-          fillColor: kDarkGreen,
-          filled: true,
-          hintText: hintText,
-          hintStyle: const TextStyle(color: kLighterDark),
         ),
+      ],
+      decoration: InputDecoration(
+        enabledBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: kDarkGreen),
+        ),
+        focusedBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: kLightColor),
+        ),
+        fillColor: kDarkGreen,
+        filled: true,
+        hintText: hintText,
+        hintStyle: const TextStyle(color: kLighterDark),
       ),
     );
   }

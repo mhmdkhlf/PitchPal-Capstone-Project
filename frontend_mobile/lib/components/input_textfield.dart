@@ -23,6 +23,7 @@ class InputTextField extends StatelessWidget {
         style: const TextStyle(color: kLightColor),
         controller: controller,
         obscureText: obscureText,
+        cursorColor: kPrimaryColor,
         keyboardType:
             isMultiLine ? TextInputType.multiline : TextInputType.text,
         maxLines: isMultiLine ? 3 : 1,
