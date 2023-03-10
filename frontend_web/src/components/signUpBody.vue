@@ -180,24 +180,24 @@ form {
     background-size: cover;
     background-repeat: no-repeat;
   }
+  // .form-field:nth-child(1)::before {
+  //   background-image: url(../assets/images/user-icon.png);
+  //   width: 20px;
+  //   height: 20px;
+  //   top: 15px;
+  // }
   .form-field:nth-child(1)::before {
-    background-image: url(../assets/images/user-icon.png);
-    width: 20px;
-    height: 20px;
-    top: 15px;
-  }
-  .form-field:nth-child(2)::before {
     background-image: url(../assets/images/email-icon.png);
     width: 20px;
     height: 20px;
     top: 15px;
   }
-  .form-field:nth-child(3)::before {
+  .form-field:nth-child(2)::before {
     background-image: url(../assets/images/lock-icon.png);
     width: 16px;
     height: 16px;
   }
-  .form-field:nth-child(4)::before {
+  .form-field:nth-child(3)::before {
     background-image: url(../assets/images/lock-icon.png);
     width: 16px;
     height: 16px;
