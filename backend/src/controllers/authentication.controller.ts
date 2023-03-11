@@ -28,11 +28,14 @@ async function tryLogIn(req: Request, res: Response) {
 
 async function trySignUp(req: Request, res: Response) {
     try{
-        const {email, password, role} = req.body;
+        const {email, password, role,rePassword} = req.body;
         const exists = await AuthenticationModel.findOne({ email, role });
         // validation
-        if (!email || !password) {
+        if (!email || !password ||  !role) {
             throw Error('All fields must be filled');
+        }
+        if (password!==rePassword){
+            throw Error("Passwords are not compatible")
         }
         if (!validator.isEmail(email)) {
             throw Error('Email not valid');

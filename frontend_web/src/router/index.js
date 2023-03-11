@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from "vue-router";
 import homePage from "../views/homePage.vue";
 import logInPage from "../views/logInView.vue";
 import signUpPage from "../views/signUpView.vue";
-//import error from "../components/errorPopup.vue";
 import profilePage from "../components/Profile.vue";
 import firstProfilePage from "../components/firstTimeProfile.vue";
 const routes = [
@@ -10,7 +9,6 @@ const routes = [
     path: "/",
     name: "home",
     component: homePage,
-    //component: error,
   },
   {
     path: "/logIn",
