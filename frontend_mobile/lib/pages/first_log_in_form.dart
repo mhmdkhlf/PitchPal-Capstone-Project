@@ -1,9 +1,12 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
 import 'package:intl/intl.dart';
 import '../components/input_textfield.dart';
 import '../components/number_input_field.dart';
+import '../components/submit_button.dart';
 import '../data/player.dart';
 import '../constants.dart';
 
@@ -15,19 +18,53 @@ class FirstLogInForm extends StatefulWidget {
 }
 
 class _FirstLogInFormState extends State<FirstLogInForm> {
+  XFile? imageFile;
+  final ImagePicker _picker = ImagePicker();
   final nameController = TextEditingController();
   final dateInput = TextEditingController();
+  late PhoneNumber phoneNumberInput;
   final locationController = TextEditingController();
+  late Sex sexInput = Sex.male;
   final weightController = TextEditingController();
   final heightController = TextEditingController();
+  late Position positionInput = Position.attacker;
   final bioController = TextEditingController();
-  late Position position = Position.attacker;
-  late Sex sex = Sex.male;
-  late PhoneNumber phoneNumber;
+
+  void createProfile() {
+    final String imageName =
+        imageFile == null ? 'default profile image' : imageFile!.name;
+    final String fullName = nameController.text;
+    final String dateOfBirth = dateInput.text;
+    final String phoneNumber = _getPhoneNumberString(phoneNumberInput);
+    final String location = locationController.text;
+    final Sex sex = sexInput;
+    final int weight = int.parse(weightController.text);
+    final int height = int.parse(heightController.text);
+    final Position position = positionInput;
+    final String bio = bioController.text;
+  }
+
+  String _getPhoneNumberString(PhoneNumber phoneNumber) {
+    final String countryCode = phoneNumber.countryCode;
+    final String number = phoneNumber.number;
+    return '$countryCode $number';
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Center(
+          child: Text(
+            'Create your Profile',
+            style: TextStyle(
+              color: kLightColor,
+              fontSize: 24,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+      ),
       backgroundColor: kPrimaryColor,
       body: SafeArea(
         child: SingleChildScrollView(
@@ -36,13 +73,8 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 20),
-                const Image(
-                  image: AssetImage('assets/logo.png'),
-                  height: 100,
-                  width: 200,
-                  fit: BoxFit.fitWidth,
-                ),
-                const SizedBox(height: 30),
+                imageProfile(),
+                const SizedBox(height: 20),
                 InputTextField(
                   controller: nameController,
                   hintText: 'Full Name',
@@ -95,7 +127,7 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
                       ),
                     ),
                     initialCountryCode: 'LB',
-                    onChanged: (phone) => phoneNumber = phone,
+                    onChanged: (phone) => phoneNumberInput = phone,
                   ),
                 ),
                 const SizedBox(height: 5),
@@ -114,16 +146,16 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
                     ),
                     Radio(
                       activeColor: kDarkGreen,
-                      groupValue: sex,
+                      groupValue: sexInput,
                       value: Sex.male,
-                      onChanged: (value) => setState(() => sex = value!),
+                      onChanged: (value) => setState(() => sexInput = value!),
                     ),
                     const Text('Male'),
                     Radio(
                       activeColor: kDarkGreen,
-                      groupValue: sex,
+                      groupValue: sexInput,
                       value: Sex.female,
-                      onChanged: (value) => setState(() => sex = value!),
+                      onChanged: (value) => setState(() => sexInput = value!),
                     ),
                     const Text('Female'),
                   ],
@@ -162,16 +194,18 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
                   children: [
                     Radio(
                       activeColor: kDarkGreen,
-                      groupValue: position,
+                      groupValue: positionInput,
                       value: Position.attacker,
-                      onChanged: (value) => setState(() => position = value!),
+                      onChanged: (value) =>
+                          setState(() => positionInput = value!),
                     ),
                     const Text('Attacker'),
                     Radio(
                       activeColor: kDarkGreen,
-                      groupValue: position,
+                      groupValue: positionInput,
                       value: Position.midfielder,
-                      onChanged: (value) => setState(() => position = value!),
+                      onChanged: (value) =>
+                          setState(() => positionInput = value!),
                     ),
                     const Text('Midfielder'),
                   ],
@@ -181,16 +215,18 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
                   children: [
                     Radio(
                       activeColor: kDarkGreen,
-                      groupValue: position,
+                      groupValue: positionInput,
                       value: Position.defender,
-                      onChanged: (value) => setState(() => position = value!),
+                      onChanged: (value) =>
+                          setState(() => positionInput = value!),
                     ),
                     const Text('Defender'),
                     Radio(
                       activeColor: kDarkGreen,
-                      groupValue: position,
+                      groupValue: positionInput,
                       value: Position.goalKeeper,
-                      onChanged: (value) => setState(() => position = value!),
+                      onChanged: (value) =>
+                          setState(() => positionInput = value!),
                     ),
                     const Text('Goalkeeper'),
                   ],
@@ -202,12 +238,94 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
                   hintText: 'Bio (Optional)',
                   isMultiLine: true,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 5),
+                const Divider(color: kDarkGreen),
+                SubmitButton(text: 'Submit', onTap: createProfile),
+                const SizedBox(height: 15),
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  Widget imageProfile() {
+    return Center(
+      child: Stack(children: <Widget>[
+        CircleAvatar(
+          radius: 80.0,
+          backgroundImage: imageFile == null
+              ? const AssetImage('assets/profile.png')
+              : FileImage(File(imageFile!.path)) as ImageProvider,
+        ),
+        Positioned(
+          bottom: 20.0,
+          right: 20.0,
+          child: InkWell(
+            onTap: () {
+              showModalBottomSheet(
+                context: context,
+                builder: ((builder) => bottomSheet()),
+              );
+            },
+            child: const Icon(
+              Icons.camera_alt,
+              color: kDarkGreen,
+              size: 28.0,
+            ),
+          ),
+        ),
+      ]),
+    );
+  }
+
+  Widget bottomSheet() {
+    return Container(
+      height: 100.0,
+      width: MediaQuery.of(context).size.width,
+      margin: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 20,
+      ),
+      child: Column(
+        children: [
+          const Text(
+            "Choose Profile photo",
+            style: TextStyle(
+              fontSize: 20.0,
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+            TextButton.icon(
+              icon: const Icon(Icons.camera),
+              onPressed: () {
+                takePhoto(ImageSource.camera);
+              },
+              label: const Text("Camera"),
+            ),
+            TextButton.icon(
+              icon: const Icon(Icons.image),
+              onPressed: () {
+                takePhoto(ImageSource.gallery);
+              },
+              label: const Text("Gallery"),
+            ),
+          ])
+        ],
+      ),
+    );
+  }
+
+  void takePhoto(ImageSource source) async {
+    final pickedFile = await _picker.pickImage(
+      source: source,
+    );
+    setState(() {
+      imageFile = pickedFile;
+    });
   }
 }
