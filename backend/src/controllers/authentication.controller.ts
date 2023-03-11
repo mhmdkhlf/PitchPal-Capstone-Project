@@ -3,7 +3,6 @@ const bcrypt = require('bcrypt');
 const validator = require('validator');
 const AuthenticationModel = require('../models/authentication.model.ts');
 
-
 async function tryLogIn(req: Request, res: Response) {
     try{
         const {email, password} = req.body;
@@ -30,8 +29,7 @@ async function trySignUp(req: Request, res: Response) {
     try{
         const {email, password, role} = req.body;
         const exists = await AuthenticationModel.findOne({ email, role });
-        // validation
-        if (!email || !password) {
+        if (!email || !password ||  !role) {
             throw Error('All fields must be filled');
         }
         if (!validator.isEmail(email)) {
@@ -42,7 +40,7 @@ async function trySignUp(req: Request, res: Response) {
         }
         if (role!=="admin" && role !=="player" && role!=="field manager"){
             throw Error("Invalid Role");
-         }
+        }
         if (exists) {
             throw Error('Email already in use');
         }

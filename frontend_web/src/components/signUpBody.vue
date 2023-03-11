@@ -1,6 +1,7 @@
 <template>
   <errorPopup v-if="error" :errorMessage="error" />
-  <div class="body-content" :class="{ hidden: error }">
+  <loader v-if="isLoading && !error" />
+  <div class="body-content" v-if="!isLoading" :class="{ hidden: error }">
     <div id="bg"></div>
     <form>
       <!-- <div class="form-field">
@@ -39,7 +40,7 @@
         </button>
       </div>
       <div class="button-seperator-text">
-        <h2>OR Having An Account?</h2>
+        <h2>Having An Account?</h2>
       </div>
       <div class="form-field">
         <button class="btn" type="button" @click="logIn()">Log In</button>
@@ -51,6 +52,7 @@
 <script>
 import axios from "axios";
 import errorPopup from "./errorPopup.vue";
+import loader from "./loader.vue";
 export default {
   name: "signUpBody",
   data() {
@@ -61,10 +63,12 @@ export default {
       rePassword: "",
       role: "",
       error: null,
+      isLoading: false,
     };
   },
   components: {
     errorPopup,
+    loader,
   },
   methods: {
     logIn() {
@@ -72,33 +76,27 @@ export default {
     },
     signUp(e) {
       e.preventDefault();
+      this.isLoading = true;
       let { password, role, rePassword, email } = this;
-      // if (name === "") {
-      //   this.error = "Name cannot be empty";
-      // }
-      //else
-      if (email === "") {
-        this.error = "Email cannot be empty";
-      } else if (password === "") {
-        this.error = "password cannot be empty";
-      } else if (role === "") {
-        this.error = "Role cannot be empty";
-      } else if (password !== rePassword) {
-        this.error = "The passwords are not compatible";
-      } else {
-        axios
-          .post("http://localhost:5000/api/signUp", { email, role, password })
-          .then(
-            (res) => {
-              if (res.status === 200) {
-                this.$router.push("/logIn");
-              }
-            },
-            (err) => {
-              this.error = err.response.data.error;
+      axios
+        .post("http://localhost:5000/api/signUp", {
+          email,
+          role,
+          password,
+          rePassword,
+        })
+        .then(
+          (res) => {
+            if (res.status === 200) {
+              this.isLoading = false;
+              this.$router.push("/logIn");
             }
-          );
-      }
+          },
+          (err) => {
+            this.isLoading = false;
+            this.error = err.response.data.error;
+          }
+        );
     },
   },
 };
@@ -180,24 +178,24 @@ form {
     background-size: cover;
     background-repeat: no-repeat;
   }
+  // .form-field:nth-child(1)::before {
+  //   background-image: url(../assets/images/user-icon.png);
+  //   width: 20px;
+  //   height: 20px;
+  //   top: 15px;
+  // }
   .form-field:nth-child(1)::before {
-    background-image: url(../assets/images/user-icon.png);
-    width: 20px;
-    height: 20px;
-    top: 15px;
-  }
-  .form-field:nth-child(2)::before {
     background-image: url(../assets/images/email-icon.png);
     width: 20px;
     height: 20px;
     top: 15px;
   }
-  .form-field:nth-child(3)::before {
+  .form-field:nth-child(2)::before {
     background-image: url(../assets/images/lock-icon.png);
     width: 16px;
     height: 16px;
   }
-  .form-field:nth-child(4)::before {
+  .form-field:nth-child(3)::before {
     background-image: url(../assets/images/lock-icon.png);
     width: 16px;
     height: 16px;

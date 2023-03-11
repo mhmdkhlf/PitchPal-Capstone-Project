@@ -23,20 +23,20 @@ const PlayerSchema = new mongoose.Schema({
         type: LocationSchema,
         required: true
     },
-    age: {
-        type: Number,
-       // required: true
+    dateOfBirth: {
+        type: Date,
+    
     },
     picture: {
         type: String
     },
     height: {
         type: Number,
-       // required: true
+       
     },
     weight: {
         type: Number,
-       // required:true
+       
     },
     sex: {
         type: String,

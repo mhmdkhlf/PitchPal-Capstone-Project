@@ -31,7 +31,7 @@ export default {
   transform: translate(-50%, -50%);
   width: 400px;
   max-width: 80%;
-  background-color: #f44336;
+  background-color: #47ab11;
   color: white;
   padding: 20px;
   border-radius: 10px;
@@ -43,7 +43,7 @@ export default {
 }
 .error-popup button {
   background-color: white;
-  color: #f44336;
+  color: #47ab11;
   border: none;
   padding: 10px 20px;
   border-radius: 5px;
