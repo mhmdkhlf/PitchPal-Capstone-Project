@@ -66,13 +66,13 @@
                           <label
                             class="form-control-label"
                             for="input-first-name"
-                            >Age</label
+                            >Date Of Birth</label
                           >
                           <input
-                            type="text"
+                            type="date"
                             id="input-first-name"
                             class="form-control form-control-alternative"
-                            v-model="age"
+                            v-model="dateOfBirth"
                           />
                         </div>
                       </div>
@@ -250,7 +250,7 @@ export default {
   data() {
     return {
       name: "",
-      email: "",
+      email: sessionStorage.getItem("user"),
       phoneNumber: "",
       location: "",
       age: 0,

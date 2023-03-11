@@ -1,6 +1,7 @@
 <template>
+  <loader v-if="isLoading && !error" />
   <errorPopup v-if="error" :errorMessage="error" />
-  <div class="body-content" :class="{ hidden: error }">
+  <div class="body-content" :class="{ hidden: error }" v-if="!isLoading">
     <div id="bg"></div>
     <form>
       <div class="form-field">
@@ -30,6 +31,7 @@
 <script>
 import axios from "axios";
 import errorPopup from "./errorPopup.vue";
+import loader from "./loader.vue";
 export default {
   name: "logInBody",
   data() {
@@ -37,30 +39,50 @@ export default {
       email: "",
       password: "",
       error: null,
+      isLoading: false,
     };
   },
   components: {
     errorPopup,
+    loader,
   },
   methods: {
+    // sleep(ms) {
+    //   return new Promise((resolve) => setTimeout(resolve, ms));
+    // },
     signUp() {
       this.$router.push("/signUp");
     },
     logIn(e) {
       e.preventDefault();
+      this.isLoading = true;
       let data = {
         email: this.email,
         password: this.password,
       };
+
       axios.post("http://localhost:5000/api/logIn", data).then(
         (res) => {
           if (res.status === 200) {
-            sessionStorage.setItem("user", JSON.stringify(res.data.email));
-            console.log(res.data);
-            this.$router.push("/");
+            sessionStorage.setItem("user", res.data.email);
+            axios
+              .post("http://localhost:5000/api/isFirstTimeLogIn", {
+                userType: "player",
+                userEmail: this.email,
+              })
+              .then((res) => {
+                if (res.data.result) {
+                  this.isLoading = false;
+                  this.$router.push("/first-profile");
+                } else {
+                  this.isLoading = false;
+                  this.$router.push("/");
+                }
+              });
           }
         },
         (err) => {
+          this.isLoading = false;
           this.error = err.response.data.error;
         }
       );
