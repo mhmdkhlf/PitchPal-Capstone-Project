@@ -3,10 +3,11 @@
     href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700"
     rel="stylesheet"
   />
-  <logo />
+  <!-- <logo /> -->
+
   <div class="body">
     <div class="main-content">
-      <div class="container-fluid mt--7">
+      <div class="container-fluid">
         <div class="row">
           <div class="col-xl-8 order-xl-1">
             <div class="card bg-secondary shadow">
@@ -26,6 +27,9 @@
                     User information
                   </h6>
                   <div class="pl-lg-4">
+                    <div class="row pf">
+                      <profilePicture />
+                    </div>
                     <div class="row">
                       <div class="col-lg-6">
                         <div class="form-group focused">
@@ -60,6 +64,7 @@
                         </div>
                       </div>
                     </div>
+
                     <div class="row">
                       <div class="col-lg-6">
                         <div class="form-group focused">
@@ -241,11 +246,11 @@
   </div>
 </template>
 <script>
-import logo from "./logo.vue";
+import profilePicture from "./profilePicture.vue";
 export default {
   name: "FirstprofileComponent",
   components: {
-    logo,
+    profilePicture,
   },
   data() {
     return {
@@ -253,7 +258,7 @@ export default {
       email: sessionStorage.getItem("user"),
       phoneNumber: "",
       location: "",
-      age: 0,
+      dateOfBirth: 0,
       picture: "",
       height: 0,
       weight: 0,
@@ -329,6 +334,12 @@ export default {
 .required:after {
   content: " *";
   color: red;
+}
+.pf {
+  height: auto;
+  margin: 0 auto;
+
+  position: relative;
 }
 
 html {
@@ -595,11 +606,12 @@ a > code {
 }
 
 .container-fluid {
+  height: 100% !important;
   width: 100%;
   margin-right: auto;
   margin-left: auto;
-  padding-right: 15px;
-  padding-left: 15px;
+  /* padding-right: 15px;
+  padding-left: 15px; */
 }
 
 .row {
@@ -791,22 +803,6 @@ button.bg-white:focus {
   border: 0 !important;
 }
 
-.rounded-circle {
-  border-radius: 50% !important;
-}
-
-.d-flex {
-  display: flex !important;
-}
-
-.justify-content-center {
-  justify-content: center !important;
-}
-
-.justify-content-between {
-  justify-content: space-between !important;
-}
-
 .align-items-center {
   align-items: center !important;
 }
@@ -817,21 +813,8 @@ button.bg-white:focus {
   }
 }
 
-.float-right {
-  float: right !important;
-}
-
-.shadow,
-.card-profile-image img {
-  box-shadow: 0 0 2rem 0 rgba(136, 152, 170, 0.15) !important;
-}
-
 .mb-0 {
   margin-bottom: 0 !important;
-}
-
-.mr-2 {
-  margin-right: 0.5rem !important;
 }
 
 .mt-4,
@@ -839,75 +822,15 @@ button.bg-white:focus {
   margin-top: 1.5rem !important;
 }
 
-.mr-4 {
-  margin-right: 1.5rem !important;
-}
-
 .mb-4,
 .my-4 {
   margin-bottom: 1.5rem !important;
-}
-
-.mb-5 {
-  margin-bottom: 3rem !important;
-}
-
-.mt--7 {
-  margin-top: 3.5rem !important;
-}
-
-.pt-0 {
-  padding-top: 0 !important;
-}
-
-.pb-0 {
-  padding-bottom: 0 !important;
-}
-
-.pt-8 {
-  padding-top: 8rem !important;
-}
-
-.m-auto {
-  margin: auto !important;
-}
-
-@media (min-width: 768px) {
-  .mt-md-5 {
-    margin-top: 3rem !important;
-  }
-
-  .pt-md-4 {
-    padding-top: 1.5rem !important;
-  }
-
-  .pb-md-4 {
-    padding-bottom: 1.5rem !important;
-  }
 }
 
 @media (min-width: 992px) {
   .pl-lg-4 {
     padding-left: 1.5rem !important;
   }
-}
-
-@media (min-width: 1200px) {
-  .mb-xl-0 {
-    margin-bottom: 0 !important;
-  }
-}
-
-.text-right {
-  text-align: right !important;
-}
-
-.text-center {
-  text-align: center !important;
-}
-
-.font-weight-light {
-  font-weight: 300 !important;
 }
 
 .text-muted {
@@ -1017,13 +940,7 @@ button.bg-white:focus {
 
 .main-content {
   position: relative;
-}
-
-@media (min-width: 768px) {
-  .main-content .container-fluid {
-    padding-right: 39px !important;
-    padding-left: 39px !important;
-  }
+  height: 100% !important;
 }
 
 .form-control-label {
