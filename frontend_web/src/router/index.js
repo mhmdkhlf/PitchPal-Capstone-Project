@@ -11,7 +11,7 @@ const routes = [
     component: homePage,
   },
   {
-    path: "/logIn",
+    path: "/logIn/:email?",
     name: "logIn",
     component: logInPage,
   },

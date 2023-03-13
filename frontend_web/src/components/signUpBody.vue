@@ -70,6 +70,10 @@ export default {
     errorPopup,
     loader,
   },
+  // mounted() {
+  //   console.log(this.$root);
+  //   console.log(this.bus);
+  // },
   methods: {
     logIn() {
       this.$router.push("/login");
@@ -78,25 +82,29 @@ export default {
       e.preventDefault();
       this.isLoading = true;
       let { password, role, rePassword, email } = this;
-      axios
-        .post("http://localhost:5000/api/signUp", {
-          email,
-          role,
-          password,
-          rePassword,
-        })
-        .then(
-          (res) => {
-            if (res.status === 200) {
+      if (password !== rePassword) {
+        this.error = "Passwords are not Compatible.Please try again";
+      } else {
+        axios
+          .post("http://localhost:5000/api/signUp", {
+            email,
+            role,
+            password,
+          })
+          .then(
+            (res) => {
+              if (res.status === 200) {
+                this.isLoading = false;
+                // this.$root.$emit("signUpDone", this.email);
+                this.$router.push("/logIn/" + this.email);
+              }
+            },
+            (err) => {
               this.isLoading = false;
-              this.$router.push("/logIn");
+              this.error = err.response.data.error;
             }
-          },
-          (err) => {
-            this.isLoading = false;
-            this.error = err.response.data.error;
-          }
-        );
+          );
+      }
     },
   },
 };
