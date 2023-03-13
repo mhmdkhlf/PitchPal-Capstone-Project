@@ -2,6 +2,7 @@ import 'location.dart';
 
 class Player {
   const Player({
+    // TODO: remove non required elements from constructor
     required this.uuid,
     required this.playerID,
     required this.name,
@@ -9,7 +10,7 @@ class Player {
     required this.phoneNumber,
     required this.location,
     required this.picture,
-    required this.age,
+    required this.dateOfBirth,
     required this.height,
     required this.weight,
     required this.sex,
@@ -17,6 +18,7 @@ class Player {
     required this.averageSkillRating,
     required this.numberOfReviews,
     required this.position,
+    required this.bio,
   });
 
   final String uuid;
@@ -26,13 +28,14 @@ class Player {
   final String phoneNumber;
   final Location location;
   final String picture;
-  final int age;
+  final String dateOfBirth;
   final num height, weight;
   final Sex sex;
   final num averageMoralityRating;
   final num averageSkillRating;
   final int numberOfReviews;
   final Position position;
+  final String bio;
 
   factory Player.fromJson(Map<String, dynamic> json) {
     return Player(
@@ -43,15 +46,33 @@ class Player {
       phoneNumber: json['phoneNumber'],
       location: Location.fromJson(json['location']),
       picture: json['picture'],
-      age: json['age'],
+      dateOfBirth: json['dateOfBirth'],
       height: json['height'],
       weight: json['weight'],
       sex: Sex.values.firstWhere((e) => e.value == json['sex']),
+      position: Position.values.firstWhere((e) => e.value == json['position']),
       averageMoralityRating: json['averageMoralityRating'],
       averageSkillRating: json['averageSkillRating'],
       numberOfReviews: json['numberOfReviews'],
-      position: Position.values.firstWhere((e) => e.value == json['position']),
+      bio: json['bio'],
     );
+  }
+
+  Map<String, dynamic> toJsonMapToCreatePlayer() {
+    return {
+      'playerID': playerID,
+      'name': name,
+      'email': email,
+      'phoneNumber': phoneNumber,
+      'location': location,
+      'picture': picture,
+      'dateOfBirth': dateOfBirth,
+      'height': height,
+      'weight': weight,
+      'sex': sex,
+      'position': position,
+      'bio': bio,
+    };
   }
 
   @override
@@ -59,7 +80,7 @@ class Player {
     return '''uuid = $uuid; playerID = $playerID; name = $name;
 email = $email; phoneNumber = $phoneNumber;
 location: $location;
-age = $age; picture = $picture; height = $height; weight = $weight;
+dateOfBirth = $dateOfBirth; picture = $picture; height = $height; weight = $weight;
 sex = $sex; averageMoralityRating = $averageMoralityRating; averageSkillRating = $averageSkillRating;
 numberOfReviews = $numberOfReviews; position = $position;''';
   }
