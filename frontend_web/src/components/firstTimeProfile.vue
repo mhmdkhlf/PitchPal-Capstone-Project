@@ -9,121 +9,130 @@
     <div class="main-content">
       <div class="container-fluid">
         <div class="row">
-          <div class="col-xl-8 order-xl-1">
-            <div class="card bg-secondary shadow">
-              <div class="card-header bg-white border-0">
-                <div class="row align-items-center">
-                  <div class="col-8">
-                    <h3 class="mb-0">My account</h3>
-                  </div>
-                  <!-- <div class="col-4 text-right">
+          <!-- <div class="col-8">
+                
+              </div> -->
+          <!-- <div class="col-4 text-right">
                       <h4>Your ID: {{ player.playerId }}</h4>
                     </div> -->
-                </div>
-              </div>
-              <div class="card-body">
-                <form>
-                  <h6 class="heading-small text-muted mb-4">
-                    User information
-                  </h6>
-                  <div class="pl-lg-4">
-                    <div class="row pf">
+
+          <div class="card-body">
+            <form>
+              <h6 class="heading-small text-muted mb-4">User information</h6>
+              <div class="pl-lg-4">
+                <div class="row pf">
+                  <div class="col-lg-6">
+                    <div class="form-group focused">
+                      <label class="form-control-label">Profile Picture</label>
                       <profilePicture />
                     </div>
-                    <div class="row">
-                      <div class="col-lg-6">
-                        <div class="form-group focused">
-                          <label
-                            class="form-control-label required"
-                            for="input-username"
-                            >Name</label
-                          >
-                          <input
-                            type="text"
-                            id="input-username"
-                            class="form-control form-control-alternative"
-                            v-model="name"
-                            required
-                          />
-                        </div>
-                      </div>
-                      <div class="col-lg-6">
-                        <div class="form-group">
-                          <label
-                            class="form-control-label required"
-                            for="input-email"
-                            >Email address</label
-                          >
-                          <input
-                            type="email"
-                            id="input-email"
-                            class="form-control form-control-alternative"
-                            v-model="email"
-                            required
-                          />
-                        </div>
-                      </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-6">
+                    <div class="form-group focused">
+                      <label
+                        class="form-control-label required"
+                        for="input-username"
+                        >Name</label
+                      >
+                      <input
+                        type="text"
+                        id="input-username"
+                        class="form-control form-control-alternative"
+                        v-model="name"
+                        required
+                      />
                     </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label
+                        class="form-control-label required"
+                        for="input-email"
+                        >Email address</label
+                      >
+                      <input
+                        type="email"
+                        id="input-email"
+                        class="form-control form-control-alternative"
+                        v-model="email"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
 
-                    <div class="row">
-                      <div class="col-lg-6">
-                        <div class="form-group focused">
-                          <label
-                            class="form-control-label"
-                            for="input-first-name"
-                            >Date Of Birth</label
-                          >
-                          <input
-                            type="date"
-                            id="input-first-name"
-                            class="form-control form-control-alternative"
-                            v-model="dateOfBirth"
-                          />
-                        </div>
-                      </div>
-                      <div class="col-lg-6">
-                        <div class="form-group focused">
-                          <label
-                            class="form-control-label required"
-                            for="input-last-name"
-                            >Sex</label
-                          >
-                          <select
-                            name="sex"
-                            required
-                            v-model="sex"
-                            class="form-control form-control-alternative"
-                          >
-                            <option value="">Sex</option>
-                            <option value="M">Male</option>
-                            <option value="F">FeMale</option>
-                          </select>
-                        </div>
-                      </div>
+                <div class="row">
+                  <div class="col-lg-6">
+                    <div class="form-group focused">
+                      <label class="form-control-label" for="input-first-name"
+                        >Date Of Birth</label
+                      >
+                      <input
+                        type="date"
+                        id="input-first-name"
+                        class="form-control form-control-alternative"
+                        v-model="dateOfBirth"
+                      />
                     </div>
-                    <div class="row">
-                      <div class="col-lg-6">
-                        <div class="form-group focused">
-                          <label
-                            class="form-control-label required"
-                            for="input-first-name"
-                            >Position</label
-                          >
-                          <select
-                            name="position"
-                            required
-                            v-model="position"
-                            class="form-control form-control-alternative"
-                          >
-                            <option value="">position</option>
-                            <option value="attacker">Attacker</option>
-                            <option value="defender">Defnder</option>
-                            <option value="goal keeper">goal keeper</option>
-                            <option value="midfielder">midfielder</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="col-lg-6">
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="form-group focused">
+                      <label
+                        class="form-control-label required"
+                        for="input-last-name"
+                        >Sex</label
+                      >
+                      <select
+                        name="sex"
+                        required
+                        v-model="sex"
+                        class="form-control form-control-alternative"
+                      >
+                        <option value="">Sex</option>
+                        <option value="M">Male</option>
+                        <option value="F">FeMale</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-6">
+                    <div class="form-group focused">
+                      <label
+                        class="form-control-label required"
+                        for="input-first-name"
+                        >Position</label
+                      >
+                      <select
+                        name="position"
+                        required
+                        v-model="position"
+                        class="form-control form-control-alternative"
+                      >
+                        <option value="">position</option>
+                        <option value="attacker">Attacker</option>
+                        <option value="defender">Defnder</option>
+                        <option value="goal keeper">goal keeper</option>
+                        <option value="midfielder">midfielder</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="form-group focused">
+                      <label class="form-control-label" for="input-first-name"
+                        >Weight</label
+                      >
+                      <input
+                        type="text"
+                        id="input-first-name"
+                        class="form-control form-control-alternative"
+                        v-model="weight"
+                      />
+                    </div>
+                  </div>
+                  <!-- <div class="col-lg-6">
                         <div class="form-group focused">
                           <label
                             class="form-control-label"
@@ -136,109 +145,88 @@
                             class="form-control form-control-alternative"
                           />
                         </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-lg-6">
-                        <div class="form-group focused">
-                          <label
-                            class="form-control-label"
-                            for="input-first-name"
-                            >Weight</label
-                          >
-                          <input
-                            type="text"
-                            id="input-first-name"
-                            class="form-control form-control-alternative"
-                            v-model="weight"
-                          />
-                        </div>
-                      </div>
-                      <div class="col-lg-6">
-                        <div class="form-group focused">
-                          <label
-                            class="form-control-label"
-                            for="input-last-name"
-                            >Height</label
-                          >
-                          <input
-                            type="text"
-                            id="input-last-name"
-                            class="form-control form-control-alternative"
-                            v-model="height"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <hr class="my-4" />
-                  <!-- Address -->
-                  <h6 class="heading-small text-muted mb-4">
-                    Contact information
-                  </h6>
-                  <div class="pl-lg-4">
-                    <div class="row">
-                      <div class="col-md-12">
-                        <div class="form-group focused">
-                          <label
-                            class="form-control-label required"
-                            for="input-address"
-                            >Address</label
-                          >
-                          <input
-                            id="input-address"
-                            class="form-control form-control-alternative"
-                            v-model="location"
-                            type="text"
-                            required
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-12">
-                        <div class="form-group focused">
-                          <label
-                            class="form-control-label required"
-                            for="input-address"
-                            >Phone Number</label
-                          >
-                          <input
-                            id="input-address"
-                            class="form-control form-control-alternative"
-                            v-model="phoneNumber"
-                            type="text"
-                            required
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <hr class="my-4" />
-                  <!-- Description -->
-                  <h6 class="heading-small text-muted mb-4">About me</h6>
-                  <div class="pl-lg-4">
+                      </div> -->
+                </div>
+                <div class="row">
+                  <div class="col-lg-6">
                     <div class="form-group focused">
-                      <label>About Me</label>
-                      <textarea
-                        rows="4"
+                      <label class="form-control-label" for="input-last-name"
+                        >Height</label
+                      >
+                      <input
+                        type="text"
+                        id="input-last-name"
                         class="form-control form-control-alternative"
-                        v-model="description"
-                      >
-  A beautiful Dashboard for Bootstrap 4. It is Free and Open Source.</textarea
-                      >
+                        v-model="height"
+                      />
                     </div>
                   </div>
-                  <button
-                    class="continue-button"
-                    type="submit"
-                    @click="createPlayer($event)"
-                  >
-                    Contniue
-                  </button>
-                </form>
+                </div>
               </div>
-            </div>
+              <hr class="my-4" />
+              <!-- Address -->
+              <h6 class="heading-small text-muted mb-4">Contact information</h6>
+              <div class="pl-lg-4">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group focused">
+                      <label
+                        class="form-control-label required"
+                        for="input-address"
+                        >Address</label
+                      >
+                      <input
+                        id="input-address"
+                        class="form-control form-control-alternative"
+                        v-model="location"
+                        type="text"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group focused">
+                      <label
+                        class="form-control-label required"
+                        for="input-address"
+                        >Phone Number</label
+                      >
+                      <input
+                        id="input-address"
+                        class="form-control form-control-alternative"
+                        v-model="phoneNumber"
+                        type="text"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <hr class="my-4" />
+              <!-- Description -->
+              <h6 class="heading-small text-muted mb-4">About me</h6>
+              <div class="pl-lg-4">
+                <div class="form-group focused">
+                  <label>About Me</label>
+                  <textarea
+                    rows="4"
+                    class="form-control form-control-alternative"
+                    v-model="description"
+                  >
+  A beautiful Dashboard for Bootstrap 4. It is Free and Open Source.</textarea
+                  >
+                </div>
+              </div>
+              <button
+                class="continue-button"
+                type="submit"
+                @click="createPlayer($event)"
+              >
+                Contniue
+              </button>
+            </form>
           </div>
         </div>
       </div>
