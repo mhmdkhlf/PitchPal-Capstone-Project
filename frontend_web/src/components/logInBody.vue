@@ -46,6 +46,13 @@ export default {
     errorPopup,
     loader,
   },
+  mounted() {
+    // this.$root.on("signUpDone", (email) => {
+    //   // here you need to use the arrow function
+    //   this.email = email;
+    // });
+    this.email = this.$route.params.email ? this.$route.params.email : "";
+  },
   methods: {
     // sleep(ms) {
     //   return new Promise((resolve) => setTimeout(resolve, ms));
