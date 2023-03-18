@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 var multer = require("multer");
-
-function uploadPicture(req: Request, res: Response) {
+const photosModel = require("../models/photos.model");
+var fs = require("fs");
+var path = require("path");
+async function uploadPicture(req: any, res: any) {
   var storage = multer.diskStorage({
     destination: function (request: any, file: any, callback: any) {
       callback(null, "./uploads");
@@ -21,11 +23,25 @@ function uploadPicture(req: Request, res: Response) {
   });
 
   var upload = multer({ storage: storage }).single("image");
-  upload(req, res, function (error: any) {
-    if (error) {
-      res.status(200).json({ status: "undone" });
-    } else {
-      res.status(200).json({ status: "done" });
+  upload(req, res, async () => {
+    // console.log(req.file);
+    var obj = {
+      email: req.body.email,
+      img: {
+        data: fs.readFileSync(
+          path.join(
+            "C:/Users/HES/Desktop/PitchPal-Capstone-Project/backend/uploads/" +
+              req.file.filename
+          )
+        ),
+        contentType: req.file.mimetype,
+      },
+    };
+    try {
+      await photosModel.create(obj);
+      res.status(200).json(obj);
+    } catch (error) {
+      res.status(400).json({ error });
     }
   });
 }

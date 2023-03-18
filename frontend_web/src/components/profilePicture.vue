@@ -12,7 +12,7 @@
   </div>
 </template>
 <script>
-//import axios from "axios";
+import axios from "axios";
 
 export default {
   name: "profilePicture",
@@ -31,9 +31,10 @@ export default {
     imageSelect() {
       //  console.log("in");
       const image = this.$refs.image.files[0];
-      console.log(image.type);
-      // var bodyFormData = new FormData();
-      // bodyFormData.append("image", image);
+      console.log(image);
+      var bodyFormData = new FormData();
+      bodyFormData.append("image", image);
+      bodyFormData.append("email", "123");
       if (image) {
         const reader = new FileReader(); //FileReader is a predefined function of JS
 
@@ -44,11 +45,11 @@ export default {
         reader.readAsDataURL(image);
       }
       //console.log(image);
-      // axios({
-      //   url: "http://localhost:5000/api/upload",
-      //   method: "POST",
-      //   data: bodyFormData,
-      // });
+      axios({
+        url: "http://localhost:5000/api/upload",
+        method: "POST",
+        data: bodyFormData,
+      });
       //this.image = image;
       // this.$emit("pictureUploaded", this.image);
     },
