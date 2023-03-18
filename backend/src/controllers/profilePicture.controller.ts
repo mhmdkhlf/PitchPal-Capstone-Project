@@ -2,11 +2,9 @@ import { Request, Response } from "express";
 var multer = require("multer");
 
 function uploadPicture(req: Request, res: Response) {
-  // const imageName=req.body.imageName
-  // res.status(200).json({imageName:imageName});
   var storage = multer.diskStorage({
     destination: function (request: any, file: any, callback: any) {
-      callback(null, "./upload");
+      callback(null, "./uploads");
     },
     filename: function (request: any, file: any, callback: any) {
       var temp_file_arr = file.originalname.split(".");

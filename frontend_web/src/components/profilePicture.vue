@@ -5,13 +5,15 @@
       @mouseenter="showButton()"
       @mouseleave="rmvButton()"
     >
-      <img src="../assets/images/image.jpg" id="photo" />
+      <img src="../assets/images/image.jpg" id="photo" ref="img" />
       <input type="file" ref="image" @change="imageSelect()" id="file" />
       <label for="file" id="uploadBtn" ref="button">Choose Photo</label>
     </div>
   </div>
 </template>
 <script>
+//import axios from "axios";
+
 export default {
   name: "profilePicture",
   data() {
@@ -29,9 +31,26 @@ export default {
     imageSelect() {
       //  console.log("in");
       const image = this.$refs.image.files[0];
-      console.log(image);
-      this.image = image;
-      this.$emit("pictureUploaded", this.image);
+      console.log(image.type);
+      // var bodyFormData = new FormData();
+      // bodyFormData.append("image", image);
+      if (image) {
+        const reader = new FileReader(); //FileReader is a predefined function of JS
+
+        reader.addEventListener("load", () => {
+          this.$refs.img.setAttribute("src", reader.result);
+        });
+
+        reader.readAsDataURL(image);
+      }
+      //console.log(image);
+      // axios({
+      //   url: "http://localhost:5000/api/upload",
+      //   method: "POST",
+      //   data: bodyFormData,
+      // });
+      //this.image = image;
+      // this.$emit("pictureUploaded", this.image);
     },
   },
 };
