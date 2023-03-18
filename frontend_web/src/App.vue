@@ -1,6 +1,6 @@
 <template>
   <!-- <loader /> -->
-  <!-- <router-view /> -->
+  <router-view />
   <!-- <p>hello</p>
   <img :src="src" alt="failed" ref="test" v-if="done" /> -->
   <!-- <pf /> -->
