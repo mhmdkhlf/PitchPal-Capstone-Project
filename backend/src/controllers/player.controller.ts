@@ -34,7 +34,7 @@ async function createProfileInformation(req: Request, res: Response){
             email: req.body.email,
             phoneNumber: req.body.phoneNumber,
             location: req.body.location,
-            age: req.body.age,
+            age: req.body.dataOfBirth,
             picture: req.body.picture,
             height: req.body.height,
             weight: req.body.weight,
@@ -42,7 +42,8 @@ async function createProfileInformation(req: Request, res: Response){
             moralityRating: req.body.averageMoralityScore,
             skillRating: req.body.averageSkillRating,
             numberOfReviews: req.body.numberOfReviews,
-            position: req.body.position
+            position: req.body.position,
+            description:req.body.decsription
         });
         res.status(200).json(playerInfo);
     } catch(error) {

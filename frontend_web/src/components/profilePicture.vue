@@ -6,7 +6,7 @@
       @mouseleave="rmvButton()"
     >
       <img src="../assets/images/image.jpg" id="photo" />
-      <input type="file" id="file" />
+      <input type="file" ref="image" @change="imageSelect()" id="file" />
       <label for="file" id="uploadBtn" ref="button">Choose Photo</label>
     </div>
   </div>
@@ -14,12 +14,24 @@
 <script>
 export default {
   name: "profilePicture",
+  data() {
+    return {
+      image: "",
+    };
+  },
   methods: {
     showButton() {
       this.$refs.button.style.display = "block";
     },
     rmvButton() {
       this.$refs.button.style.display = "none";
+    },
+    imageSelect() {
+      //  console.log("in");
+      const image = this.$refs.image.files[0];
+      console.log(image);
+      this.image = image;
+      this.$emit("pictureUploaded", this.image);
     },
   },
 };

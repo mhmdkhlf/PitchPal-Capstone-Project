@@ -1,9 +1,25 @@
 import { createStore } from "vuex";
 
 export default createStore({
-  state: {},
+  state: {
+    isLoading: false,
+  },
   getters: {},
-  mutations: {},
-  actions: {},
+  mutations: {
+    setLoading: (state) => {
+      state.isLoading = true;
+    },
+    stopLoading: (state) => {
+      state.isLoading = false;
+    },
+  },
+  actions: {
+    setLoading: (context) => {
+      context.commit("setLoading");
+    },
+    stopLoading: (context) => {
+      context.commit("stopLoading");
+    },
+  },
   modules: {},
 });

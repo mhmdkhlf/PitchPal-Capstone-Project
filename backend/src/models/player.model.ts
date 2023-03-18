@@ -28,7 +28,8 @@ const PlayerSchema = new mongoose.Schema({
     
     },
     picture: {
-        type: String
+        data: Buffer,
+        contentType: String
     },
     height: {
         type: Number,
