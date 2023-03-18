@@ -799,10 +799,10 @@
     "@types/node" "*"
     "form-data" "^3.0.0"
 
-"@types/node@*":
-  "integrity" "sha512-DHQpWGjyQKSHj3ebjFI/wRKcqQcdR+MoFBygntYOZytCqNfkd2ZC4ARDJ2DQqhjH5p85Nnd3jhUJIXrszFX/JA=="
-  "resolved" "https://registry.npmjs.org/@types/node/-/node-18.11.18.tgz"
-  "version" "18.11.18"
+"@types/node@*", "@types/node@^18.15.3":
+  "integrity" "sha512-p6ua9zBxz5otCmbpb5D3U4B5Nanw6Pk3PPyX05xnxbB/fRv71N7CPmORg7uAD5P70T0xmx1pzAx/FUfa5X+3cw=="
+  "resolved" "https://registry.npmjs.org/@types/node/-/node-18.15.3.tgz"
+  "version" "18.15.3"
 
 "@types/qs@*":
   "integrity" "sha512-FGa1F62FT09qcrueBA6qYTrJPVDzah9a+493+o2PCXsesWHIn27G98TsSMs3WPNbZIEj4+VJf6saSFpvD+3Zsw=="

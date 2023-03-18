@@ -243,7 +243,9 @@ export default {
   data() {
     return {
       name: "",
-      email: sessionStorage.getItem("user"),
+      email: sessionStorage.getItem("user")
+        ? sessionStorage.getItem("user")
+        : "",
       phoneNumber: "",
       location: null,
       dateOfBirth: 0,
