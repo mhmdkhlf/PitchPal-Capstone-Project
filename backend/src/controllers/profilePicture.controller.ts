@@ -29,10 +29,7 @@ async function uploadPicture(req: any, res: any) {
       email: req.body.email,
       img: {
         data: fs.readFileSync(
-          path.join(
-            "C:/Users/HES/Desktop/PitchPal-Capstone-Project/backend/uploads/" +
-              req.file.filename
-          )
+          path.join(__dirname + "/../../uploads/" + req.file.filename)
         ),
         contentType: req.file.mimetype,
       },
