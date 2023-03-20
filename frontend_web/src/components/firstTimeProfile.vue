@@ -10,7 +10,7 @@
       <div class="container-fluid">
         <div class="row">
           <!-- <div class="col-8">
-                
+
               </div> -->
           <!-- <div class="col-4 text-right">
                       <h4>Your ID: {{ player.playerId }}</h4>
