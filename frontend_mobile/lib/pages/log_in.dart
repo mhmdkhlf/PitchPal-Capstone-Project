@@ -114,6 +114,8 @@ class _LoginPageState extends State<LogInPage> {
                 SubmitButton(
                   text: 'Log In',
                   onTap: logUserIn,
+                  // TODO: change to navigate to first time log in if auth user doesn't correspond to player/field manager
+                  // TODO: if user already filled form then navigate to home page.
                 ),
                 const SizedBox(height: 15),
                 Row(

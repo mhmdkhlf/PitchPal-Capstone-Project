@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
@@ -8,6 +9,7 @@ import '../components/input_textfield.dart';
 import '../components/number_input_field.dart';
 import '../components/submit_button.dart';
 import '../data/player.dart';
+import '../data/location.dart';
 import '../constants.dart';
 
 class FirstLogInForm extends StatefulWidget {
@@ -30,7 +32,12 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
   late Position positionInput = Position.attacker;
   final bioController = TextEditingController();
 
-  void createProfile() {
+  final dio = Dio();
+  final String apiRoute = Platform.isAndroid
+      ? 'http://10.0.2.2:5000/api'
+      : 'http://localhost:5000/api';
+
+  void createProfile() async {
     final String imageName =
         imageFile == null ? 'default profile image' : imageFile!.name;
     final String fullName = nameController.text;
@@ -42,6 +49,41 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
     final int height = int.parse(heightController.text);
     final Position position = positionInput;
     final String bio = bioController.text;
+
+    final Player playerProfileToCreate = Player(
+      //remove unnecessary argument from this constructor ,
+      uuid: '', //usesless here
+      playerID: '', //usesless here
+      name: fullName,
+      email: '', //TODO: get email from LogIN page
+      phoneNumber: phoneNumber,
+      location: const Location(
+        //TODO: figure it out how this value is inputted other than string
+        uuid: '',
+        longitude: 0,
+        latitude: 0,
+      ),
+      picture: imageName, //TODO: learn how to store image in MongoDB
+      dateOfBirth: dateOfBirth,
+      height: height,
+      weight: weight,
+      sex: sex,
+      averageMoralityRating: 0, //usesless here
+      averageSkillRating: 0, //usesless here
+      numberOfReviews: 0, //usesless here
+      position: position,
+      bio: bio,
+    );
+
+    final response = await dio.post(
+      '$apiRoute/newPlayerProfile',
+      data: playerProfileToCreate.toJsonMapToCreatePlayer(),
+    );
+    if (response.statusCode == 200) {
+      // TODO: player profile created successfully & navigate to home page
+    } else {
+      throw Exception('failed to get sport center reviews');
+    }
   }
 
   String _getPhoneNumberString(PhoneNumber phoneNumber) {

@@ -45,6 +45,21 @@ export default {
   components: {
     errorPopup,
     loader,
+<<<<<<< HEAD
+=======
+  },
+  mounted() {
+    // this.$root.on("signUpDone", (email) => {
+    //   // here you need to use the arrow function
+    //   this.email = email;
+    // });
+    this.email = this.$route.params.email ? this.$route.params.email : "";
+  },
+  computed: {
+    isLoading() {
+      return this.$store.state.isLoading;
+    },
+>>>>>>> main
   },
   methods: {
     // sleep(ms) {
@@ -55,7 +70,11 @@ export default {
     },
     logIn(e) {
       e.preventDefault();
+<<<<<<< HEAD
       this.isLoading = true;
+=======
+      this.$store.dispatch("setLoading");
+>>>>>>> main
       let data = {
         email: this.email,
         password: this.password,
@@ -72,17 +91,28 @@ export default {
               })
               .then((res) => {
                 if (res.data.result) {
+<<<<<<< HEAD
                   this.isLoading = false;
                   this.$router.push("/first-profile");
                 } else {
                   this.isLoading = false;
+=======
+                  this.$store.dispatch("stopLoading");
+                  this.$router.push("/first-profile");
+                } else {
+                  this.$store.dispatch("stopLoading");
+>>>>>>> main
                   this.$router.push("/");
                 }
               });
           }
         },
         (err) => {
+<<<<<<< HEAD
           this.isLoading = false;
+=======
+          this.$store.dispatch("stopLoading");
+>>>>>>> main
           this.error = err.response.data.error;
         }
       );

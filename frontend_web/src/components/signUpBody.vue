@@ -69,6 +69,17 @@ export default {
   components: {
     errorPopup,
     loader,
+<<<<<<< HEAD
+=======
+  },
+  mounted() {
+    console.log(this.$store.state.isLoading);
+  },
+  computed: {
+    isLoading() {
+      return this.$store.state.isLoading;
+    },
+>>>>>>> main
   },
   methods: {
     logIn() {
@@ -76,6 +87,7 @@ export default {
     },
     signUp(e) {
       e.preventDefault();
+<<<<<<< HEAD
       this.isLoading = true;
       let { password, role, rePassword, email } = this;
       axios
@@ -90,6 +102,30 @@ export default {
             if (res.status === 200) {
               this.isLoading = false;
               this.$router.push("/logIn");
+=======
+      this.$store.dispatch("setLoading");
+      let { password, role, rePassword, email } = this;
+      if (password !== rePassword) {
+        this.error = "Passwords are not Compatible.Please try again";
+      } else {
+        axios
+          .post("http://localhost:5000/api/signUp", {
+            email,
+            role,
+            password,
+          })
+          .then(
+            (res) => {
+              if (res.status === 200) {
+                this.$store.dispatch("stopLoading");
+
+                this.$router.push("/logIn/" + this.email);
+              }
+            },
+            (err) => {
+              this.$store.dispatch("stopLoading");
+              this.error = err.response.data.error;
+>>>>>>> main
             }
           },
           (err) => {
