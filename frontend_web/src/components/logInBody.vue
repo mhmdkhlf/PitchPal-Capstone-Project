@@ -71,6 +71,7 @@ export default {
         email: this.email,
         password: this.password,
       };
+
       axios.post("http://localhost:5000/api/logIn", data).then(
         (res) => {
           if (res.status === 200) {
