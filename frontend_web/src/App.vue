@@ -7,12 +7,6 @@
 </template>
 <script>
 //import loader from "./components/loader.vue";
-<<<<<<< HEAD
-export default {
-  // components: {
-  //   loader,
-=======
-
 // import axios from "axios";
 // import { Buffer } from "buffer";
 //import pf from "@/components/profilePicture.vue";
@@ -52,7 +46,6 @@ export default {
   //       "utf-8"
   //     ).toString("base64")}`;
   //   },
->>>>>>> main
   // },
 };
 </script>

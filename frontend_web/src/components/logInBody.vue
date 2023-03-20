@@ -39,14 +39,11 @@ export default {
       email: "",
       password: "",
       error: null,
-      isLoading: false,
     };
   },
   components: {
     errorPopup,
     loader,
-<<<<<<< HEAD
-=======
   },
   mounted() {
     // this.$root.on("signUpDone", (email) => {
@@ -59,7 +56,6 @@ export default {
     isLoading() {
       return this.$store.state.isLoading;
     },
->>>>>>> main
   },
   methods: {
     // sleep(ms) {
@@ -70,16 +66,11 @@ export default {
     },
     logIn(e) {
       e.preventDefault();
-<<<<<<< HEAD
-      this.isLoading = true;
-=======
       this.$store.dispatch("setLoading");
->>>>>>> main
       let data = {
         email: this.email,
         password: this.password,
       };
-
       axios.post("http://localhost:5000/api/logIn", data).then(
         (res) => {
           if (res.status === 200) {
@@ -91,28 +82,17 @@ export default {
               })
               .then((res) => {
                 if (res.data.result) {
-<<<<<<< HEAD
-                  this.isLoading = false;
-                  this.$router.push("/first-profile");
-                } else {
-                  this.isLoading = false;
-=======
                   this.$store.dispatch("stopLoading");
                   this.$router.push("/first-profile");
                 } else {
                   this.$store.dispatch("stopLoading");
->>>>>>> main
                   this.$router.push("/");
                 }
               });
           }
         },
         (err) => {
-<<<<<<< HEAD
-          this.isLoading = false;
-=======
           this.$store.dispatch("stopLoading");
->>>>>>> main
           this.error = err.response.data.error;
         }
       );
@@ -142,7 +122,6 @@ export default {
   margin: 0;
   color: #fff;
 }
-
 .btn {
   outline: none;
   border: none;
@@ -158,7 +137,6 @@ export default {
   font-size: 17px;
   width: 100%;
 }
-
 #bg {
   background-image: url("../assets/images/background.jpg");
   position: fixed;
@@ -168,7 +146,6 @@ export default {
   height: 100%;
   background-size: cover;
 }
-
 .body-content {
   font-family: "Lato", sans-serif;
   color: #4a4a4a;

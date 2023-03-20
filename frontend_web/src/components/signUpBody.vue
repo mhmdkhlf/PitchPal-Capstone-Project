@@ -63,14 +63,11 @@ export default {
       rePassword: "",
       role: "",
       error: null,
-      isLoading: false,
     };
   },
   components: {
     errorPopup,
     loader,
-<<<<<<< HEAD
-=======
   },
   mounted() {
     console.log(this.$store.state.isLoading);
@@ -79,7 +76,6 @@ export default {
     isLoading() {
       return this.$store.state.isLoading;
     },
->>>>>>> main
   },
   methods: {
     logIn() {
@@ -87,22 +83,6 @@ export default {
     },
     signUp(e) {
       e.preventDefault();
-<<<<<<< HEAD
-      this.isLoading = true;
-      let { password, role, rePassword, email } = this;
-      axios
-        .post("http://localhost:5000/api/signUp", {
-          email,
-          role,
-          password,
-          rePassword,
-        })
-        .then(
-          (res) => {
-            if (res.status === 200) {
-              this.isLoading = false;
-              this.$router.push("/logIn");
-=======
       this.$store.dispatch("setLoading");
       let { password, role, rePassword, email } = this;
       if (password !== rePassword) {
@@ -118,21 +98,15 @@ export default {
             (res) => {
               if (res.status === 200) {
                 this.$store.dispatch("stopLoading");
-
                 this.$router.push("/logIn/" + this.email);
               }
             },
             (err) => {
               this.$store.dispatch("stopLoading");
               this.error = err.response.data.error;
->>>>>>> main
             }
-          },
-          (err) => {
-            this.isLoading = false;
-            this.error = err.response.data.error;
-          }
-        );
+          );
+      }
     },
   },
 };
@@ -170,7 +144,6 @@ export default {
   font-size: 17px;
   width: 100%;
 }
-
 #bg {
   background-image: url("../assets/images/background.jpg");
   position: fixed;
@@ -180,7 +153,6 @@ export default {
   height: 100%;
   background-size: cover;
 }
-
 .body-content {
   font-family: "Lato", sans-serif;
   color: #4a4a4a;

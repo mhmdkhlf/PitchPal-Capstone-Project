@@ -10,7 +10,7 @@
       <div class="container-fluid">
         <div class="row">
           <!-- <div class="col-8">
-                
+
               </div> -->
           <!-- <div class="col-4 text-right">
                       <h4>Your ID: {{ player.playerId }}</h4>
@@ -44,43 +44,6 @@
                         required
                       />
                     </div>
-<<<<<<< HEAD
-                    <div class="row">
-                      <div class="col-lg-6">
-                        <div class="form-group focused">
-                          <label
-                            class="form-control-label"
-                            for="input-first-name"
-                            >Date Of Birth</label
-                          >
-                          <input
-                            type="date"
-                            id="input-first-name"
-                            class="form-control form-control-alternative"
-                            v-model="dateOfBirth"
-                          />
-                        </div>
-                      </div>
-                      <div class="col-lg-6">
-                        <div class="form-group focused">
-                          <label
-                            class="form-control-label required"
-                            for="input-last-name"
-                            >Sex</label
-                          >
-                          <select
-                            name="sex"
-                            required
-                            v-model="sex"
-                            class="form-control form-control-alternative"
-                          >
-                            <option value="">Sex</option>
-                            <option value="M">Male</option>
-                            <option value="F">FeMale</option>
-                          </select>
-                        </div>
-                      </div>
-=======
                   </div>
                   <div class="col-lg-6">
                     <div class="form-group">
@@ -96,7 +59,6 @@
                         v-model="email"
                         required
                       />
->>>>>>> main
                     </div>
                   </div>
                 </div>
@@ -281,13 +243,9 @@ export default {
   data() {
     return {
       name: "",
-<<<<<<< HEAD
-      email: sessionStorage.getItem("user"),
-=======
       email: sessionStorage.getItem("user")
         ? sessionStorage.getItem("user")
         : "",
->>>>>>> main
       phoneNumber: "",
       location: null,
       dateOfBirth: 0,
