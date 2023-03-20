@@ -123,7 +123,6 @@ export default {
   margin: 0;
   color: #fff;
 }
-
 .btn {
   outline: none;
   border: none;
@@ -139,7 +138,6 @@ export default {
   font-size: 17px;
   width: 100%;
 }
-
 #bg {
   background-image: url("../assets/images/background.jpg");
   position: fixed;
@@ -149,7 +147,6 @@ export default {
   height: 100%;
   background-size: cover;
 }
-
 .body-content {
   font-family: "Lato", sans-serif;
   color: #4a4a4a;

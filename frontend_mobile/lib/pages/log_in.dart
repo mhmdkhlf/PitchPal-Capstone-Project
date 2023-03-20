@@ -13,10 +13,12 @@ class LogInPage extends StatefulWidget {
     super.key,
     required this.apiRoute,
     this.emailFromSignUp = '',
+    this.comingFromSignUp = false,
   });
 
   final String apiRoute;
   final String emailFromSignUp;
+  final bool comingFromSignUp;
 
   @override
   State<LogInPage> createState() => _LoginPageState();
@@ -90,11 +92,17 @@ class _LoginPageState extends State<LogInPage> {
                   width: 200,
                   fit: BoxFit.fitWidth,
                 ),
-                const SizedBox(height: 50),
+                const SizedBox(height: 35),
+                if (widget.comingFromSignUp)
+                  const Text("Log In with you new account",
+                      style: TextStyle(
+                        color: kDarkGreen,
+                        fontSize: 20,
+                      )),
+                const SizedBox(height: 35),
                 InputTextField(
                   controller: emailController,
                   hintText: 'Email',
-                  obscureText: false,
                 ),
                 const SizedBox(height: 10),
                 InputTextField(
@@ -102,10 +110,12 @@ class _LoginPageState extends State<LogInPage> {
                   hintText: 'Password',
                   obscureText: true,
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 40),
                 SubmitButton(
                   text: 'Log In',
                   onTap: logUserIn,
+                  // TODO: change to navigate to first time log in if auth user doesn't correspond to player/field manager
+                  // TODO: if user already filled form then navigate to home page.
                 ),
                 const SizedBox(height: 15),
                 Row(
@@ -137,7 +147,8 @@ class _LoginPageState extends State<LogInPage> {
                       ),
                     )
                   ],
-                )
+                ),
+                const SizedBox(height: 10),
               ],
             ),
           ),

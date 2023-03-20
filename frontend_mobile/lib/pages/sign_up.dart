@@ -61,6 +61,7 @@ class _SignUpPageState extends State<SignUpPage> {
             builder: (context) => LogInPage(
               apiRoute: apiRoute,
               emailFromSignUp: email,
+              comingFromSignUp: true,
             ),
           ),
         );
@@ -110,7 +111,6 @@ class _SignUpPageState extends State<SignUpPage> {
                 InputTextField(
                   controller: emailController,
                   hintText: 'Email',
-                  obscureText: false,
                 ),
                 const SizedBox(height: 10),
                 InputTextField(
@@ -126,40 +126,30 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 const SizedBox(height: 15),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const SizedBox(width: 50),
-                    const Expanded(child: Text('User Type')),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          // child:
-                          RadioListTile<Role>(
-                            title: const Text('Player'),
-                            activeColor: kDarkGreen,
-                            dense: true,
-                            groupValue: role,
-                            value: Role.player,
-                            onChanged: (value) => setState(() {
-                              role = value!;
-                            }),
-                          ),
-                          // child:
-                          RadioListTile<Role>(
-                            title: const Text('Field Manager'),
-                            activeColor: kDarkGreen,
-                            dense: true,
-                            groupValue: role,
-                            value: Role.fieldManager,
-                            onChanged: (value) => setState(() {
-                              role = value!;
-                            }),
-                          ),
-                        ],
-                      ),
+                    const Text('User Type:'),
+                    Radio(
+                      activeColor: kDarkGreen,
+                      groupValue: role,
+                      value: Role.player,
+                      onChanged: (value) => setState(() {
+                        role = value!;
+                      }),
                     ),
-                    const SizedBox(width: 50),
+                    const Text('Player'),
+                    Radio(
+                      activeColor: kDarkGreen,
+                      groupValue: role,
+                      value: Role.fieldManager,
+                      onChanged: (value) => setState(() {
+                        role = value!;
+                      }),
+                    ),
+                    const Text('Field Manager'),
                   ],
                 ),
+                const SizedBox(width: 50),
                 SubmitButton(
                   text: 'Sign Up',
                   onTap: signUpUser,
@@ -194,7 +184,8 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                     )
                   ],
-                )
+                ),
+                const SizedBox(height: 10),
               ],
             ),
           ),

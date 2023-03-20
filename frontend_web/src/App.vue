@@ -7,7 +7,6 @@
 </template>
 <script>
 //import loader from "./components/loader.vue";
-
 // import axios from "axios";
 // import { Buffer } from "buffer";
 //import pf from "@/components/profilePicture.vue";
