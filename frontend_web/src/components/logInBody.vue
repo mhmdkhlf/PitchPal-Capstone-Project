@@ -39,7 +39,6 @@ export default {
       email: "",
       password: "",
       error: null,
-      isLoading: false,
     };
   },
   components: {
@@ -53,6 +52,11 @@ export default {
     // });
     this.email = this.$route.params.email ? this.$route.params.email : "";
   },
+  computed: {
+    isLoading() {
+      return this.$store.state.isLoading;
+    },
+  },
   methods: {
     // sleep(ms) {
     //   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -62,7 +66,7 @@ export default {
     },
     logIn(e) {
       e.preventDefault();
-      this.isLoading = true;
+      this.$store.dispatch("setLoading");
       let data = {
         email: this.email,
         password: this.password,
@@ -79,17 +83,17 @@ export default {
               })
               .then((res) => {
                 if (res.data.result) {
-                  this.isLoading = false;
+                  this.$store.dispatch("stopLoading");
                   this.$router.push("/first-profile");
                 } else {
-                  this.isLoading = false;
+                  this.$store.dispatch("stopLoading");
                   this.$router.push("/");
                 }
               });
           }
         },
         (err) => {
-          this.isLoading = false;
+          this.$store.dispatch("stopLoading");
           this.error = err.response.data.error;
         }
       );

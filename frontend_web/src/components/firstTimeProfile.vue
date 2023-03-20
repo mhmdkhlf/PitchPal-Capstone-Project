@@ -24,7 +24,7 @@
                   <div class="col-lg-6">
                     <div class="form-group focused">
                       <label class="form-control-label">Profile Picture</label>
-                      <profilePicture />
+                      <profilePicture @pictureUploaded="saveImage()" />
                     </div>
                   </div>
                 </div>
@@ -243,9 +243,11 @@ export default {
   data() {
     return {
       name: "",
-      email: sessionStorage.getItem("user"),
+      email: sessionStorage.getItem("user")
+        ? sessionStorage.getItem("user")
+        : "",
       phoneNumber: "",
-      location: "",
+      location: null,
       dateOfBirth: 0,
       picture: "",
       height: 0,
@@ -257,8 +259,54 @@ export default {
   },
   //should take email as prop or access it from session
   methods: {
-    // createPlayer(e){
-    // }
+    //   createPlayer(e) {
+    //     e.preventDefault();
+    //     this.$store.dispatch("setLoading");
+    //     let {
+    //       name,
+    //       email,
+    //       phoneNumber,
+    //       location,
+    //       dateOfBirth,
+    //       picture,
+    //       height,
+    //       weight,
+    //       sex,
+    //       position,
+    //       description,
+    //     } = this;
+    //     axios
+    //       .post("http://localhost:5000/api/newPlayerProfile", {
+    //         name,
+    //         email,
+    //         phoneNumber,
+    //         location,
+    //         dateOfBirth,
+    //         picture,
+    //         height,
+    //         weight,
+    //         sex,
+    //         position,
+    //         description,
+    //       })
+    //       .then(
+    //         (res) => {
+    //           if (res.status === 200) {
+    //             this.$store.dispatch("stopLoading");
+
+    //             this.$router.push("/");
+    //           }
+    //         },
+    //         (err) => {
+    //           this.$store.dispatch("stopLoading");
+    //           this.error = err.response.data.error;
+    //         }
+    //       );
+    //   },
+    // },
+    saveImage(imageName) {
+      this.picture = imageName;
+    },
   },
 };
 </script>

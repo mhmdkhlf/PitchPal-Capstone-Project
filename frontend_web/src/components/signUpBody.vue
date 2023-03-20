@@ -63,24 +63,27 @@ export default {
       rePassword: "",
       role: "",
       error: null,
-      isLoading: false,
     };
   },
   components: {
     errorPopup,
     loader,
   },
-  // mounted() {
-  //   console.log(this.$root);
-  //   console.log(this.bus);
-  // },
+  mounted() {
+    console.log(this.$store.state.isLoading);
+  },
+  computed: {
+    isLoading() {
+      return this.$store.state.isLoading;
+    },
+  },
   methods: {
     logIn() {
       this.$router.push("/login");
     },
     signUp(e) {
       e.preventDefault();
-      this.isLoading = true;
+      this.$store.dispatch("setLoading");
       let { password, role, rePassword, email } = this;
       if (password !== rePassword) {
         this.error = "Passwords are not Compatible.Please try again";
@@ -94,13 +97,13 @@ export default {
           .then(
             (res) => {
               if (res.status === 200) {
-                this.isLoading = false;
-                // this.$root.$emit("signUpDone", this.email);
+                this.$store.dispatch("stopLoading");
+
                 this.$router.push("/logIn/" + this.email);
               }
             },
             (err) => {
-              this.isLoading = false;
+              this.$store.dispatch("stopLoading");
               this.error = err.response.data.error;
             }
           );
