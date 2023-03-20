@@ -25,21 +25,6 @@ const PlayerSchema = new mongoose.Schema(
       required: true,
     },
     dateOfBirth: {
-<<<<<<< HEAD
-        type: Date,
-    
-    },
-    picture: {
-        type: String
-    },
-    height: {
-        type: Number,
-       
-    },
-    weight: {
-        type: Number,
-       
-=======
       type: Date,
     },
     height: {
@@ -47,7 +32,6 @@ const PlayerSchema = new mongoose.Schema(
     },
     weight: {
       type: Number,
->>>>>>> main
     },
     sex: {
       type: String,
