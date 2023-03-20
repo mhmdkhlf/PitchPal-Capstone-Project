@@ -10,10 +10,6 @@
       <div class="container-fluid">
         <div class="row">
           <!-- <div class="col-8">
-<<<<<<< HEAD
-=======
-                
->>>>>>> main
               </div> -->
           <!-- <div class="col-4 text-right">
                       <h4>Your ID: {{ player.playerId }}</h4>
@@ -296,10 +292,6 @@ export default {
     //         (res) => {
     //           if (res.status === 200) {
     //             this.$store.dispatch("stopLoading");
-<<<<<<< HEAD
-=======
-
->>>>>>> main
     //             this.$router.push("/");
     //           }
     //         },
@@ -379,15 +371,10 @@ export default {
 .pf {
   height: auto;
   margin: 0 auto;
-<<<<<<< HEAD
-  position: relative;
-}
-=======
 
   position: relative;
 }
 
->>>>>>> main
 html {
   font-family: sans-serif;
   line-height: 1.15;
@@ -776,10 +763,6 @@ button.bg-white:focus {
 .border-0 {
   border: 0 !important;
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> main
 .align-items-center {
   align-items: center !important;
 }
@@ -788,42 +771,24 @@ button.bg-white:focus {
     justify-content: space-between !important;
   }
 }
-<<<<<<< HEAD
-.mb-0 {
-  margin-bottom: 0 !important;
-}
-=======
 
 .mb-0 {
   margin-bottom: 0 !important;
 }
 
->>>>>>> main
 .mt-4,
 .my-4 {
   margin-top: 1.5rem !important;
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> main
 .mb-4,
 .my-4 {
   margin-bottom: 1.5rem !important;
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> main
 @media (min-width: 992px) {
   .pl-lg-4 {
     padding-left: 1.5rem !important;
   }
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> main
 .text-muted {
   color: #8898aa !important;
 }
@@ -911,10 +876,6 @@ button.bg-white:focus {
   position: relative;
   height: 100% !important;
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> main
 .form-control-label {
   font-size: 0.875rem;
   font-weight: 600;

@@ -98,10 +98,6 @@ export default {
             (res) => {
               if (res.status === 200) {
                 this.$store.dispatch("stopLoading");
-<<<<<<< HEAD
-=======
-
->>>>>>> main
                 this.$router.push("/logIn/" + this.email);
               }
             },
