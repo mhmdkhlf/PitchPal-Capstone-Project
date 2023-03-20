@@ -1,36 +1,32 @@
-var multer = require("multer");
+const multer = require("multer");
 const photosModel = require("../models/photos.model");
-var fs = require("fs");
-var path = require("path");
+const fs = require("fs");
+const path = require("path");
+
 async function uploadPicture(req: any, res: any) {
-  var storage = multer.diskStorage({
+  let storage = multer.diskStorage({
     destination: function (request: any, file: any, callback: any) {
       callback(null, "./uploads");
     },
     filename: function (request: any, file: any, callback: any) {
-      var temp_file_arr = file.originalname.split(".");
-
-      var temp_file_name = temp_file_arr[0];
-
-      var temp_file_extension = temp_file_arr[1];
-
+      let tempFileArr = file.originalname.split(".");
+      let tempFileName = tempFileArr[0];
+      let tempFileExtension = tempFileArr[1];
       callback(
         null,
-        temp_file_name + "-" + Date.now() + "." + temp_file_extension
+        tempFileName + "-" + Date.now() + "." + tempFileExtension
       );
     },
   });
 
-  var upload = multer({ storage: storage }).single("image");
+  let upload = multer({ storage: storage }).single("image");
   upload(req, res, async () => {
-    // console.log(req.file);
-    var obj = {
+    let obj = {
       email: req.body.email,
       img: {
         data: fs.readFileSync(
           path.join(__dirname + "/../../uploads/" + req.file.filename)
         ),
-
         contentType: req.file.mimetype,
       },
     };
@@ -42,6 +38,7 @@ async function uploadPicture(req: any, res: any) {
     }
   });
 }
+
 async function getProfileByEmail(req: any, res: any) {
   try {
     const email = req.params.email;
@@ -51,18 +48,19 @@ async function getProfileByEmail(req: any, res: any) {
     res.status(400).json(error.message);
   }
 }
+
 // async function updatePicture(req: any, res: any) {
 //   photosModel.deleteOne({ email: req.body.email }).then(() => {
-//     var storage = multer.diskStorage({
+//     let storage = multer.diskStorage({
 //       destination: function (request: any, file: any, callback: any) {
 //         callback(null, "./uploads");
 //       },
 //       filename: function (request: any, file: any, callback: any) {
-//         var temp_file_arr = file.originalname.split(".");
+//         let temp_file_arr = file.originalname.split(".");
 
-//         var temp_file_name = temp_file_arr[0];
+//         let temp_file_name = temp_file_arr[0];
 
-//         var temp_file_extension = temp_file_arr[1];
+//         let temp_file_extension = temp_file_arr[1];
 
 //         callback(
 //           null,
@@ -71,10 +69,10 @@ async function getProfileByEmail(req: any, res: any) {
 //       },
 //     });
 
-//     var upload = multer({ storage: storage }).single("image");
+//     let upload = multer({ storage: storage }).single("image");
 //     upload(req, res, async () => {
 //       // console.log(req.file);
-//       var obj = {
+//       let obj = {
 //         email: req.body.email,
 //         img: {
 //           data: fs.readFileSync(

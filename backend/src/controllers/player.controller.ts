@@ -37,7 +37,6 @@ async function createProfileInformation(req: Request, res: Response) {
       phoneNumber: req.body.phoneNumber,
       location: req.body.location,
       age: req.body.dataOfBirth,
-      picture: req.body.picture,
       height: req.body.height,
       weight: req.body.weight,
       sex: req.body.sex,

@@ -47,7 +47,7 @@ const fieldRoutes = require("./routes/field.route");
 const sportCenterReviewRoutes = require("./routes/sport-center-review.route");
 const teamReviewRoutes = require("./routes/team-review.route");
 const generalUserRoutes = require("./routes/users-common-route");
-const profilePictureRoutes = require("./routes/profilePicture.route");
+const profilePictureRoutes = require("./routes/profile-picture.route");
 app.use("/api", playerReviewRoutes);
 app.use("/api", distanceRoutes);
 app.use("/api", authenticationRoutes);
