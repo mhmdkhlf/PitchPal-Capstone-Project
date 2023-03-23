@@ -71,32 +71,36 @@ export default {
         email: this.email,
         password: this.password,
       };
-
-      axios.post("http://localhost:5000/api/logIn", data).then(
-        (res) => {
-          if (res.status === 200) {
-            sessionStorage.setItem("user", res.data.email);
-            axios
-              .post("http://localhost:5000/api/isFirstTimeLogIn", {
-                userType: "player",
-                userEmail: this.email,
-              })
-              .then((res) => {
-                if (res.data.result) {
-                  this.$store.dispatch("stopLoading");
-                  this.$router.push("/first-profile");
-                } else {
-                  this.$store.dispatch("stopLoading");
-                  this.$router.push("/");
-                }
-              });
+      if (!this.email || !this.password) {
+        this.error = "All fields must be filled";
+        this.$store.dispatch("stopLoading");
+      } else {
+        axios.post("http://localhost:5000/api/logIn", data).then(
+          (res) => {
+            if (res.status === 200) {
+              sessionStorage.setItem("user", res.data.email);
+              axios
+                .post("http://localhost:5000/api/isFirstTimeLogIn", {
+                  userType: "player",
+                  userEmail: this.email,
+                })
+                .then((res) => {
+                  if (res.data.result) {
+                    this.$store.dispatch("stopLoading");
+                    this.$router.push("/first-profile");
+                  } else {
+                    this.$store.dispatch("stopLoading");
+                    this.$router.push("/");
+                  }
+                });
+            }
+          },
+          (err) => {
+            this.$store.dispatch("stopLoading");
+            this.error = err.response.data.error;
           }
-        },
-        (err) => {
-          this.$store.dispatch("stopLoading");
-          this.error = err.response.data.error;
-        }
-      );
+        );
+      }
     },
     // logout() {
     //   sessionStorage.clear();

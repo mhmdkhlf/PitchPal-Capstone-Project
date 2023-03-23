@@ -85,8 +85,12 @@ export default {
       e.preventDefault();
       this.$store.dispatch("setLoading");
       let { password, role, rePassword, email } = this;
-      if (password !== rePassword) {
+      if (!password || !role || !rePassword || !email) {
+        this.error = "All fields must be filled";
+        this.$store.dispatch("stopLoading");
+      } else if (password !== rePassword) {
         this.error = "Passwords are not Compatible.Please try again";
+        this.$store.dispatch("stopLoading");
       } else {
         axios
           .post("http://localhost:5000/api/signUp", {

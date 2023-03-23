@@ -18,7 +18,9 @@
 
           <div class="card-body">
             <form>
-              <h6 class="heading-small text-muted mb-4">User information</h6>
+              <h6 class="heading-small text-muted header-nav">
+                User information
+              </h6>
               <div class="pl-lg-4">
                 <div class="row pf">
                   <div class="col-lg-6">
@@ -113,7 +115,7 @@
                       >
                         <option value="">position</option>
                         <option value="attacker">Attacker</option>
-                        <option value="defender">Defnder</option>
+                        <option value="defender">Defender</option>
                         <option value="goal keeper">goal keeper</option>
                         <option value="midfielder">midfielder</option>
                       </select>
@@ -365,6 +367,12 @@ export default {
 * {
   color: #0a870ac7 !important;
 }
+.header-nav {
+  margin-bottom: 16px !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  margin-top: 0 !important;
+}
 .required:after {
   content: " *";
   color: red;
@@ -401,6 +409,7 @@ section {
   text-align: left;
   color: #525f7f;
   background-color: #f8f9fe;
+  overflow-x: hidden !important;
 }
 [tabindex="-1"]:focus {
   outline: 0 !important;
@@ -945,8 +954,8 @@ p {
 }
 .heading-small {
   font-size: 0.75rem;
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
+  /* padding-top: 0.25rem;
+  padding-bottom: 0.25rem; */
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
