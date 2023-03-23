@@ -18,7 +18,9 @@
 
           <div class="card-body">
             <form>
-              <h6 class="heading-small text-muted mb-4">User information</h6>
+              <h6 class="heading-small text-muted header-nav">
+                User information
+              </h6>
               <div class="pl-lg-4">
                 <div class="row pf">
                   <div class="col-lg-6">
@@ -113,7 +115,7 @@
                       >
                         <option value="">position</option>
                         <option value="attacker">Attacker</option>
-                        <option value="defender">Defnder</option>
+                        <option value="defender">Defender</option>
                         <option value="goal keeper">goal keeper</option>
                         <option value="midfielder">midfielder</option>
                       </select>
@@ -171,17 +173,33 @@
                   <div class="col-md-12">
                     <div class="form-group focused">
                       <label
-                        class="form-control-label required"
+                        class="form-control-label required block"
                         for="input-address"
                         >Address</label
                       >
-                      <input
+                      <div class="flex-address">
+                        <button
+                          class="btn address-btn"
+                          @click="getLocation($event)"
+                        >
+                          Get My Location
+                        </button>
+                        <textLoader v-if="locationLoader && !this.address" />
+                        <p
+                          class="adress-result"
+                          v-if="!locationLoader && this.address"
+                        >
+                          {{ address }}
+                        </p>
+                      </div>
+
+                      <!-- <input
                         id="input-address"
                         class="form-control form-control-alternative"
                         v-model="location"
                         type="text"
                         required
-                      />
+                      /> -->
                     </div>
                   </div>
                 </div>
@@ -235,10 +253,12 @@
 </template>
 <script>
 import profilePicture from "./profilePicture.vue";
+import textLoader from "./loaderText.vue";
 export default {
   name: "FirstprofileComponent",
   components: {
     profilePicture,
+    textLoader,
   },
   data() {
     return {
@@ -249,16 +269,65 @@ export default {
       phoneNumber: "",
       location: null,
       dateOfBirth: 0,
-      picture: "",
       height: 0,
       weight: 0,
       sex: "M",
       position: "",
       description: "",
+      locationLoader: false,
+      address: "",
     };
   },
   //should take email as prop or access it from session
   methods: {
+    getLocation(e) {
+      e.preventDefault();
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            this.locationLoader = true;
+            let { latitude, longitude } = position.coords;
+            //this is free for limited attempts
+            //`https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=YOUR_API_KEY`
+            //the used api is free
+            fetch(
+              `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+            )
+              .then((response) => response.json())
+              .then((response) => {
+                console.log(response);
+                let { countryName, city, locality } = response;
+                this.address = `${locality}, ${city}, ${countryName}`;
+                this.location = {
+                  longitude,
+                  latitude,
+                };
+                this.locationLoader = false;
+              })
+              .catch(() => {
+                this.locationLoader = false;
+                this.address = "Something went wrong";
+              });
+          },
+          (error) => {
+            if (error.code == 1) {
+              this.locationLoader = false;
+              this.address = "You denied the request";
+            } else if (error.code == 2) {
+              this.locationLoader = false;
+              this.address = "Location is unavailable";
+            } else {
+              this.locationLoader = false;
+              this.address = "Something went wrong";
+            }
+            //button.setAttribute("disabled", "true");
+          }
+        );
+      } else {
+        this.locationLoader = false;
+        this.address = "Your browser not support";
+      }
+    },
     //   createPlayer(e) {
     //     e.preventDefault();
     //     this.$store.dispatch("setLoading");
@@ -303,9 +372,6 @@ export default {
     //       );
     //   },
     // },
-    saveImage(imageName) {
-      this.picture = imageName;
-    },
   },
 };
 </script>
@@ -319,6 +385,11 @@ export default {
   border: #2dce89;
   height: 40px;
   border-radius: 30%;
+}
+.flex-address {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
 }
 :root {
   --blue: #5e72e4;
@@ -365,6 +436,22 @@ export default {
 * {
   color: #0a870ac7 !important;
 }
+.address-btn {
+  /* margin-top: 10px;
+  margin-right: 10px; */
+  border: #2dce89;
+  height: 40px;
+  border-radius: 30%;
+}
+.header-nav {
+  margin-bottom: 16px !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  margin-top: 0 !important;
+}
+.block {
+  display: block !important;
+}
 .required:after {
   content: " *";
   color: red;
@@ -401,6 +488,7 @@ section {
   text-align: left;
   color: #525f7f;
   background-color: #f8f9fe;
+  overflow-x: hidden !important;
 }
 [tabindex="-1"]:focus {
   outline: 0 !important;
@@ -738,41 +826,7 @@ textarea.form-control {
     background-position: 0 0;
   }
 }
-.bg-secondary {
-  background-color: #f7fafc !important;
-}
-a.bg-secondary:hover,
-a.bg-secondary:focus,
-button.bg-secondary:hover,
-button.bg-secondary:focus {
-  background-color: #d2e3ee !important;
-}
-.bg-white {
-  background-color: #fff !important;
-}
-a.bg-white:hover,
-a.bg-white:focus,
-button.bg-white:hover,
-button.bg-white:focus {
-  background-color: #e6e6e6 !important;
-}
-.bg-white {
-  background-color: #fff !important;
-}
-.border-0 {
-  border: 0 !important;
-}
-.align-items-center {
-  align-items: center !important;
-}
-@media (min-width: 1200px) {
-  .justify-content-xl-between {
-    justify-content: space-between !important;
-  }
-}
-.mb-0 {
-  margin-bottom: 0 !important;
-}
+
 .mt-4,
 .my-4 {
   margin-top: 1.5rem !important;
@@ -821,15 +875,7 @@ main {
 main {
   overflow: hidden;
 }
-.bg-white {
-  background-color: #fff !important;
-}
-a.bg-white:hover,
-a.bg-white:focus,
-button.bg-white:hover,
-button.bg-white:focus {
-  background-color: #e6e6e6 !important;
-}
+
 @keyframes floating-lg {
   0% {
     transform: translateY(0px);
@@ -945,8 +991,8 @@ p {
 }
 .heading-small {
   font-size: 0.75rem;
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
+  /* padding-top: 0.25rem;
+  padding-bottom: 0.25rem; */
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
