@@ -50,4 +50,9 @@ export default {
 };
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+button,
+input[type="submit"] {
+  cursor: pointer;
+}
+</style>
