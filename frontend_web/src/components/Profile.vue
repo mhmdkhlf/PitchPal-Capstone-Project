@@ -4,7 +4,8 @@
     rel="stylesheet"
   />
   <!-- <logo /> -->
-  <div class="body">
+  <loader v-if="isLoading && !done" />
+  <div class="body" v-if="done && !isLoading">
     <div class="main-content">
       <div class="container-fluid mt--7">
         <div class="row">
@@ -255,10 +256,14 @@
   </div>
 </template>
 <script>
-//import logo from "./logo.vue";
+import axios from "axios";
+import loader from "./loader.vue";
 export default {
   name: "profileComponent",
-  props: ["playerInfo", "imageSrc", "isSelfVisit"],
+  props: ["playerInfo", "isSelfVisit"],
+  components: {
+    loader,
+  },
   data() {
     return {
       name: this.playerInfo.name,
@@ -275,7 +280,40 @@ export default {
       location: this.playerInfo.location.place,
       playerID: this.playerInfo.playerID,
       numberOfFriends: 0,
+      done: false,
+      src: "",
     };
+  },
+  mounted() {
+    console.log("in");
+    this.$store.dispatch("setLoading");
+    axios
+      .get("http://localhost:5000/api/getPlayer/" + this.playerInfo.playerID)
+      .then((res) => {
+        console.log(res.data);
+        this.obj = res.data;
+        axios
+          .get(
+            "http://localhost:5000/api/getProfilePictureByEmail/" +
+              this.playerInfo.email
+          )
+          .then((res2) => {
+            this.src = `data:${res2.data.img.contentType};base64,${Buffer.from(
+              res2.data.img.data,
+              "utf-8"
+            ).toString("base64")}`;
+            axios
+              .get(
+                "http://localhost:5000/api/getNumberOfFriends/" +
+                  this.playerInfo.playerID
+              )
+              .then((res3) => {
+                this.numberOfFriends = res3.data.numberOfFriends;
+                this.done = true;
+                this.$store.dispatch("stopLoading");
+              });
+          });
+      });
   },
   computed: {
     Age() {
@@ -283,6 +321,9 @@ export default {
       const ageInMs = Date.now() - dob.getTime();
       const ageInDate = new Date(ageInMs);
       return Math.abs(ageInDate.getUTCFullYear() - 1970).toString();
+    },
+    isLoading() {
+      return this.$store.state.isLoading;
     },
   },
 };
