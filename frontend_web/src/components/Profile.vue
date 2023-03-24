@@ -14,10 +14,11 @@
                 <div class="col-lg-3 order-lg-2">
                   <div class="card-profile-image">
                     <a href="#">
-                      <img
+                      <img :src="imageSrc" class="rounded-circle" />
+                      <!-- <img
                         src="https://demos.creative-tim.com/argon-dashboard/assets-old/img/theme/team-4.jpg"
                         class="rounded-circle"
-                      />
+                      /> -->
                     </a>
                   </div>
                 </div>
@@ -47,42 +48,33 @@
                       class="card-profile-stats d-flex justify-content-center mt-md-5"
                     >
                       <div>
-                        <span class="heading">22</span>
+                        <span class="heading">{{ numberOfFriends }}</span>
                         <span class="description">Friends</span>
                       </div>
                       <div>
-                        <span class="heading">10</span>
-                        <span class="description">Photos</span>
+                        <span class="heading">{{ averageMoralityRating }}</span>
+                        <span class="description">Morality Rating</span>
                       </div>
                       <div>
-                        <span class="heading">89</span>
-                        <span class="description">Comments</span>
+                        <span class="heading">{{ averageSkillRating }}</span>
+                        <span class="description">Skill Rating</span>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div class="text-center">
                   <h3>
-                    Jessica Jones<span class="font-weight-light">, 27</span>
+                    {{ name }}<span class="font-weight-light">, {{ Age }}</span>
                   </h3>
                   <div class="h5 font-weight-300">
-                    <i class="ni location_pin mr-2"></i>Bucharest, Romania
+                    <i class="ni location_pin mr-2"></i>{{ location.place }}
                   </div>
-                  <div class="h5 mt-4">
-                    <i class="ni business_briefcase-24 mr-2"></i>Solution
-                    Manager - Creative Tim Officer
-                  </div>
-                  <div>
-                    <i class="ni education_hat mr-2"></i>University of Computer
-                    Science
-                  </div>
+                  <div><i class="ni education_hat mr-2"></i>{{ position }}</div>
                   <hr class="my-4" />
                   <p>
-                    Ryan — the name taken by Melbourne-raised, Brooklyn-based
-                    Nick Murphy — writes, performs and records all of his own
-                    music.
+                    {{ description }}
                   </p>
-                  <a href="#" v-if="isSelfVisit">Edit Your Profile</a>
+                  <a href="#" v-if="isSelfVisit">Edit Profile</a>
                 </div>
               </div>
             </div>
@@ -94,9 +86,9 @@
                   <div class="col-8">
                     <h3 class="mb-0">My account</h3>
                   </div>
-                  <!-- <div class="col-4 text-right">
-                    <h4>Your ID: {{ player.playerId }}</h4>
-                  </div> -->
+                  <div class="col-4 text-right">
+                    <h4>Your ID: {{ playerID }}</h4>
+                  </div>
                 </div>
               </div>
               <div class="card-body">
@@ -126,10 +118,10 @@
                             >Email address</label
                           >
                           <input
-                            type="email"
                             id="input-email"
+                            type="email"
                             class="form-control form-control-alternative"
-                            :vlaue="email"
+                            :value="email"
                             disabled
                           />
                         </div>
@@ -267,31 +259,32 @@
 export default {
   name: "profileComponent",
   props: ["playerInfo", "imageSrc", "isSelfVisit"],
-  // data() {
-  //   return {
-  //     name: this.playerInfo.name,
-  //     email: this.playerInfo.email,
-  //     position: this.playerInfo.position,
-  //     phoneNumber: this.playerInfo.phoneNumber,
-  //     sex: this.playerInfo.sex,
-  //     height: this.playerInfo.height,
-  //     weight: this.playerInfo.weight,
-  //     description: this.playerInfo.description,
-  //     averageMoralityRating: this.playerInfo.averageMoralityRating,
-  //     averageSkillRating: this.playerInfo.averageSkillRating,
-  //     numberOfReviews: this.playerInfo.numberOfReviews,
-  //     location: this.playerInfo.location.place,
-  //     playerID: this.playerInfo.playerID,
-  //   };
-  // },
-  // computed: {
-  //   Age() {
-  //     const dob = new Date(this.playerInfo.dateOfBirth);
-  //     const ageInMs = Date.now() - dob.getTime();
-  //     const ageInDate = new Date(ageInMs);
-  //     return Math.abs(ageInDate.getUTCFullYear() - 1970).toString();
-  //   },
-  // },
+  data() {
+    return {
+      name: this.playerInfo.name,
+      email: this.playerInfo.email,
+      position: this.playerInfo.position,
+      phoneNumber: this.playerInfo.phoneNumber,
+      sex: this.playerInfo.sex,
+      height: this.playerInfo.height,
+      weight: this.playerInfo.weight,
+      description: this.playerInfo.description,
+      averageMoralityRating: this.playerInfo.averageMoralityRating,
+      averageSkillRating: this.playerInfo.averageSkillRating,
+      numberOfReviews: this.playerInfo.numberOfReviews,
+      location: this.playerInfo.location.place,
+      playerID: this.playerInfo.playerID,
+      numberOfFriends: 0,
+    };
+  },
+  computed: {
+    Age() {
+      const dob = new Date(this.playerInfo.dateOfBirth);
+      const ageInMs = Date.now() - dob.getTime();
+      const ageInDate = new Date(ageInMs);
+      return Math.abs(ageInDate.getUTCFullYear() - 1970).toString();
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>
@@ -1140,6 +1133,9 @@ button.bg-white:focus {
 .shadow,
 .card-profile-image img {
   box-shadow: 0 0 2rem 0 rgba(136, 152, 170, 0.15) !important;
+}
+.card-profile-image img {
+  height: 185px !important;
 }
 
 .mb-0 {
