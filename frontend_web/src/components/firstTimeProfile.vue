@@ -313,6 +313,7 @@ export default {
                 this.location = {
                   longitude,
                   latitude,
+                  place: this.address,
                 };
                 this.locationLoader = false;
               })

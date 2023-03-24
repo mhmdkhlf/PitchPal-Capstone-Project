@@ -26,9 +26,17 @@
                 class="card-header text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4"
               >
                 <div class="d-flex justify-content-between">
-                  <a href="#" class="btn btn-sm btn-info mr-4">Connect</a>
-                  <a href="#" class="btn btn-sm btn-default float-right"
-                    >Message</a
+                  <a
+                    href="#"
+                    class="btn btn-sm btn-info mr-4 common"
+                    v-if="!isSelfVisit"
+                    >Connect</a
+                  >
+                  <a
+                    href="#"
+                    class="btn btn-sm btn-default float-right common"
+                    v-if="!isSelfVisit"
+                    >Rate</a
                   >
                 </div>
               </div>
@@ -74,7 +82,7 @@
                     Nick Murphy — writes, performs and records all of his own
                     music.
                   </p>
-                  <a href="#">Show more</a>
+                  <a href="#" v-if="isSelfVisit">Edit Your Profile</a>
                 </div>
               </div>
             </div>
@@ -101,14 +109,14 @@
                       <div class="col-lg-6">
                         <div class="form-group focused">
                           <label class="form-control-label" for="input-username"
-                            >Username</label
+                            >Name</label
                           >
                           <input
                             type="text"
                             id="input-username"
                             class="form-control form-control-alternative"
-                            placeholder="Username"
-                            value="lucky.jesse"
+                            :value="name"
+                            disabled
                           />
                         </div>
                       </div>
@@ -121,7 +129,8 @@
                             type="email"
                             id="input-email"
                             class="form-control form-control-alternative"
-                            placeholder="jesse@example.com"
+                            :vlaue="email"
+                            disabled
                           />
                         </div>
                       </div>
@@ -129,33 +138,75 @@
                     <div class="row">
                       <div class="col-lg-6">
                         <div class="form-group focused">
-                          <label
-                            class="form-control-label"
-                            for="input-first-name"
-                            >First name</label
+                          <label class="form-control-label" for="age"
+                            >Age</label
                           >
                           <input
                             type="text"
-                            id="input-first-name"
+                            id="age"
                             class="form-control form-control-alternative"
-                            placeholder="First name"
-                            value="Lucky"
+                            :value="Age"
+                            disabled
                           />
                         </div>
                       </div>
                       <div class="col-lg-6">
                         <div class="form-group focused">
-                          <label
-                            class="form-control-label"
-                            for="input-last-name"
-                            >Last name</label
+                          <label class="form-control-label" for="sex"
+                            >Sex</label
                           >
                           <input
                             type="text"
-                            id="input-last-name"
+                            id="sex"
                             class="form-control form-control-alternative"
-                            placeholder="Last name"
-                            value="Jesse"
+                            disabled
+                            :value="sex"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <div class="form-group focused">
+                          <label class="form-control-label" for="pos"
+                            >Position</label
+                          >
+                          <input
+                            type="text"
+                            id="pos"
+                            class="form-control form-control-alternative"
+                            :value="position"
+                            disabled
+                          />
+                        </div>
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="form-group focused">
+                          <label class="form-control-label" for="weight"
+                            >weight</label
+                          >
+                          <input
+                            type="text"
+                            id="weight"
+                            class="form-control form-control-alternative"
+                            disabled
+                            :value="weight"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <div class="form-group focused">
+                          <label class="form-control-label" for="height"
+                            >Height</label
+                          >
+                          <input
+                            type="text"
+                            id="height"
+                            class="form-control form-control-alternative"
+                            :value="height"
+                            disabled
                           />
                         </div>
                       </div>
@@ -176,72 +227,32 @@
                           <input
                             id="input-address"
                             class="form-control form-control-alternative"
-                            placeholder="Home Address"
-                            value="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09"
+                            disabled
+                            :value="location"
                             type="text"
                           />
                         </div>
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-lg-4">
+                      <div class="col-md-12">
                         <div class="form-group focused">
-                          <label class="form-control-label" for="input-city"
-                            >City</label
+                          <label class="form-control-label" for="phoneNumber"
+                            >PhoneNumber</label
                           >
                           <input
+                            id="phoneNumber"
+                            class="form-control form-control-alternative"
+                            disabled
+                            :value="phoneNumber"
                             type="text"
-                            id="input-city"
-                            class="form-control form-control-alternative"
-                            placeholder="City"
-                            value="New York"
-                          />
-                        </div>
-                      </div>
-                      <div class="col-lg-4">
-                        <div class="form-group focused">
-                          <label class="form-control-label" for="input-country"
-                            >Country</label
-                          >
-                          <input
-                            type="text"
-                            id="input-country"
-                            class="form-control form-control-alternative"
-                            placeholder="Country"
-                            value="United States"
-                          />
-                        </div>
-                      </div>
-                      <div class="col-lg-4">
-                        <div class="form-group">
-                          <label class="form-control-label" for="input-country"
-                            >Postal code</label
-                          >
-                          <input
-                            type="number"
-                            id="input-postal-code"
-                            class="form-control form-control-alternative"
-                            placeholder="Postal code"
                           />
                         </div>
                       </div>
                     </div>
                   </div>
-                  <hr class="my-4" />
+
                   <!-- Description -->
-                  <h6 class="heading-small text-muted mb-4">About me</h6>
-                  <div class="pl-lg-4">
-                    <div class="form-group focused">
-                      <label>About Me</label>
-                      <textarea
-                        rows="4"
-                        class="form-control form-control-alternative"
-                        placeholder="A few words about you ..."
-                      >
-A beautiful Dashboard for Bootstrap 4. It is Free and Open Source.</textarea
-                      >
-                    </div>
-                  </div>
                 </form>
               </div>
             </div>
@@ -255,13 +266,41 @@ A beautiful Dashboard for Bootstrap 4. It is Free and Open Source.</textarea
 //import logo from "./logo.vue";
 export default {
   name: "profileComponent",
-  //   props: ["player"],
-  //   components: {
-  //     //logo,
+  props: ["playerInfo", "imageSrc", "isSelfVisit"],
+  // data() {
+  //   return {
+  //     name: this.playerInfo.name,
+  //     email: this.playerInfo.email,
+  //     position: this.playerInfo.position,
+  //     phoneNumber: this.playerInfo.phoneNumber,
+  //     sex: this.playerInfo.sex,
+  //     height: this.playerInfo.height,
+  //     weight: this.playerInfo.weight,
+  //     description: this.playerInfo.description,
+  //     averageMoralityRating: this.playerInfo.averageMoralityRating,
+  //     averageSkillRating: this.playerInfo.averageSkillRating,
+  //     numberOfReviews: this.playerInfo.numberOfReviews,
+  //     location: this.playerInfo.location.place,
+  //     playerID: this.playerInfo.playerID,
+  //   };
+  // },
+  // computed: {
+  //   Age() {
+  //     const dob = new Date(this.playerInfo.dateOfBirth);
+  //     const ageInMs = Date.now() - dob.getTime();
+  //     const ageInDate = new Date(ageInMs);
+  //     return Math.abs(ageInDate.getUTCFullYear() - 1970).toString();
   //   },
+  // },
 };
 </script>
-<style lang="css" scoped>
+<style lang="scss" scoped>
+* {
+  color: #2dce89 !important;
+}
+.common {
+  color: white !important;
+}
 :root {
   --blue: #5e72e4;
   --indigo: #5603ad;
