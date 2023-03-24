@@ -5,3 +5,4 @@ frontend_mobile/windows/
 frontend_mobile/linux/
 frontend_web/node_modules
 backend/node_modules
+backend/yarn.lock
