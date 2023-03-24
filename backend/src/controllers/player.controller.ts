@@ -1,24 +1,20 @@
 import { Request, Response } from "express";
-const playerModel = require("../models/player.model.ts");
+let playerModel = require("../models/player.model.ts");
 
 async function randomNumberGenerator(): Promise<Number> {
-  var playerId = Math.floor(100000 + Math.random() * 900000);
-  const user = await playerModel.findOne({ playerId });
+  var playerID = Math.floor(100000 + Math.random() * 900000);
+  let user = await playerModel.findOne({ playerID });
   if (user) {
     return randomNumberGenerator();
   }
-  return playerId;
+  return playerID;
 }
 async function updatePlayerById(req: Request, res: Response) {
   try {
-    const id = req.params.id;
-    const updatedData = req.body;
-    const options = { new: true };
-    const result = await playerModel.findByIdAndUpdate(
-      id,
-      updatedData,
-      options
-    );
+    let id = req.params.id;
+    let updatedData = req.body;
+    let options = { new: true };
+    let result = await playerModel.findByIdAndUpdate(id, updatedData, options);
     res.send(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -27,35 +23,34 @@ async function updatePlayerById(req: Request, res: Response) {
 
 async function createProfileInformation(req: Request, res: Response) {
   try {
-    const id = await randomNumberGenerator();
-    const playerID =
+    let id = await randomNumberGenerator();
+    let playerID =
       id.toString().substring(0, 3) + "-" + id.toString().substring(3, 6);
-    const playerInfo = await playerModel.create({
+    const data = {
       playerID: playerID,
       name: req.body.name,
       email: req.body.email,
       phoneNumber: req.body.phoneNumber,
       location: req.body.location,
-      age: req.body.dataOfBirth,
+      dateOfBirth: req.body.dateOfBirth,
       height: req.body.height,
       weight: req.body.weight,
       sex: req.body.sex,
-      moralityRating: req.body.averageMoralityScore,
-      skillRating: req.body.averageSkillRating,
-      numberOfReviews: req.body.numberOfReviews,
       position: req.body.position,
-      description: req.body.decsription,
-    });
+      description: req.body.description,
+    };
+    let playerInfo = await playerModel.create(data);
     res.status(200).json(playerInfo);
   } catch (error) {
+    console.log(error);
     res.status(400).json(error.message);
   }
 }
 
 async function getPlayerInformation(req: Request, res: Response) {
   try {
-    const playerId = req.params.id;
-    const playerInfo = await playerModel.findOne({ playerId });
+    let playerID = req.params.id;
+    let playerInfo = await playerModel.findOne({ playerID });
     res.status(200).json(playerInfo);
   } catch (error) {
     res.status(400).json(error.message);
@@ -64,7 +59,7 @@ async function getPlayerInformation(req: Request, res: Response) {
 
 async function getAllPlayers(req: Request, res: Response) {
   try {
-    const playerInfo = await playerModel.find();
+    let playerInfo = await playerModel.find();
     res.status(200).json(playerInfo);
   } catch (error) {
     res.status(400).json(error.message);

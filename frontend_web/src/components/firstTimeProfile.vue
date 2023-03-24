@@ -4,8 +4,9 @@
     rel="stylesheet"
   />
   <!-- <logo /> -->
-
-  <div class="body">
+  <errorPopUp v-if="error" :errorMessage="error" />
+  <loader v-if="isLoading && !error" />
+  <div class="body" v-if="!isLoading" :class="{ hidden: error }">
     <div class="main-content">
       <div class="container-fluid">
         <div class="row">
@@ -254,11 +255,16 @@
 <script>
 import profilePicture from "./profilePicture.vue";
 import textLoader from "./loaderText.vue";
+import errorPopUp from "./errorPopup.vue";
+import loader from "./loader.vue";
+import axios from "axios";
 export default {
   name: "FirstprofileComponent",
   components: {
     profilePicture,
     textLoader,
+    loader,
+    errorPopUp,
   },
   data() {
     return {
@@ -268,7 +274,7 @@ export default {
         : "",
       phoneNumber: "",
       location: null,
-      dateOfBirth: 0,
+      dateOfBirth: "",
       height: 0,
       weight: 0,
       sex: "M",
@@ -276,7 +282,13 @@ export default {
       description: "",
       locationLoader: false,
       address: "",
+      error: null,
     };
+  },
+  computed: {
+    isLoading() {
+      return this.$store.state.isLoading;
+    },
   },
   //should take email as prop or access it from session
   methods: {
@@ -328,50 +340,62 @@ export default {
         this.address = "Your browser not support";
       }
     },
-    //   createPlayer(e) {
-    //     e.preventDefault();
-    //     this.$store.dispatch("setLoading");
-    //     let {
-    //       name,
-    //       email,
-    //       phoneNumber,
-    //       location,
-    //       dateOfBirth,
-    //       picture,
-    //       height,
-    //       weight,
-    //       sex,
-    //       position,
-    //       description,
-    //     } = this;
-    //     axios
-    //       .post("http://localhost:5000/api/newPlayerProfile", {
-    //         name,
-    //         email,
-    //         phoneNumber,
-    //         location,
-    //         dateOfBirth,
-    //         picture,
-    //         height,
-    //         weight,
-    //         sex,
-    //         position,
-    //         description,
-    //       })
-    //       .then(
-    //         (res) => {
-    //           if (res.status === 200) {
-    //             this.$store.dispatch("stopLoading");
-    //             this.$router.push("/");
-    //           }
-    //         },
-    //         (err) => {
-    //           this.$store.dispatch("stopLoading");
-    //           this.error = err.response.data.error;
-    //         }
-    //       );
-    //   },
-    // },
+
+    createPlayer(e) {
+      console.log("in");
+      e.preventDefault();
+      this.$store.dispatch("setLoading");
+      let {
+        name,
+        email,
+        phoneNumber,
+        location,
+        dateOfBirth,
+        height,
+        weight,
+        sex,
+        position,
+        description,
+      } = this;
+      if (
+        !name ||
+        !email ||
+        !phoneNumber ||
+        !location ||
+        !dateOfBirth ||
+        !sex ||
+        !position
+      ) {
+        this.error = "All Required fields must be filled";
+        this.$store.dispatch("stopLoading");
+      } else {
+        axios
+          .post("http://localhost:5000/api/newPlayerProfile", {
+            name,
+            email,
+            phoneNumber,
+            location,
+            dateOfBirth,
+            height,
+            weight,
+            sex,
+            position,
+            description,
+          })
+          .then(
+            (res) => {
+              if (res.status === 200) {
+                this.$store.dispatch("stopLoading");
+                this.$router.push("/");
+              }
+            },
+            (err) => {
+              this.$store.dispatch("stopLoading");
+              this.error = err.response.data.error;
+            }
+          );
+      }
+    },
   },
 };
 </script>
@@ -390,6 +414,9 @@ export default {
   display: flex;
   justify-content: space-around;
   align-items: center;
+}
+.hidden {
+  opacity: 0.07;
 }
 :root {
   --blue: #5e72e4;
