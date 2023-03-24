@@ -32,7 +32,7 @@ export default {
   width: 400px;
   max-width: 80%;
   background-color: #47ab11;
-  color: white;
+  color: white !important;
   padding: 20px;
   border-radius: 10px;
   text-align: center;

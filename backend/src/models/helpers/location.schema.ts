@@ -1,15 +1,21 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const LocationSchema = new mongoose.Schema({
+const LocationSchema = new mongoose.Schema(
+  {
     longitude: {
-        type: Number,
-        required: true,
+      type: Number,
+      required: true,
     },
     latitude: {
-        type: Number,
-        required: true
+      type: Number,
+      required: true,
     },
-}, { collection: 'Location' }
+    place: {
+      type: String,
+      required: true,
+    },
+  },
+  { collection: "Location" }
 );
 
 module.exports = LocationSchema;
