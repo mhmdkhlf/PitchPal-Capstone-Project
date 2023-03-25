@@ -15,7 +15,18 @@
                 <div class="col-lg-3 order-lg-2">
                   <div class="card-profile-image">
                     <a href="#">
-                      <img :src="src" class="rounded-circle" />
+                      <img
+                        :src="src"
+                        class="rounded-circle"
+                        ref="image"
+                        v-if="src"
+                      />
+                      <img
+                        src="../assets/images/image.jpg"
+                        class="rounded-circle"
+                        ref="image"
+                        v-if="!src"
+                      />
                       <!-- <img
                         src="https://demos.creative-tim.com/argon-dashboard/assets-old/img/theme/team-4.jpg"
                         class="rounded-circle"
@@ -291,6 +302,9 @@ export default {
   mounted() {
     // console.log(this.isSelfVisit);
     // console.log(this.$route.params.id);
+    // if (!this.src) {
+    //   this.$refs.image.setAttribute("src", "../assets/images/image.jpg");
+    // }
     this.$store.dispatch("setLoading");
     axios
       .get("http://localhost:5000/api/getPlayer/" + this.$route.params.id)
@@ -303,10 +317,16 @@ export default {
               res.data.email
           )
           .then((res2) => {
-            this.src = `data:${res2.data.img.contentType};base64,${Buffer.from(
-              res2.data.img.data,
-              "utf-8"
-            ).toString("base64")}`;
+            console.log(res2.data);
+            if (res2.data) {
+              //no image
+              this.src = `data:${
+                res2.data.img.contentType
+              };base64,${Buffer.from(res2.data.img.data, "utf-8").toString(
+                "base64"
+              )}`;
+            }
+
             axios
               .get(
                 "http://localhost:5000/api/getNumberOfFriends/" +
@@ -314,7 +334,9 @@ export default {
               )
               .then((res3) => {
                 this.numberOfFriends = res3.data.numberOfFriends;
+
                 this.done = true;
+
                 this.$store.dispatch("stopLoading");
               });
           });

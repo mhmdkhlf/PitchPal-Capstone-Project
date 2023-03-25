@@ -27,7 +27,7 @@
                   <div class="col-lg-6">
                     <div class="form-group focused">
                       <label class="form-control-label">Profile Picture</label>
-                      <profilePicture @pictureUploaded="saveImage()" />
+                      <profilePicture />
                     </div>
                   </div>
                 </div>
