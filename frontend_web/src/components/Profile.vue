@@ -94,10 +94,16 @@
               <div class="card-header bg-white border-0">
                 <div class="row align-items-center">
                   <div class="col-8">
-                    <h3 class="mb-0">My account</h3>
+                    <h3 class="mb-0" v-if="isSelfVisit">My Account</h3>
+                    <h3 class="mb-0" v-if="!isSelfVisit">User Account</h3>
                   </div>
                   <div class="col-4 text-right">
-                    <h4>Your ID: {{ playerInfo.playerID }}</h4>
+                    <h4 v-if="isSelfVisit">
+                      Your ID: {{ playerInfo.playerID }}
+                    </h4>
+                    <h4 v-if="!isSelfVisit">
+                      User ID: {{ playerInfo.playerID }}
+                    </h4>
                   </div>
                 </div>
               </div>
@@ -276,27 +282,15 @@ export default {
   data() {
     return {
       playerInfo: null,
-      // name: this.playerInfo.name,
-      // email: this.playerInfo.email,
-      // position: this.playerInfo.position,
-      // phoneNumber: this.playerInfo.phoneNumber,
-      // sex: this.playerInfo.sex,
-      // height: this.playerInfo.height,
-      // weight: this.playerInfo.weight,
-      // description: this.playerInfo.description,
-      // averageMoralityRating: this.playerInfo.averageMoralityRating,
-      // averageSkillRating: this.playerInfo.averageSkillRating,
-      // numberOfReviews: this.playerInfo.numberOfReviews,
-      // location: this.playerInfo.location.place,
-      // playerID: this.playerInfo.playerID,
       numberOfFriends: 0,
       done: false,
+      isSelfVisit: this.$route.params.isSelfVisit === "true" ? true : false,
       src: "",
     };
   },
   mounted() {
-    console.log("in");
-    console.log(this.$route.params.id);
+    // console.log(this.isSelfVisit);
+    // console.log(this.$route.params.id);
     this.$store.dispatch("setLoading");
     axios
       .get("http://localhost:5000/api/getPlayer/" + this.$route.params.id)

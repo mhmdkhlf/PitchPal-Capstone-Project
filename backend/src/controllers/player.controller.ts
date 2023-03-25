@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 let playerModel = require("../models/player.model.ts");
-
+let friendsModel = require("../models/friends.model");
 async function randomNumberGenerator(): Promise<Number> {
   var playerID = Math.floor(100000 + Math.random() * 900000);
   let user = await playerModel.findOne({ playerID });
@@ -20,7 +20,7 @@ async function updatePlayerById(req: Request, res: Response) {
     res.status(400).json({ message: error.message });
   }
 }
-
+//create player
 async function createProfileInformation(req: Request, res: Response) {
   try {
     let id = await randomNumberGenerator();
@@ -40,6 +40,7 @@ async function createProfileInformation(req: Request, res: Response) {
       description: req.body.description,
     };
     let playerInfo = await playerModel.create(data);
+    await friendsModel.create({ playerID, friendsIDs: [] });
     res.status(200).json(playerInfo);
   } catch (error) {
     console.log(error);

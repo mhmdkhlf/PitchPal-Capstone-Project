@@ -21,7 +21,7 @@ const routes = [
     component: signUpPage,
   },
   {
-    path: "/player-profile/:id",
+    path: "/player-profile/:id/:isSelfVisit",
     name: "Profile",
     component: profilePage,
     params: true,
