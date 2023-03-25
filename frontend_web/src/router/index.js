@@ -21,10 +21,14 @@ const routes = [
     component: signUpPage,
   },
   {
-    path: "/profile",
+    path: "/player-profile/:id",
     name: "Profile",
     component: profilePage,
-    props: true,
+    params: true,
+    // props: (route) => ({
+    //   playerInfo: route.query.playerInfo,
+    //   isSelfVisit: route.query.isSelfVisit,
+    // }),
   },
   {
     path: "/first-profile",

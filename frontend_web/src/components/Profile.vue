@@ -15,7 +15,7 @@
                 <div class="col-lg-3 order-lg-2">
                   <div class="card-profile-image">
                     <a href="#">
-                      <img :src="imageSrc" class="rounded-circle" />
+                      <img :src="src" class="rounded-circle" />
                       <!-- <img
                         src="https://demos.creative-tim.com/argon-dashboard/assets-old/img/theme/team-4.jpg"
                         class="rounded-circle"
@@ -53,11 +53,15 @@
                         <span class="description">Friends</span>
                       </div>
                       <div>
-                        <span class="heading">{{ averageMoralityRating }}</span>
+                        <span class="heading">{{
+                          playerInfo.averageMoralityRating
+                        }}</span>
                         <span class="description">Morality Rating</span>
                       </div>
                       <div>
-                        <span class="heading">{{ averageSkillRating }}</span>
+                        <span class="heading">{{
+                          playerInfo.averageSkillRating
+                        }}</span>
                         <span class="description">Skill Rating</span>
                       </div>
                     </div>
@@ -65,15 +69,20 @@
                 </div>
                 <div class="text-center">
                   <h3>
-                    {{ name }}<span class="font-weight-light">, {{ Age }}</span>
+                    {{ playerInfo.name
+                    }}<span class="font-weight-light">, {{ Age }}</span>
                   </h3>
                   <div class="h5 font-weight-300">
-                    <i class="ni location_pin mr-2"></i>{{ location.place }}
+                    <i class="ni location_pin mr-2"></i
+                    >{{ playerInfo.location.place }}
                   </div>
-                  <div><i class="ni education_hat mr-2"></i>{{ position }}</div>
+                  <div>
+                    <i class="ni education_hat mr-2"></i
+                    >{{ playerInfo.position }}
+                  </div>
                   <hr class="my-4" />
                   <p>
-                    {{ description }}
+                    {{ playerInfo.description }}
                   </p>
                   <a href="#" v-if="isSelfVisit">Edit Profile</a>
                 </div>
@@ -88,7 +97,7 @@
                     <h3 class="mb-0">My account</h3>
                   </div>
                   <div class="col-4 text-right">
-                    <h4>Your ID: {{ playerID }}</h4>
+                    <h4>Your ID: {{ playerInfo.playerID }}</h4>
                   </div>
                 </div>
               </div>
@@ -108,7 +117,7 @@
                             type="text"
                             id="input-username"
                             class="form-control form-control-alternative"
-                            :value="name"
+                            :value="playerInfo.name"
                             disabled
                           />
                         </div>
@@ -122,7 +131,7 @@
                             id="input-email"
                             type="email"
                             class="form-control form-control-alternative"
-                            :value="email"
+                            :value="playerInfo.email"
                             disabled
                           />
                         </div>
@@ -153,7 +162,7 @@
                             id="sex"
                             class="form-control form-control-alternative"
                             disabled
-                            :value="sex"
+                            :value="playerInfo.sex"
                           />
                         </div>
                       </div>
@@ -168,7 +177,7 @@
                             type="text"
                             id="pos"
                             class="form-control form-control-alternative"
-                            :value="position"
+                            :value="playerInfo.position"
                             disabled
                           />
                         </div>
@@ -183,7 +192,7 @@
                             id="weight"
                             class="form-control form-control-alternative"
                             disabled
-                            :value="weight"
+                            :value="playerInfo.weight"
                           />
                         </div>
                       </div>
@@ -198,7 +207,7 @@
                             type="text"
                             id="height"
                             class="form-control form-control-alternative"
-                            :value="height"
+                            :value="playerInfo.height"
                             disabled
                           />
                         </div>
@@ -221,7 +230,7 @@
                             id="input-address"
                             class="form-control form-control-alternative"
                             disabled
-                            :value="location"
+                            :value="playerInfo.location.place"
                             type="text"
                           />
                         </div>
@@ -237,7 +246,7 @@
                             id="phoneNumber"
                             class="form-control form-control-alternative"
                             disabled
-                            :value="phoneNumber"
+                            :value="playerInfo.phoneNumber"
                             type="text"
                           />
                         </div>
@@ -258,27 +267,28 @@
 <script>
 import axios from "axios";
 import loader from "./loader.vue";
+import { Buffer } from "buffer";
 export default {
   name: "profileComponent",
-  props: ["playerInfo", "isSelfVisit"],
   components: {
     loader,
   },
   data() {
     return {
-      name: this.playerInfo.name,
-      email: this.playerInfo.email,
-      position: this.playerInfo.position,
-      phoneNumber: this.playerInfo.phoneNumber,
-      sex: this.playerInfo.sex,
-      height: this.playerInfo.height,
-      weight: this.playerInfo.weight,
-      description: this.playerInfo.description,
-      averageMoralityRating: this.playerInfo.averageMoralityRating,
-      averageSkillRating: this.playerInfo.averageSkillRating,
-      numberOfReviews: this.playerInfo.numberOfReviews,
-      location: this.playerInfo.location.place,
-      playerID: this.playerInfo.playerID,
+      playerInfo: null,
+      // name: this.playerInfo.name,
+      // email: this.playerInfo.email,
+      // position: this.playerInfo.position,
+      // phoneNumber: this.playerInfo.phoneNumber,
+      // sex: this.playerInfo.sex,
+      // height: this.playerInfo.height,
+      // weight: this.playerInfo.weight,
+      // description: this.playerInfo.description,
+      // averageMoralityRating: this.playerInfo.averageMoralityRating,
+      // averageSkillRating: this.playerInfo.averageSkillRating,
+      // numberOfReviews: this.playerInfo.numberOfReviews,
+      // location: this.playerInfo.location.place,
+      // playerID: this.playerInfo.playerID,
       numberOfFriends: 0,
       done: false,
       src: "",
@@ -286,16 +296,17 @@ export default {
   },
   mounted() {
     console.log("in");
+    console.log(this.$route.params.id);
     this.$store.dispatch("setLoading");
     axios
-      .get("http://localhost:5000/api/getPlayer/" + this.playerInfo.playerID)
+      .get("http://localhost:5000/api/getPlayer/" + this.$route.params.id)
       .then((res) => {
-        console.log(res.data);
-        this.obj = res.data;
+        console.log(res);
+        this.playerInfo = res.data;
         axios
           .get(
             "http://localhost:5000/api/getProfilePictureByEmail/" +
-              this.playerInfo.email
+              res.data.email
           )
           .then((res2) => {
             this.src = `data:${res2.data.img.contentType};base64,${Buffer.from(
