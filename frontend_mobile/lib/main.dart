@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'pages/first_log_in_form.dart';
-// import 'pages/log_in.dart';
+import 'pages/log_in.dart';
 import 'dart:io';
 
 final String apiRoute = Platform.isAndroid
@@ -34,8 +33,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Pitch-Pal',
       theme: ThemeData(primarySwatch: materialColor),
-      // home: LogInPage(apiRoute: apiRoute),
-      home: const FirstLogInForm(), // using to display page in development
+      home: LogInPage(apiRoute: apiRoute),
     );
   }
 }

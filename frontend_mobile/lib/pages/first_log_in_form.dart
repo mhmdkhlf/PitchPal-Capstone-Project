@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
 import 'package:intl/intl.dart';
+import 'package:frontend_mobile/pages/welcome.dart';
 import '../components/input_textfield.dart';
 import '../components/number_input_field.dart';
 import '../components/submit_button.dart';
@@ -13,7 +14,12 @@ import '../data/location.dart';
 import '../constants.dart';
 
 class FirstLogInForm extends StatefulWidget {
-  const FirstLogInForm({super.key});
+  const FirstLogInForm({
+    super.key,
+    required this.emailFromLogIn,
+  });
+
+  final String emailFromLogIn;
 
   @override
   State<FirstLogInForm> createState() => _FirstLogInFormState();
@@ -38,40 +44,33 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
       : 'http://localhost:5000/api';
 
   void createProfile() async {
-    final String imageName =
+    final String imageName = //TODO: Picture to be stored in seperate collection
         imageFile == null ? 'default profile image' : imageFile!.name;
     final String fullName = nameController.text;
-    final String dateOfBirth = dateInput.text;
+    final String email = widget.emailFromLogIn;
     final String phoneNumber = _getPhoneNumberString(phoneNumberInput);
-    final String location = locationController.text;
+    final String dateOfBirth = dateInput.text;
+    final String location = locationController.text; //TODO: input geolocation
     final Sex sex = sexInput;
     final int weight = int.parse(weightController.text);
     final int height = int.parse(heightController.text);
     final Position position = positionInput;
     final String bio = bioController.text;
 
-    final Player playerProfileToCreate = Player(
-      //remove unnecessary argument from this constructor ,
-      uuid: '', //usesless here
-      playerID: '', //usesless here
+    final Player playerProfileToCreate = Player.createProfile(
       name: fullName,
-      email: '', //TODO: get email from LogIN page
+      email: email,
       phoneNumber: phoneNumber,
-      location: const Location(
-        //TODO: figure it out how this value is inputted other than string
-        uuid: '',
+      location: Location.fromInput(
         longitude: 0,
         latitude: 0,
+        place: 'Beirut',
       ),
-      picture: imageName, //TODO: learn how to store image in MongoDB
       dateOfBirth: dateOfBirth,
+      position: position,
+      sex: sex,
       height: height,
       weight: weight,
-      sex: sex,
-      averageMoralityRating: 0, //usesless here
-      averageSkillRating: 0, //usesless here
-      numberOfReviews: 0, //usesless here
-      position: position,
       bio: bio,
     );
 
@@ -80,9 +79,20 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
       data: playerProfileToCreate.toJsonMapToCreatePlayer(),
     );
     if (response.statusCode == 200) {
-      // TODO: player profile created successfully & navigate to home page
+      if (context.mounted) {
+        Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => WelcomePage(
+              userEmail: email,
+              role: 'player',
+            ),
+          ),
+        );
+      }
     } else {
-      throw Exception('failed to get sport center reviews');
+      throw Exception('failed to create player profile');
     }
   }
 
