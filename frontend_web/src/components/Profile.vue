@@ -4,7 +4,8 @@
     rel="stylesheet"
   />
   <!-- <logo /> -->
-  <div class="body">
+  <loader v-if="isLoading && !done" />
+  <div class="body" v-if="done && !isLoading">
     <div class="main-content">
       <div class="container-fluid mt--7">
         <div class="row">
@@ -15,9 +16,21 @@
                   <div class="card-profile-image">
                     <a href="#">
                       <img
+                        :src="src"
+                        class="rounded-circle"
+                        ref="image"
+                        v-if="src"
+                      />
+                      <img
+                        src="../assets/images/image.jpg"
+                        class="rounded-circle"
+                        ref="image"
+                        v-if="!src"
+                      />
+                      <!-- <img
                         src="https://demos.creative-tim.com/argon-dashboard/assets-old/img/theme/team-4.jpg"
                         class="rounded-circle"
-                      />
+                      /> -->
                     </a>
                   </div>
                 </div>
@@ -47,42 +60,42 @@
                       class="card-profile-stats d-flex justify-content-center mt-md-5"
                     >
                       <div>
-                        <span class="heading">22</span>
+                        <span class="heading">{{ numberOfFriends }}</span>
                         <span class="description">Friends</span>
                       </div>
                       <div>
-                        <span class="heading">10</span>
-                        <span class="description">Photos</span>
+                        <span class="heading">{{
+                          playerInfo.averageMoralityRating
+                        }}</span>
+                        <span class="description">Morality Rating</span>
                       </div>
                       <div>
-                        <span class="heading">89</span>
-                        <span class="description">Comments</span>
+                        <span class="heading">{{
+                          playerInfo.averageSkillRating
+                        }}</span>
+                        <span class="description">Skill Rating</span>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div class="text-center">
                   <h3>
-                    Jessica Jones<span class="font-weight-light">, 27</span>
+                    {{ playerInfo.name
+                    }}<span class="font-weight-light">, {{ Age }}</span>
                   </h3>
                   <div class="h5 font-weight-300">
-                    <i class="ni location_pin mr-2"></i>Bucharest, Romania
-                  </div>
-                  <div class="h5 mt-4">
-                    <i class="ni business_briefcase-24 mr-2"></i>Solution
-                    Manager - Creative Tim Officer
+                    <i class="ni location_pin mr-2"></i
+                    >{{ playerInfo.location.place }}
                   </div>
                   <div>
-                    <i class="ni education_hat mr-2"></i>University of Computer
-                    Science
+                    <i class="ni education_hat mr-2"></i
+                    >{{ playerInfo.position }}
                   </div>
                   <hr class="my-4" />
                   <p>
-                    Ryan — the name taken by Melbourne-raised, Brooklyn-based
-                    Nick Murphy — writes, performs and records all of his own
-                    music.
+                    {{ playerInfo.description }}
                   </p>
-                  <a href="#" v-if="isSelfVisit">Edit Your Profile</a>
+                  <a href="#" v-if="isSelfVisit">Edit Profile</a>
                 </div>
               </div>
             </div>
@@ -92,11 +105,17 @@
               <div class="card-header bg-white border-0">
                 <div class="row align-items-center">
                   <div class="col-8">
-                    <h3 class="mb-0">My account</h3>
+                    <h3 class="mb-0" v-if="isSelfVisit">My Account</h3>
+                    <h3 class="mb-0" v-if="!isSelfVisit">User Account</h3>
                   </div>
-                  <!-- <div class="col-4 text-right">
-                    <h4>Your ID: {{ player.playerId }}</h4>
-                  </div> -->
+                  <div class="col-4 text-right">
+                    <h4 v-if="isSelfVisit">
+                      Your ID: {{ playerInfo.playerID }}
+                    </h4>
+                    <h4 v-if="!isSelfVisit">
+                      User ID: {{ playerInfo.playerID }}
+                    </h4>
+                  </div>
                 </div>
               </div>
               <div class="card-body">
@@ -115,7 +134,7 @@
                             type="text"
                             id="input-username"
                             class="form-control form-control-alternative"
-                            :value="name"
+                            :value="playerInfo.name"
                             disabled
                           />
                         </div>
@@ -126,10 +145,10 @@
                             >Email address</label
                           >
                           <input
-                            type="email"
                             id="input-email"
+                            type="email"
                             class="form-control form-control-alternative"
-                            :vlaue="email"
+                            :value="playerInfo.email"
                             disabled
                           />
                         </div>
@@ -160,7 +179,7 @@
                             id="sex"
                             class="form-control form-control-alternative"
                             disabled
-                            :value="sex"
+                            :value="playerInfo.sex"
                           />
                         </div>
                       </div>
@@ -175,7 +194,7 @@
                             type="text"
                             id="pos"
                             class="form-control form-control-alternative"
-                            :value="position"
+                            :value="playerInfo.position"
                             disabled
                           />
                         </div>
@@ -190,7 +209,7 @@
                             id="weight"
                             class="form-control form-control-alternative"
                             disabled
-                            :value="weight"
+                            :value="playerInfo.weight"
                           />
                         </div>
                       </div>
@@ -205,7 +224,7 @@
                             type="text"
                             id="height"
                             class="form-control form-control-alternative"
-                            :value="height"
+                            :value="playerInfo.height"
                             disabled
                           />
                         </div>
@@ -228,7 +247,7 @@
                             id="input-address"
                             class="form-control form-control-alternative"
                             disabled
-                            :value="location"
+                            :value="playerInfo.location.place"
                             type="text"
                           />
                         </div>
@@ -244,7 +263,7 @@
                             id="phoneNumber"
                             class="form-control form-control-alternative"
                             disabled
-                            :value="phoneNumber"
+                            :value="playerInfo.phoneNumber"
                             type="text"
                           />
                         </div>
@@ -263,35 +282,77 @@
   </div>
 </template>
 <script>
-//import logo from "./logo.vue";
+import axios from "axios";
+import loader from "./loader.vue";
+import { Buffer } from "buffer";
 export default {
   name: "profileComponent",
-  props: ["playerInfo", "imageSrc", "isSelfVisit"],
-  // data() {
-  //   return {
-  //     name: this.playerInfo.name,
-  //     email: this.playerInfo.email,
-  //     position: this.playerInfo.position,
-  //     phoneNumber: this.playerInfo.phoneNumber,
-  //     sex: this.playerInfo.sex,
-  //     height: this.playerInfo.height,
-  //     weight: this.playerInfo.weight,
-  //     description: this.playerInfo.description,
-  //     averageMoralityRating: this.playerInfo.averageMoralityRating,
-  //     averageSkillRating: this.playerInfo.averageSkillRating,
-  //     numberOfReviews: this.playerInfo.numberOfReviews,
-  //     location: this.playerInfo.location.place,
-  //     playerID: this.playerInfo.playerID,
-  //   };
-  // },
-  // computed: {
-  //   Age() {
-  //     const dob = new Date(this.playerInfo.dateOfBirth);
-  //     const ageInMs = Date.now() - dob.getTime();
-  //     const ageInDate = new Date(ageInMs);
-  //     return Math.abs(ageInDate.getUTCFullYear() - 1970).toString();
-  //   },
-  // },
+  components: {
+    loader,
+  },
+  data() {
+    return {
+      playerInfo: null,
+      numberOfFriends: 0,
+      done: false,
+      isSelfVisit: this.$route.params.isSelfVisit === "true" ? true : false,
+      src: "",
+    };
+  },
+  mounted() {
+    // console.log(this.isSelfVisit);
+    // console.log(this.$route.params.id);
+    // if (!this.src) {
+    //   this.$refs.image.setAttribute("src", "../assets/images/image.jpg");
+    // }
+    this.$store.dispatch("setLoading");
+    axios
+      .get("http://localhost:5000/api/getPlayer/" + this.$route.params.id)
+      .then((res) => {
+        console.log(res);
+        this.playerInfo = res.data;
+        axios
+          .get(
+            "http://localhost:5000/api/getProfilePictureByEmail/" +
+              res.data.email
+          )
+          .then((res2) => {
+            console.log(res2.data);
+            if (res2.data) {
+              //no image
+              this.src = `data:${
+                res2.data.img.contentType
+              };base64,${Buffer.from(res2.data.img.data, "utf-8").toString(
+                "base64"
+              )}`;
+            }
+
+            axios
+              .get(
+                "http://localhost:5000/api/getNumberOfFriends/" +
+                  this.playerInfo.playerID
+              )
+              .then((res3) => {
+                this.numberOfFriends = res3.data.numberOfFriends;
+
+                this.done = true;
+
+                this.$store.dispatch("stopLoading");
+              });
+          });
+      });
+  },
+  computed: {
+    Age() {
+      const dob = new Date(this.playerInfo.dateOfBirth);
+      const ageInMs = Date.now() - dob.getTime();
+      const ageInDate = new Date(ageInMs);
+      return Math.abs(ageInDate.getUTCFullYear() - 1970).toString();
+    },
+    isLoading() {
+      return this.$store.state.isLoading;
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>
@@ -1140,6 +1201,9 @@ button.bg-white:focus {
 .shadow,
 .card-profile-image img {
   box-shadow: 0 0 2rem 0 rgba(136, 152, 170, 0.15) !important;
+}
+.card-profile-image img {
+  height: 185px !important;
 }
 
 .mb-0 {
