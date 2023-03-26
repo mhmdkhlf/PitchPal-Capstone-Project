@@ -106,6 +106,7 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Center(
           child: Text(
             'Create your Profile',
