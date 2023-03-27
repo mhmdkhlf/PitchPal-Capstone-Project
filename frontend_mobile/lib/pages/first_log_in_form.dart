@@ -7,6 +7,7 @@ import 'package:intl_phone_field/phone_number.dart';
 import 'package:intl/intl.dart';
 import 'package:frontend_mobile/pages/welcome.dart';
 import '../components/input_textfield.dart';
+import '../components/location_input.dart';
 import '../components/number_input_field.dart';
 import '../components/submit_button.dart';
 import '../data/player.dart';
@@ -31,7 +32,7 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
   final nameController = TextEditingController();
   final dateInput = TextEditingController();
   late PhoneNumber phoneNumberInput;
-  final locationController = TextEditingController();
+  final Location location = Location.initial();
   late Sex sexInput = Sex.male;
   final weightController = TextEditingController();
   final heightController = TextEditingController();
@@ -50,7 +51,6 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
     final String email = widget.emailFromLogIn;
     final String phoneNumber = _getPhoneNumberString(phoneNumberInput);
     final String dateOfBirth = dateInput.text;
-    final String location = locationController.text; //TODO: input geolocation
     final Sex sex = sexInput;
     final int weight = int.parse(weightController.text);
     final int height = int.parse(heightController.text);
@@ -61,11 +61,7 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
       name: fullName,
       email: email,
       phoneNumber: phoneNumber,
-      location: Location.fromInput(
-        longitude: 0,
-        latitude: 0,
-        place: 'Beirut',
-      ),
+      location: location,
       dateOfBirth: dateOfBirth,
       position: position,
       sex: sex,
@@ -74,25 +70,27 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
       bio: bio,
     );
 
-    final response = await dio.post(
-      '$apiRoute/newPlayerProfile',
-      data: playerProfileToCreate.toJsonMapToCreatePlayer(),
-    );
-    if (response.statusCode == 200) {
-      if (context.mounted) {
-        Navigator.pop(context);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => WelcomePage(
-              userEmail: email,
-              role: 'player',
+    try {
+      final response = await dio.post(
+        '$apiRoute/newPlayerProfile',
+        data: playerProfileToCreate.toJsonMapToCreatePlayer(),
+      );
+      if (response.statusCode == 200) {
+        if (context.mounted) {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => WelcomePage(
+                userEmail: email,
+                role: 'player',
+              ),
             ),
-          ),
-        );
+          );
+        }
       }
-    } else {
-      throw Exception('failed to create player profile');
+    } on DioError catch (e) {
+      throw Exception(e.response);
     }
   }
 
@@ -161,7 +159,7 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
                         );
                         if (pickedDate != null) {
                           String formattedDate =
-                              DateFormat('dd-MM-yyyy').format(pickedDate);
+                              DateFormat('yyyy-MM-dd').format(pickedDate);
                           setState(() => dateInput.text = formattedDate);
                         } else {}
                       },
@@ -184,9 +182,8 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
                   ),
                 ),
                 const SizedBox(height: 5),
-                InputTextField(
-                  controller: locationController,
-                  hintText: 'Location',
+                LocationInput(
+                  location: location,
                 ),
                 const SizedBox(height: 20),
                 const Divider(color: kDarkGreen),

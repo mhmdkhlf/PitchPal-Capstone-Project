@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'pages/log_in.dart';
-import 'pages/location.dart';
 import 'dart:io';
 
 final String apiRoute = Platform.isAndroid
@@ -34,8 +33,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Pitch-Pal',
       theme: ThemeData(primarySwatch: materialColor),
-      home: const LocationPage(),
-      // LogInPage(apiRoute: apiRoute),
+      home: LogInPage(apiRoute: apiRoute),
     );
   }
 }

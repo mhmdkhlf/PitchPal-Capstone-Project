@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:geolocator/geolocator.dart';
+import '../data/location.dart';
 
-//TODO: page to be converted to components and added to first time log-in page
+class LocationInput extends StatefulWidget {
+  const LocationInput({
+    super.key,
+    required this.location,
+  });
 
-class LocationPage extends StatefulWidget {
-  const LocationPage({super.key});
+  final Location location;
 
   @override
-  State<LocationPage> createState() => _LocationPageState();
+  State<LocationInput> createState() => _LocationInputState();
 }
 
-class _LocationPageState extends State<LocationPage> {
+class _LocationInputState extends State<LocationInput> {
+  String buttonText = "Get Current Location";
   late Position _currentPosition;
   double longitude = 0;
   double latitude = 0;
@@ -78,16 +83,14 @@ class _LocationPageState extends State<LocationPage> {
 
   void _getCurrentAdress() async {
     final dio = Dio();
-    print(longitude);
-    print(latitude);
     final response = await dio.get(
       'https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=$latitude&longitude=$longitude&localityLanguage=en',
     );
     if (response.statusCode == 200) {
       final String countryName = response.data['countryName'];
-      final String city = response.data['city'];
+      final String principalSubdivision = response.data['principalSubdivision'];
       final String locality = response.data['locality'];
-      address = '$locality, $city, $countryName';
+      address = '$locality, $principalSubdivision, $countryName';
     } else {
       throw Exception('failed to create player profile');
     }
@@ -96,33 +99,19 @@ class _LocationPageState extends State<LocationPage> {
   void getCurrentLocation() {
     _getCurrentPosition();
     _getCurrentAdress();
+    widget.location.latitude = latitude;
+    widget.location.longitude = longitude;
+    widget.location.place = address;
+    setState(() {
+      buttonText = "Location Obtained";
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Location Page")),
-      body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('LAT: $latitude'),
-              Text('LNG: $longitude'),
-              Text(
-                'Address: $address',
-                overflow: TextOverflow.ellipsis,
-                maxLines: 5,
-              ),
-              const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: getCurrentLocation,
-                child: const Text("Get Current Location"),
-              )
-            ],
-          ),
-        ),
-      ),
+    return ElevatedButton(
+      onPressed: getCurrentLocation,
+      child: const Text("Get Current Location"),
     );
   }
 }
