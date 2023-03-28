@@ -1,15 +1,29 @@
 import 'location.dart';
 
 class Player {
-  const Player({
-    // TODO: remove non required elements from constructor
+  String? uuid;
+  String? playerID;
+  final String name;
+  final String email;
+  final String phoneNumber;
+  final Location location;
+  final String dateOfBirth;
+  final Sex sex;
+  final Position position;
+  num? height;
+  num? weight;
+  String? bio;
+  num? averageMoralityRating;
+  num? averageSkillRating;
+  int? numberOfReviews;
+
+  Player({
     required this.uuid,
     required this.playerID,
     required this.name,
     required this.email,
     required this.phoneNumber,
     required this.location,
-    required this.picture,
     required this.dateOfBirth,
     required this.height,
     required this.weight,
@@ -21,22 +35,6 @@ class Player {
     required this.bio,
   });
 
-  final String uuid;
-  final String playerID;
-  final String name;
-  final String email;
-  final String phoneNumber;
-  final Location location;
-  final String picture;
-  final String dateOfBirth;
-  final num height, weight;
-  final Sex sex;
-  final num averageMoralityRating;
-  final num averageSkillRating;
-  final int numberOfReviews;
-  final Position position;
-  final String bio;
-
   factory Player.fromJson(Map<String, dynamic> json) {
     return Player(
       uuid: json['_id'],
@@ -45,7 +43,6 @@ class Player {
       email: json['email'],
       phoneNumber: json['phoneNumber'],
       location: Location.fromJson(json['location']),
-      picture: json['picture'],
       dateOfBirth: json['dateOfBirth'],
       height: json['height'],
       weight: json['weight'],
@@ -58,20 +55,31 @@ class Player {
     );
   }
 
+  Player.createProfile({
+    required this.name,
+    required this.email,
+    required this.phoneNumber,
+    required this.location,
+    required this.dateOfBirth,
+    required this.position,
+    required this.sex,
+    this.height,
+    this.weight,
+    this.bio,
+  });
+
   Map<String, dynamic> toJsonMapToCreatePlayer() {
     return {
-      'playerID': playerID,
       'name': name,
       'email': email,
       'phoneNumber': phoneNumber,
-      'location': location,
-      'picture': picture,
+      'location': location.toJsonMap(),
       'dateOfBirth': dateOfBirth,
-      'height': height,
-      'weight': weight,
-      'sex': sex,
-      'position': position,
-      'bio': bio,
+      'position': position.value,
+      'sex': sex.value,
+      'height': height ?? 0,
+      'weight': weight ?? 0,
+      'bio': bio ?? '',
     };
   }
 
@@ -80,8 +88,8 @@ class Player {
     return '''uuid = $uuid; playerID = $playerID; name = $name;
 email = $email; phoneNumber = $phoneNumber;
 location: $location;
-dateOfBirth = $dateOfBirth; picture = $picture; height = $height; weight = $weight;
-sex = $sex; averageMoralityRating = $averageMoralityRating; averageSkillRating = $averageSkillRating;
+dateOfBirth = $dateOfBirth; height = $height; weight = $weight; sex = $sex;
+averageMoralityRating = $averageMoralityRating; averageSkillRating = $averageSkillRating;
 numberOfReviews = $numberOfReviews; position = $position;''';
   }
 }

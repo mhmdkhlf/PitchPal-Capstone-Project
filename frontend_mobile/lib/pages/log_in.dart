@@ -3,6 +3,7 @@ import 'package:frontend_mobile/constants.dart';
 import 'package:dio/dio.dart';
 import 'package:frontend_mobile/pages/sign_up.dart';
 import 'package:frontend_mobile/pages/welcome.dart';
+import 'package:frontend_mobile/pages/first_log_in_form.dart';
 import '../components/submit_button.dart';
 import '../components/input_textfield.dart';
 import '../components/failed_auth_dialog.dart';
@@ -52,16 +53,51 @@ class _LoginPageState extends State<LogInPage> {
       String email = response.data['email'];
       String role = response.data['user']['role'];
       if (context.mounted) {
-        Navigator.pop(context);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => WelcomePage(
-              userEmail: email,
-              role: role,
-            ),
-          ),
-        );
+        try {
+          response = await dio.post(
+            '$apiRoute/isFirstTimeLogIn',
+            data: {
+              "userType": role,
+              "userEmail": email,
+            },
+          );
+          bool isNewUser = response.data['result'];
+          if (isNewUser) {
+            if (context.mounted) {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FirstLogInForm(
+                    emailFromLogIn: email,
+                  ),
+                ),
+              );
+            }
+          } else {
+            if (context.mounted) {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => WelcomePage(
+                    userEmail: email,
+                    role: role,
+                  ),
+                ),
+              );
+            }
+          }
+        } on DioError catch (e) {
+          String error = e.response?.data['error'];
+          Navigator.pop(context);
+          showDialog(
+            context: context,
+            builder: (context) {
+              return FailedAuthDialog(errorText: error);
+            },
+          );
+        }
       }
     } on DioError catch (e) {
       String error = e.response?.data['error'];
@@ -114,8 +150,6 @@ class _LoginPageState extends State<LogInPage> {
                 SubmitButton(
                   text: 'Log In',
                   onTap: logUserIn,
-                  // TODO: change to navigate to first time log in if auth user doesn't correspond to player/field manager
-                  // TODO: if user already filled form then navigate to home page.
                 ),
                 const SizedBox(height: 15),
                 Row(
