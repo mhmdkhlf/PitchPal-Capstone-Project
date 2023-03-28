@@ -10,6 +10,7 @@ import '../components/input_textfield.dart';
 import '../components/location_input.dart';
 import '../components/number_input_field.dart';
 import '../components/submit_button.dart';
+import '../components/profile_picture_input.dart';
 import '../data/player.dart';
 import '../data/location.dart';
 import '../constants.dart';
@@ -27,8 +28,7 @@ class FirstLogInForm extends StatefulWidget {
 }
 
 class _FirstLogInFormState extends State<FirstLogInForm> {
-  XFile? imageFile;
-  final ImagePicker _picker = ImagePicker();
+  XFile imageFile = XFile(defaultProfilePath);
   final nameController = TextEditingController();
   final dateInput = TextEditingController();
   late PhoneNumber phoneNumberInput;
@@ -45,8 +45,7 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
       : 'http://localhost:5000/api';
 
   void createProfile() async {
-    final String imageName = //TODO: Picture to be stored in seperate collection
-        imageFile == null ? 'default profile image' : imageFile!.name;
+    if (imageFile.path != defaultProfilePath) await _uploadImage();
     final String fullName = nameController.text;
     final String email = widget.emailFromLogIn;
     final String phoneNumber = _getPhoneNumberString(phoneNumberInput);
@@ -56,7 +55,6 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
     final int height = int.parse(heightController.text);
     final Position position = positionInput;
     final String bio = bioController.text;
-
     final Player playerProfileToCreate = Player.createProfile(
       name: fullName,
       email: email,
@@ -69,7 +67,6 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
       weight: weight,
       bio: bio,
     );
-
     try {
       final response = await dio.post(
         '$apiRoute/newPlayerProfile',
@@ -89,6 +86,24 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
           );
         }
       }
+    } on DioError catch (e) {
+      throw Exception(e.response);
+    }
+  }
+
+  Future<void> _uploadImage() async {
+    try {
+      File image = File(imageFile.path);
+      String filePath = image.path;
+      String fileName = filePath.split('/').last;
+      var formData = FormData.fromMap({
+        'email': widget.emailFromLogIn,
+        'image': await MultipartFile.fromFile(filePath, filename: fileName),
+      });
+      await dio.post(
+        '$apiRoute/uploadPicture',
+        data: formData,
+      );
     } on DioError catch (e) {
       throw Exception(e.response);
     }
@@ -124,7 +139,9 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 20),
-                imageProfile(),
+                ProfilePictureInput(
+                  imageFile: imageFile,
+                ),
                 const SizedBox(height: 20),
                 InputTextField(
                   controller: nameController,
@@ -298,84 +315,5 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
         ),
       ),
     );
-  }
-
-  Widget imageProfile() {
-    return Center(
-      child: Stack(children: <Widget>[
-        CircleAvatar(
-          radius: 80.0,
-          backgroundImage: imageFile == null
-              ? const AssetImage('assets/profile.png')
-              : FileImage(File(imageFile!.path)) as ImageProvider,
-        ),
-        Positioned(
-          bottom: 20.0,
-          right: 20.0,
-          child: InkWell(
-            onTap: () {
-              showModalBottomSheet(
-                context: context,
-                builder: ((builder) => bottomSheet()),
-              );
-            },
-            child: const Icon(
-              Icons.camera_alt,
-              color: kDarkGreen,
-              size: 28.0,
-            ),
-          ),
-        ),
-      ]),
-    );
-  }
-
-  Widget bottomSheet() {
-    return Container(
-      height: 100.0,
-      width: MediaQuery.of(context).size.width,
-      margin: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 20,
-      ),
-      child: Column(
-        children: [
-          const Text(
-            "Choose Profile photo",
-            style: TextStyle(
-              fontSize: 20.0,
-            ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-            TextButton.icon(
-              icon: const Icon(Icons.camera),
-              onPressed: () {
-                takePhoto(ImageSource.camera);
-              },
-              label: const Text("Camera"),
-            ),
-            TextButton.icon(
-              icon: const Icon(Icons.image),
-              onPressed: () {
-                takePhoto(ImageSource.gallery);
-              },
-              label: const Text("Gallery"),
-            ),
-          ])
-        ],
-      ),
-    );
-  }
-
-  void takePhoto(ImageSource source) async {
-    final pickedFile = await _picker.pickImage(
-      source: source,
-    );
-    setState(() {
-      imageFile = pickedFile;
-    });
   }
 }

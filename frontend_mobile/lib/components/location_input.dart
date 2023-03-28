@@ -81,7 +81,7 @@ class _LocationInputState extends State<LocationInput> {
     });
   }
 
-  void _getCurrentAdress() async {
+  Future<void> _getCurrentAdress() async {
     final dio = Dio();
     final response = await dio.get(
       'https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=$latitude&longitude=$longitude&localityLanguage=en',
@@ -96,9 +96,9 @@ class _LocationInputState extends State<LocationInput> {
     }
   }
 
-  void getCurrentLocation() {
-    _getCurrentPosition();
-    _getCurrentAdress();
+  void getCurrentLocation() async {
+    await _getCurrentPosition();
+    await _getCurrentAdress();
     widget.location.latitude = latitude;
     widget.location.longitude = longitude;
     widget.location.place = address;
@@ -111,7 +111,7 @@ class _LocationInputState extends State<LocationInput> {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: getCurrentLocation,
-      child: const Text("Get Current Location"),
+      child: Text(buttonText),
     );
   }
 }
