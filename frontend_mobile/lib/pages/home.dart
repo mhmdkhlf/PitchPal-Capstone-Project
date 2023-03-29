@@ -1,47 +1,8 @@
 import 'package:flutter/material.dart';
 import '../constants.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key, required this.email});
-  final String email;
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'Welcome $email',
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-    );
-  }
-}
-
-class ViewProfile extends StatelessWidget {
-  const ViewProfile({
-    super.key,
-    required this.email,
-  });
-  final String email;
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        "Viewing $email's profile",
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-    );
-  }
-}
-
-class WelcomePage extends StatefulWidget {
-  const WelcomePage({
+class HomePage extends StatefulWidget {
+  const HomePage({
     super.key,
     required this.userEmail,
     required this.role,
@@ -50,10 +11,10 @@ class WelcomePage extends StatefulWidget {
   final String userEmail, role;
 
   @override
-  State<WelcomePage> createState() => _WelcomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _WelcomePageState extends State<WelcomePage> {
+class _HomePageState extends State<HomePage> {
   int _selectNavBarItemIndex = 0;
 
   void _onItemTapped(int index) {
@@ -64,9 +25,27 @@ class _WelcomePageState extends State<WelcomePage> {
 
   Widget getBody() {
     if (_selectNavBarItemIndex == 0) {
-      return HomePage(email: widget.userEmail);
+      return Center(
+        child: Text(
+          'Welcome ${widget.userEmail}',
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      );
     }
-    return ViewProfile(email: widget.userEmail);
+    return Center(
+      child: Text(
+        "Viewing ${widget.userEmail}'s profile",
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
   }
 
   @override

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
 import 'package:intl/intl.dart';
-import 'package:frontend_mobile/pages/welcome.dart';
+import 'package:frontend_mobile/pages/home.dart';
 import '../components/input_textfield.dart';
 import '../components/location_input.dart';
 import '../components/number_input_field.dart';
@@ -77,7 +77,7 @@ class _PlayerCreateProfileState extends State<PlayerCreateProfile> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => WelcomePage(
+              builder: (context) => HomePage(
                 userEmail: email,
                 role: 'player',
               ),

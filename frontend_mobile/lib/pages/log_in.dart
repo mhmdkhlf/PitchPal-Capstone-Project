@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend_mobile/constants.dart';
 import 'package:dio/dio.dart';
 import 'package:frontend_mobile/pages/sign_up.dart';
-import 'package:frontend_mobile/pages/welcome.dart';
+import 'package:frontend_mobile/pages/home.dart';
 import 'package:frontend_mobile/pages/player_create_profile.dart';
 import 'package:frontend_mobile/pages/field_manager_create_profile.dart';
 import '../components/submit_button.dart';
@@ -92,7 +92,7 @@ class _LoginPageState extends State<LogInPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => WelcomePage(
+                  builder: (context) => HomePage(
                     userEmail: email,
                     role: role,
                   ),

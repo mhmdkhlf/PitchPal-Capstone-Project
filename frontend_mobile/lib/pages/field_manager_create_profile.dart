@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
-import 'package:frontend_mobile/pages/welcome.dart';
+import 'package:frontend_mobile/pages/home.dart';
 import '../components/input_textfield.dart';
 import '../components/submit_button.dart';
 import '../components/profile_picture_input.dart';
@@ -57,7 +57,7 @@ class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => WelcomePage(
+              builder: (context) => HomePage(
                 userEmail: email,
                 role: 'field manager',
               ),
