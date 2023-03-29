@@ -3,6 +3,11 @@
     <h2 class="form-title">Field Manager Information</h2>
     <form class="field-manager-form" @submit.prevent="submitForm">
       <div class="form-group">
+        <label for="name">Profile Picture</label>
+        <profilePicture />
+      </div>
+
+      <div class="form-group">
         <label for="name">Name:</label>
         <input type="text" id="name" v-model="name" />
       </div>
@@ -24,16 +29,12 @@
 
       <h3 class="field-title">Fields</h3>
       <div v-for="(field, index) in fields" :key="index" class="field-group">
-        <h4>Field {{ index + 1 }}</h4>
+        <h3>Field {{ index + 1 }}</h3>
         <div class="form-group">
           <label for="dimensions">Dimensions:</label>
           <input type="text" id="dimensions" v-model="field.dimensions" />
         </div>
 
-        <div class="form-group">
-          <label for="field-number">Field Number:</label>
-          <input type="text" id="field-number" v-model="field.fieldNumber" />
-        </div>
         <div class="form-group">
           <label for="field-number">Field Number:</label>
           <input type="text" id="field-number" v-model="field.fieldNumber" />
@@ -86,7 +87,12 @@
 </template>
 
 <script>
+import profilePicture from "./profilePicture.vue";
 export default {
+  name: "ManagerProfile",
+  components: {
+    profilePicture,
+  },
   data() {
     return {
       name: "",
@@ -97,6 +103,11 @@ export default {
         {
           dimensions: "",
           fieldNumber: "",
+          grassType: "",
+          length: "",
+          width: "",
+          recommendedTeamSize: 0,
+          reservation_price: 0,
         },
       ],
     };
@@ -117,7 +128,17 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style lang="scss">
+* {
+  color: #2dce89;
+}
+
+.profile-pic-div {
+  position: relative !important;
+}
+.all {
+  padding-bottom: 0 !important;
+}
 .field-manager-form-container {
   /* display: flex;
   justify-content: center;
@@ -141,7 +162,7 @@ export default {
 .form-title {
   margin-top: 0;
   margin-bottom: 20px;
-  color: green;
+  color: #2dce89;
 }
 
 .field-title {
@@ -169,15 +190,15 @@ export default {
   background-color: #f5f5f5;
   font-size: 16px;
 }
-input {
-  width: 100% !important;
-}
+/* input {
+  width: 100%;
+} */
 
 .field-group {
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: #f5f5f5;
+  margin-bottom: 20px;
 }
 
 .field-group h4 {
@@ -205,26 +226,26 @@ input {
 }
 
 .add-field-button:hover {
-  background-color: green;
+  background-color: #2dce89;
   color: #fff;
 }
 
 .remove-field-button {
   background-color: #f5f5f5;
-  color: #333;
+  color: #2dce89;
   transition: all 0.2s ease-in-out;
 }
 
-.remove-field-button:hover {
+/* .remove-field-button:hover {
   background-color: #333;
   color: #fff;
-}
+} */
 
 .submit-button {
   padding: 10px;
   border: none;
   border-radius: 5px;
-  background-color: green;
+  background-color: #2dce89;
   color: #fff;
   font-size: 16px;
   cursor: pointer;
@@ -234,7 +255,7 @@ input {
 
 .submit-button:hover {
   background-color: #fff;
-  color: green;
-  border: 1px solid green;
+  color: #2dce89;
+  border: 1px solid #2dce89;
 }
 </style>
