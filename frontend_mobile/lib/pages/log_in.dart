@@ -3,7 +3,8 @@ import 'package:frontend_mobile/constants.dart';
 import 'package:dio/dio.dart';
 import 'package:frontend_mobile/pages/sign_up.dart';
 import 'package:frontend_mobile/pages/welcome.dart';
-import 'package:frontend_mobile/pages/first_log_in_form.dart';
+import 'package:frontend_mobile/pages/player_create_profile.dart';
+import 'package:frontend_mobile/pages/field_manager_create_profile.dart';
 import '../components/submit_button.dart';
 import '../components/input_textfield.dart';
 import '../components/failed_auth_dialog.dart';
@@ -65,14 +66,25 @@ class _LoginPageState extends State<LogInPage> {
           if (isNewUser) {
             if (context.mounted) {
               Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => FirstLogInForm(
-                    emailFromLogIn: email,
+              if (role == 'player') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PlayerCreateProfile(
+                      emailFromLogIn: email,
+                    ),
                   ),
-                ),
-              );
+                );
+              } else if (role == 'field manager') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FieldManagerCreateProfile(
+                      emailFromLogIn: email,
+                    ),
+                  ),
+                );
+              }
             }
           } else {
             if (context.mounted) {

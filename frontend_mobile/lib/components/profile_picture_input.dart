@@ -1,16 +1,45 @@
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../constants.dart';
+
+class ProfilePicture {
+  String path;
+  ProfilePicture({required this.path});
+}
+
+Future<void> uploadImage(ProfilePicture profilePicture, String email) async {
+  if (profilePicture.path == defaultProfilePath) return;
+  final dio = Dio();
+  final String apiRoute = Platform.isAndroid
+      ? 'http://10.0.2.2:5000/api'
+      : 'http://localhost:5000/api';
+  try {
+    File image = File(profilePicture.path);
+    String filePath = image.path;
+    String fileName = filePath.split('/').last;
+    var formData = FormData.fromMap({
+      'email': email,
+      'image': await MultipartFile.fromFile(filePath, filename: fileName),
+    });
+    await dio.post(
+      '$apiRoute/uploadPicture',
+      data: formData,
+    );
+  } on DioError catch (e) {
+    throw Exception(e.response);
+  }
+}
 
 // ignore: must_be_immutable
 class ProfilePictureInput extends StatefulWidget {
   ProfilePictureInput({
     super.key,
-    required this.imageFile,
+    required this.profilePicture,
   });
 
-  XFile imageFile;
+  ProfilePicture profilePicture;
 
   @override
   State<ProfilePictureInput> createState() => _ProfilePictureInputState();
@@ -25,9 +54,9 @@ class _ProfilePictureInputState extends State<ProfilePictureInput> {
       child: Stack(children: <Widget>[
         CircleAvatar(
           radius: 80.0,
-          backgroundImage: widget.imageFile.path == defaultProfilePath
+          backgroundImage: widget.profilePicture.path == defaultProfilePath
               ? const AssetImage(defaultProfilePath)
-              : FileImage(File(widget.imageFile.path)) as ImageProvider,
+              : FileImage(File(widget.profilePicture.path)) as ImageProvider,
         ),
         Positioned(
           bottom: 20.0,
@@ -95,7 +124,7 @@ class _ProfilePictureInputState extends State<ProfilePictureInput> {
       source: source,
     );
     setState(() {
-      widget.imageFile = pickedFile!;
+      widget.profilePicture.path = pickedFile!.path;
     });
   }
 }

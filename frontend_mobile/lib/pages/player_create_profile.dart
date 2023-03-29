@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
 import 'package:intl/intl.dart';
@@ -15,8 +14,8 @@ import '../data/player.dart';
 import '../data/location.dart';
 import '../constants.dart';
 
-class FirstLogInForm extends StatefulWidget {
-  const FirstLogInForm({
+class PlayerCreateProfile extends StatefulWidget {
+  const PlayerCreateProfile({
     super.key,
     required this.emailFromLogIn,
   });
@@ -24,11 +23,11 @@ class FirstLogInForm extends StatefulWidget {
   final String emailFromLogIn;
 
   @override
-  State<FirstLogInForm> createState() => _FirstLogInFormState();
+  State<PlayerCreateProfile> createState() => _PlayerCreateProfileState();
 }
 
-class _FirstLogInFormState extends State<FirstLogInForm> {
-  XFile imageFile = XFile(defaultProfilePath);
+class _PlayerCreateProfileState extends State<PlayerCreateProfile> {
+  ProfilePicture profilePicture = ProfilePicture(path: defaultProfilePath);
   final nameController = TextEditingController();
   final dateInput = TextEditingController();
   late PhoneNumber phoneNumberInput;
@@ -45,7 +44,7 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
       : 'http://localhost:5000/api';
 
   void createProfile() async {
-    if (imageFile.path != defaultProfilePath) await _uploadImage();
+    await uploadImage(profilePicture, widget.emailFromLogIn);
     final String fullName = nameController.text;
     final String email = widget.emailFromLogIn;
     final String phoneNumber = _getPhoneNumberString(phoneNumberInput);
@@ -55,7 +54,7 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
     final int height = int.parse(heightController.text);
     final Position position = positionInput;
     final String bio = bioController.text;
-    final Player playerProfileToCreate = Player.createProfile(
+    final Player playerProfile = Player.createProfile(
       name: fullName,
       email: email,
       phoneNumber: phoneNumber,
@@ -70,7 +69,7 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
     try {
       final response = await dio.post(
         '$apiRoute/newPlayerProfile',
-        data: playerProfileToCreate.toJsonMapToCreatePlayer(),
+        data: playerProfile.toJsonMapToCreatePlayer(),
       );
       if (response.statusCode == 200) {
         if (context.mounted) {
@@ -86,24 +85,6 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
           );
         }
       }
-    } on DioError catch (e) {
-      throw Exception(e.response);
-    }
-  }
-
-  Future<void> _uploadImage() async {
-    try {
-      File image = File(imageFile.path);
-      String filePath = image.path;
-      String fileName = filePath.split('/').last;
-      var formData = FormData.fromMap({
-        'email': widget.emailFromLogIn,
-        'image': await MultipartFile.fromFile(filePath, filename: fileName),
-      });
-      await dio.post(
-        '$apiRoute/uploadPicture',
-        data: formData,
-      );
     } on DioError catch (e) {
       throw Exception(e.response);
     }
@@ -140,7 +121,7 @@ class _FirstLogInFormState extends State<FirstLogInForm> {
               children: [
                 const SizedBox(height: 20),
                 ProfilePictureInput(
-                  imageFile: imageFile,
+                  profilePicture: profilePicture,
                 ),
                 const SizedBox(height: 20),
                 InputTextField(
