@@ -69,7 +69,7 @@ class _PlayerCreateProfileState extends State<PlayerCreateProfile> {
     try {
       final response = await dio.post(
         '$apiRoute/newPlayerProfile',
-        data: playerProfile.toJsonMapToCreatePlayer(),
+        data: playerProfile.toJsonMap(),
       );
       if (response.statusCode == 200) {
         if (context.mounted) {

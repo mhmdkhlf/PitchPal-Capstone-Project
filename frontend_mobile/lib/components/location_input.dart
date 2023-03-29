@@ -25,7 +25,6 @@ class LocationInput extends StatefulWidget {
 
 class _LocationInputState extends State<LocationInput> {
   String buttonText = "Get Current Location";
-  late Position _currentPosition;
 
   Future<bool> _handleLocationPermission() async {
     bool serviceEnabled;
@@ -77,13 +76,12 @@ class _LocationInputState extends State<LocationInput> {
     final hasPermission = await _handleLocationPermission();
     if (!hasPermission) throw Exception("Can't get location. No permissions");
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
-        .then(
-      (Position position) {
-        setState(() => _currentPosition = position);
-        longitude = _currentPosition.longitude;
-        latitude = _currentPosition.latitude;
-      },
-    ).catchError((e) {
+        .then((Position position) {
+      setState(() {
+        longitude = position.longitude;
+        latitude = position.latitude;
+      });
+    }).catchError((e) {
       throw Exception(e);
     });
     return _Position(

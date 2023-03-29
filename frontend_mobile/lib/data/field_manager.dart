@@ -30,7 +30,7 @@ class FieldManager {
     required this.sportCenterName,
   });
 
-  Map<String, dynamic> toJsonMapToCreatePlayer() {
+  Map<String, dynamic> toJsonMap() {
     return {
       'name': name,
       'email': email,

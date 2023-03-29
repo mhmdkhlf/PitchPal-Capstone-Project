@@ -49,7 +49,7 @@ class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
     try {
       final response = await dio.post(
         '$apiRoute/newManagerProfile',
-        data: fieldManagerProfile.toJsonMapToCreatePlayer(),
+        data: fieldManagerProfile.toJsonMap(),
       );
       if (response.statusCode == 200) {
         if (context.mounted) {
