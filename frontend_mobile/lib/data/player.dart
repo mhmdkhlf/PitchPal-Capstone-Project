@@ -68,7 +68,7 @@ class Player {
     this.bio,
   });
 
-  Map<String, dynamic> toJsonMapToCreatePlayer() {
+  Map<String, dynamic> toJsonMap() {
     return {
       'name': name,
       'email': email,

@@ -3,6 +3,14 @@ import 'package:dio/dio.dart';
 import 'package:geolocator/geolocator.dart';
 import '../data/location.dart';
 
+class _Position {
+  const _Position({
+    required this.longitude,
+    required this.latitude,
+  });
+  final double longitude, latitude;
+}
+
 class LocationInput extends StatefulWidget {
   const LocationInput({
     super.key,
@@ -17,10 +25,6 @@ class LocationInput extends StatefulWidget {
 
 class _LocationInputState extends State<LocationInput> {
   String buttonText = "Get Current Location";
-  late Position _currentPosition;
-  double longitude = 0;
-  double latitude = 0;
-  String address = '';
 
   Future<bool> _handleLocationPermission() async {
     bool serviceEnabled;
@@ -66,25 +70,31 @@ class _LocationInputState extends State<LocationInput> {
     return true;
   }
 
-  Future<void> _getCurrentPosition() async {
+  Future<_Position> _getCurrentPosition() async {
+    double longitude = 0;
+    double latitude = 0;
     final hasPermission = await _handleLocationPermission();
-    if (!hasPermission) return;
+    if (!hasPermission) throw Exception("Can't get location. No permissions");
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
-        .then(
-      (Position position) {
-        setState(() => _currentPosition = position);
-        longitude = _currentPosition.longitude;
-        latitude = _currentPosition.latitude;
-      },
-    ).catchError((e) {
+        .then((Position position) {
+      setState(() {
+        longitude = position.longitude;
+        latitude = position.latitude;
+      });
+    }).catchError((e) {
       throw Exception(e);
     });
+    return _Position(
+      longitude: longitude,
+      latitude: latitude,
+    );
   }
 
-  Future<void> _getCurrentAdress() async {
+  Future<String> _getCurrentAdress(_Position position) async {
+    String address;
     final dio = Dio();
     final response = await dio.get(
-      'https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=$latitude&longitude=$longitude&localityLanguage=en',
+      'https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${position.latitude}&longitude=${position.longitude}&localityLanguage=en',
     );
     if (response.statusCode == 200) {
       final String countryName = response.data['countryName'];
@@ -94,13 +104,14 @@ class _LocationInputState extends State<LocationInput> {
     } else {
       throw Exception('failed to create player profile');
     }
+    return address;
   }
 
   void getCurrentLocation() async {
-    await _getCurrentPosition();
-    await _getCurrentAdress();
-    widget.location.latitude = latitude;
-    widget.location.longitude = longitude;
+    _Position position = await _getCurrentPosition();
+    String address = await _getCurrentAdress(position);
+    widget.location.latitude = position.latitude;
+    widget.location.longitude = position.longitude;
     widget.location.place = address;
     setState(() {
       buttonText = "Location Obtained";
