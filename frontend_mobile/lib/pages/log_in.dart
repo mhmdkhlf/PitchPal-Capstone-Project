@@ -6,8 +6,8 @@ import 'package:frontend_mobile/pages/home.dart';
 import 'package:frontend_mobile/pages/player_create_profile.dart';
 import 'package:frontend_mobile/pages/field_manager_create_profile.dart';
 import '../components/submit_button.dart';
-import '../components/input_textfield.dart';
-import '../components/failed_auth_dialog.dart';
+import '../components/textfield_input.dart';
+import '../components/failed_request_dialog.dart';
 import '../data/auth.dart';
 
 class LogInPage extends StatefulWidget {
@@ -106,7 +106,7 @@ class _LoginPageState extends State<LogInPage> {
           showDialog(
             context: context,
             builder: (context) {
-              return FailedAuthDialog(errorText: error);
+              return FailedRequestDialog(errorText: error);
             },
           );
         }
@@ -117,7 +117,7 @@ class _LoginPageState extends State<LogInPage> {
       showDialog(
         context: context,
         builder: (context) {
-          return FailedAuthDialog(errorText: error);
+          return FailedRequestDialog(errorText: error);
         },
       );
     }
@@ -148,12 +148,12 @@ class _LoginPageState extends State<LogInPage> {
                         fontSize: 20,
                       )),
                 const SizedBox(height: 35),
-                InputTextField(
+                TextFieldInput(
                   controller: emailController,
                   hintText: 'Email',
                 ),
                 const SizedBox(height: 10),
-                InputTextField(
+                TextFieldInput(
                   controller: passwordController,
                   hintText: 'Password',
                   obscureText: true,
@@ -162,6 +162,7 @@ class _LoginPageState extends State<LogInPage> {
                 SubmitButton(
                   text: 'Log In',
                   onTap: logUserIn,
+                  fontSize: 20,
                 ),
                 const SizedBox(height: 15),
                 Row(

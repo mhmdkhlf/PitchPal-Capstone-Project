@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../constants.dart';
 
-class FailedAuthDialog extends StatelessWidget {
-  const FailedAuthDialog({
+class FailedRequestDialog extends StatelessWidget {
+  const FailedRequestDialog({
     super.key,
     required this.errorText,
   });
@@ -26,7 +26,10 @@ class FailedAuthDialog extends StatelessWidget {
       title: Center(
         child: Text(
           errorText,
-          style: const TextStyle(color: kDarkColor),
+          style: const TextStyle(
+            color: kDarkColor,
+            fontSize: 16,
+          ),
         ),
       ),
     );
