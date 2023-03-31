@@ -4,8 +4,6 @@ import express from "express";
 import mongoose from "mongoose";
 const bodyParser = require("body-parser");
 const cors = require("cors");
-// var fs = require('fs');
-// var path = require('path');
 
 // DB initialization and connection
 mongoose.set("strictQuery", true);
@@ -48,6 +46,8 @@ const sportCenterReviewRoutes = require("./routes/sport-center-review.route");
 const teamReviewRoutes = require("./routes/team-review.route");
 const generalUserRoutes = require("./routes/users-common-route");
 const profilePictureRoutes = require("./routes/profile-picture.route");
+const linkToCoordinatesRoutes = require("./routes/link-to-coordinates.route");
+
 app.use("/api", playerReviewRoutes);
 app.use("/api", distanceRoutes);
 app.use("/api", authenticationRoutes);
@@ -63,34 +63,4 @@ app.use("/api", sportCenterReviewRoutes);
 app.use("/api", teamReviewRoutes);
 app.use("/api", generalUserRoutes);
 app.use("/api", profilePictureRoutes);
-//  const multer  = require('multer');
-//  var storage = multer.diskStorage({
-//     destination: (req:any, file:any, cb:any) => {
-//         cb(null, 'uploads')
-//     },
-//     filename: (req:any, file:any, cb:any) => {
-//         cb(null, file.fieldname + '-' + Date.now())
-//     }
-// });
-
-//   const upload = multer({ storage: storage });
-
-//   app.post('/upload', upload.single('image'), (req:any, res:any, next) => {
-
-//        res.json({res:"done"});
-//     //    var img= {
-//     //         data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
-//     //         contentType: 'image/png'
-//     //     }
-//     //     console.log(img);
-
-//     // imgModel.create(obj, (err, item) => {
-//     //     if (err) {
-//     //         console.log(err);
-//     //     }
-//     //     else {
-//     //         // item.save();
-//     //         res.redirect('/');
-//     //     }
-//     // });
-// });
+app.use("/api", linkToCoordinatesRoutes);

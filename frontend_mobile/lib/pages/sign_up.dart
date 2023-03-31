@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:frontend_mobile/pages/log_in.dart';
-import '../components/input_textfield.dart';
+import '../components/textfield_input.dart';
 import '../components/submit_button.dart';
-import '../components/failed_auth_dialog.dart';
+import '../components/failed_request_dialog.dart';
 import '../data/auth.dart';
 import '../constants.dart';
 
@@ -28,7 +28,7 @@ class _SignUpPageState extends State<SignUpPage> {
       showDialog(
         context: context,
         builder: (context) {
-          return const FailedAuthDialog(errorText: 'Passwords do not match');
+          return const FailedRequestDialog(errorText: 'Passwords do not match');
         },
       );
       return;
@@ -72,7 +72,7 @@ class _SignUpPageState extends State<SignUpPage> {
       showDialog(
         context: context,
         builder: (context) {
-          return FailedAuthDialog(errorText: error);
+          return FailedRequestDialog(errorText: error);
         },
       );
     }
@@ -108,18 +108,18 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
                 const SizedBox(height: 40),
-                InputTextField(
+                TextFieldInput(
                   controller: emailController,
                   hintText: 'Email',
                 ),
                 const SizedBox(height: 10),
-                InputTextField(
+                TextFieldInput(
                   controller: passwordController,
                   hintText: 'Password',
                   obscureText: true,
                 ),
                 const SizedBox(height: 10),
-                InputTextField(
+                TextFieldInput(
                   controller: confirmPasswordController,
                   hintText: 'Confirm password',
                   obscureText: true,
@@ -153,6 +153,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 SubmitButton(
                   text: 'Sign Up',
                   onTap: signUpUser,
+                  fontSize: 20,
                 ),
                 const SizedBox(height: 5),
                 Row(
