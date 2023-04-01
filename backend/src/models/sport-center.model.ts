@@ -1,51 +1,57 @@
-import mongoose from 'mongoose';
-const LocationSchema = require('./helpers/location.schema.ts')
-const TimeSlotSchema = require('./helpers/time-slot.schema.ts')
+import mongoose from "mongoose";
+const LocationSchema = require("./helpers/location.schema.ts");
+const TimeSlotSchema = require("./helpers/time-slot.schema.ts");
 
-const SportCenterSchema = new mongoose.Schema({
+const SportCenterSchema = new mongoose.Schema(
+  {
     name: {
-        type: String,
-        required: true,
-        unique: true
+      type: String,
+      required: true,
+      unique: true,
+    },
+    locationLink: {
+      type: String,
+      required: true,
     },
     location: {
-        type: LocationSchema,
-        required: true
+      type: LocationSchema,
+      required: true,
     },
     phoneNumber: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
-    profilePicture: {
-        type: String
+    linkToFB: {
+      type: String,
     },
-    linkToSocial: {
-        type: String
+    linkToInsta: {
+      type: String,
     },
     nbOfFields: {
-        type: Number,
-        required: true
+      type: Number,
+      required: true,
     },
     facilityQualityAverageRating: {
-        type: Number,
-        default: 0
+      type: Number,
+      default: 0,
     },
     staffServiceAverageRating: {
-        type: Number,
-        default: 0
+      type: Number,
+      default: 0,
     },
     nbOfRatings: {
-        type: Number,
-        default: 0
+      type: Number,
+      default: 0,
     },
     facilitiesAvailable: {
-        type: String
+      type: String,
     },
     workingHours: {
-        type: TimeSlotSchema,
-        required: true
-    }
-}, { collection: 'SportCenter' }
+      type: TimeSlotSchema,
+      required: true,
+    },
+  },
+  { collection: "SportCenter" }
 );
 
-module.exports = mongoose.model('SportCenter', SportCenterSchema);
+module.exports = mongoose.model("SportCenter", SportCenterSchema);

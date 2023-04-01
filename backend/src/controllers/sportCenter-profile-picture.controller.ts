@@ -1,9 +1,10 @@
+export {};
 const multer = require("multer");
-const photosModel = require("../models/photos.model");
+const sportCenterProfilePictureModel = require("../models/sport-center-picture.model");
 const fs = require("fs");
 const path = require("path");
 
-async function uploadPicture(req: any, res: any) {
+async function uploadSportCenterPicture(req: any, res: any) {
   let storage = multer.diskStorage({
     destination: function (request: any, file: any, callback: any) {
       callback(null, "./uploads");
@@ -19,7 +20,7 @@ async function uploadPicture(req: any, res: any) {
   let upload = multer({ storage: storage }).single("image");
   upload(req, res, async () => {
     let obj = {
-      email: req.body.email,
+      sportCenterName: req.body.sportCenterName,
       img: {
         data: fs.readFileSync(
           path.join(__dirname + "/../../uploads/" + req.file.filename)
@@ -28,7 +29,7 @@ async function uploadPicture(req: any, res: any) {
       },
     };
     try {
-      await photosModel.create(obj);
+      await sportCenterProfilePictureModel.create(obj);
       res.status(200).json(obj);
     } catch (error) {
       res.status(400).json({ error });
@@ -36,17 +37,19 @@ async function uploadPicture(req: any, res: any) {
   });
 }
 
-async function getProfileByEmail(req: any, res: any) {
+async function getSportCenterProfileByName(req: any, res: any) {
   try {
-    const email = req.params.email;
-    const profile = await photosModel.findOne({ email });
+    const sportCenterName = req.params.sportCenterName;
+    const profile = await sportCenterProfilePictureModel.findOne({
+      sportCenterName,
+    });
     res.status(200).json(profile);
   } catch (error) {
     res.status(400).json(error.message);
   }
 }
 
-async function updatePicture(req: any, res: any) {
+async function updateSportCenterPicture(req: any, res: any) {
   let storage = multer.diskStorage({
     destination: function (request: any, file: any, callback: any) {
       callback(null, "./uploads");
@@ -78,8 +81,10 @@ async function updatePicture(req: any, res: any) {
       },
     };
     try {
-      await photosModel.deleteOne({ email: req.body.email });
-      await photosModel.create(obj);
+      await sportCenterProfilePictureModel.deleteOne({
+        sportCenterName: req.body.sportCenterName,
+      });
+      await sportCenterProfilePictureModel.create(obj);
       res.status(200).json(obj);
     } catch (error) {
       res.status(400).json({ error });
@@ -87,4 +92,8 @@ async function updatePicture(req: any, res: any) {
   });
 }
 
-module.exports = { uploadPicture, getProfileByEmail, updatePicture };
+module.exports = {
+  uploadSportCenterPicture,
+  updateSportCenterPicture,
+  getSportCenterProfileByName,
+};

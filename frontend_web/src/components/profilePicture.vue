@@ -12,15 +12,8 @@
   </div>
 </template>
 <script>
-import axios from "axios";
-
 export default {
   name: "profilePicture",
-  data() {
-    return {
-      image: "",
-    };
-  },
   methods: {
     showButton() {
       this.$refs.button.style.display = "block";
@@ -29,29 +22,17 @@ export default {
       this.$refs.button.style.display = "none";
     },
     imageSelect() {
-      //  console.log("in");
       const image = this.$refs.image.files[0];
-      console.log(image);
-      var bodyFormData = new FormData();
-      bodyFormData.append("image", image);
-      bodyFormData.append("email", "123");
+
       if (image) {
         const reader = new FileReader(); //FileReader is a predefined function of JS
-
+        this.$emit("pictureUploaded", image);
         reader.addEventListener("load", () => {
           this.$refs.img.setAttribute("src", reader.result);
         });
 
         reader.readAsDataURL(image);
       }
-      //console.log(image);
-      axios({
-        url: "http://localhost:5000/api/upload",
-        method: "POST",
-        data: bodyFormData,
-      });
-      //this.image = image;
-      // this.$emit("pictureUploaded", this.image);
     },
   },
 };

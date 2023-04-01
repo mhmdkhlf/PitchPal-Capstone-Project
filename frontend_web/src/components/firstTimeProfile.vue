@@ -27,7 +27,7 @@
                   <div class="col-lg-6">
                     <div class="form-group focused">
                       <label class="form-control-label">Profile Picture</label>
-                      <profilePicture />
+                      <profilePicture @pictureUploaded="getImage" />
                     </div>
                   </div>
                 </div>
@@ -283,6 +283,7 @@ export default {
       locationLoader: false,
       address: "",
       error: null,
+      image: null,
     };
   },
   computed: {
@@ -292,6 +293,9 @@ export default {
   },
   //should take email as prop or access it from session
   methods: {
+    getImage(value) {
+      this.image = value;
+    },
     getLocation(e) {
       e.preventDefault();
       if (navigator.geolocation) {
@@ -386,6 +390,17 @@ export default {
           .then(
             (res) => {
               if (res.status === 200) {
+                var bodyFormData = new FormData();
+                if (this.image) {
+                  bodyFormData.append("image", this.image);
+                  bodyFormData.append("email", email);
+                  axios({
+                    url: "http://localhost:5000/api/uploadPicture",
+                    method: "POST",
+                    data: bodyFormData,
+                  });
+                }
+
                 this.$store.dispatch("stopLoading");
                 this.$router.push("/");
               }
