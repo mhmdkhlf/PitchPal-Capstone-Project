@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
 import 'package:frontend_mobile/pages/home.dart';
-import '../components/input_textfield.dart';
+import '../components/textfield_input.dart';
 import '../components/submit_button.dart';
 import '../components/profile_picture_input.dart';
+import '../components/failed_request_dialog.dart';
+import '../pages/new_sport_center_form.dart';
 import '../data/field_manager.dart';
 import '../constants.dart';
 
@@ -28,6 +30,7 @@ class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
   final nameController = TextEditingController();
   late PhoneNumber phoneNumberInput;
   final sportCenterController = TextEditingController();
+  bool isSportCenterRegistered = true;
 
   final dio = Dio();
   final String apiRoute = Platform.isAndroid
@@ -51,22 +54,29 @@ class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
         '$apiRoute/newManagerProfile',
         data: fieldManagerProfile.toJsonMap(),
       );
-      if (response.statusCode == 200) {
-        if (context.mounted) {
-          Navigator.pop(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => HomePage(
-                userEmail: email,
-                role: 'field manager',
-              ),
+      FieldManager.fromJson(response.data); //object to be used later on
+      if (context.mounted) {
+        Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePage(
+              userEmail: email,
+              role: 'field manager',
             ),
-          );
-        }
+          ),
+        );
       }
     } on DioError catch (e) {
-      throw Exception(e.response);
+      String error = e.response?.data['error'];
+      if (context.mounted) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return FailedRequestDialog(errorText: error);
+          },
+        );
+      }
     }
   }
 
@@ -104,7 +114,7 @@ class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
                   profilePicture: profilePicture,
                 ),
                 const SizedBox(height: 20),
-                InputTextField(
+                TextFieldInput(
                   controller: nameController,
                   hintText: 'Full Name',
                 ),
@@ -124,12 +134,79 @@ class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                InputTextField(
-                  controller: sportCenterController,
-                  hintText: 'Sports Center Name',
+                const Divider(color: kDarkGreen),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Is your sport-center registered?',
+                      style: TextStyle(fontSize: 14),
+                    ),
+                    const SizedBox(width: 10),
+                    ToggleButtons(
+                      direction: Axis.horizontal,
+                      onPressed: (int index) {
+                        setState(() => isSportCenterRegistered = index == 0);
+                      },
+                      borderRadius: const BorderRadius.all(Radius.circular(8)),
+                      selectedBorderColor: kDarkGreen,
+                      selectedColor: kLightColor,
+                      fillColor: kDarkGreen,
+                      color: kDarkGreen,
+                      constraints: const BoxConstraints(
+                        minHeight: 30.0,
+                        minWidth: 60.0,
+                      ),
+                      isSelected: [
+                        isSportCenterRegistered,
+                        !isSportCenterRegistered
+                      ],
+                      children: const [
+                        Text('Yes'),
+                        Text('No'),
+                      ],
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 20),
-                SubmitButton(text: 'Submit', onTap: createProfile),
+                const SizedBox(height: 10),
+                isSportCenterRegistered
+                    ? Column(
+                        children: [
+                          TextFieldInput(
+                            controller: sportCenterController,
+                            hintText: 'Sport-Center Name',
+                          ),
+                          const SizedBox(height: 10),
+                          SubmitButton(
+                            text: 'Submit',
+                            onTap: createProfile,
+                            fontSize: 20,
+                          ),
+                        ],
+                      )
+                    : Column(
+                        children: [
+                          const SizedBox(height: 10),
+                          const Text(
+                            '(You must register your sport-center before creating you manager account)',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          SubmitButton(
+                            text: 'Register Sport-Center',
+                            fontSize: 14,
+                            onTap: () => {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const NewSportCenterForm(),
+                                ),
+                              )
+                            },
+                          ),
+                        ],
+                      ),
                 const SizedBox(height: 15),
               ],
             ),

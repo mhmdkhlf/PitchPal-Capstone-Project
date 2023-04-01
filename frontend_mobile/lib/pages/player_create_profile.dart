@@ -5,7 +5,7 @@ import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
 import 'package:intl/intl.dart';
 import 'package:frontend_mobile/pages/home.dart';
-import '../components/input_textfield.dart';
+import '../components/textfield_input.dart';
 import '../components/location_input.dart';
 import '../components/number_input_field.dart';
 import '../components/submit_button.dart';
@@ -124,7 +124,7 @@ class _PlayerCreateProfileState extends State<PlayerCreateProfile> {
                   profilePicture: profilePicture,
                 ),
                 const SizedBox(height: 20),
-                InputTextField(
+                TextFieldInput(
                   controller: nameController,
                   hintText: 'Full Name',
                 ),
@@ -281,14 +281,18 @@ class _PlayerCreateProfileState extends State<PlayerCreateProfile> {
                 ),
                 const Divider(color: kDarkGreen),
                 const SizedBox(height: 10),
-                InputTextField(
+                TextFieldInput(
                   controller: bioController,
                   hintText: 'Bio (Optional)',
                   isMultiLine: true,
                 ),
                 const SizedBox(height: 5),
                 const Divider(color: kDarkGreen),
-                SubmitButton(text: 'Submit', onTap: createProfile),
+                SubmitButton(
+                  text: 'Submit',
+                  onTap: createProfile,
+                  fontSize: 20,
+                ),
                 const SizedBox(height: 15),
               ],
             ),

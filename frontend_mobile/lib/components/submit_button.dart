@@ -4,8 +4,14 @@ import 'package:frontend_mobile/constants.dart';
 class SubmitButton extends StatelessWidget {
   final String text;
   final Function() onTap;
+  final double fontSize;
 
-  const SubmitButton({super.key, required this.text, required this.onTap});
+  const SubmitButton({
+    super.key,
+    required this.text,
+    required this.onTap,
+    required this.fontSize,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,10 +27,10 @@ class SubmitButton extends StatelessWidget {
         child: Center(
           child: Text(
             text,
-            style: const TextStyle(
+            style: TextStyle(
               color: kLightColor,
               fontWeight: FontWeight.bold,
-              fontSize: 20,
+              fontSize: fontSize,
             ),
           ),
         ),
