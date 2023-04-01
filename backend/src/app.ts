@@ -46,6 +46,7 @@ const sportCenterReviewRoutes = require("./routes/sport-center-review.route");
 const teamReviewRoutes = require("./routes/team-review.route");
 const generalUserRoutes = require("./routes/users-common-route");
 const profilePictureRoutes = require("./routes/profile-picture.route");
+const sportCenterprofilePictureRoutes = require("./routes/sportCenter-profile-picture.route");
 const linkToCoordinatesRoutes = require("./routes/link-to-coordinates.route");
 
 app.use("/api", playerReviewRoutes);
@@ -64,3 +65,4 @@ app.use("/api", teamReviewRoutes);
 app.use("/api", generalUserRoutes);
 app.use("/api", profilePictureRoutes);
 app.use("/api", linkToCoordinatesRoutes);
+app.use("/api", sportCenterprofilePictureRoutes);
