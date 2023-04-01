@@ -12,10 +12,7 @@ async function uploadPicture(req: any, res: any) {
       let tempFileArr = file.originalname.split(".");
       let tempFileName = tempFileArr[0];
       let tempFileExtension = tempFileArr[1];
-      callback(
-        null,
-        tempFileName + "-" + Date.now() + "." + tempFileExtension
-      );
+      callback(null, tempFileName + "-" + Date.now() + "." + tempFileExtension);
     },
   });
 
@@ -49,46 +46,45 @@ async function getProfileByEmail(req: any, res: any) {
   }
 }
 
-// async function updatePicture(req: any, res: any) {
-//   photosModel.deleteOne({ email: req.body.email }).then(() => {
-//     let storage = multer.diskStorage({
-//       destination: function (request: any, file: any, callback: any) {
-//         callback(null, "./uploads");
-//       },
-//       filename: function (request: any, file: any, callback: any) {
-//         let temp_file_arr = file.originalname.split(".");
+async function updatePicture(req: any, res: any) {
+  let storage = multer.diskStorage({
+    destination: function (request: any, file: any, callback: any) {
+      callback(null, "./uploads");
+    },
+    filename: function (request: any, file: any, callback: any) {
+      let temp_file_arr = file.originalname.split(".");
 
-//         let temp_file_name = temp_file_arr[0];
+      let temp_file_name = temp_file_arr[0];
 
-//         let temp_file_extension = temp_file_arr[1];
+      let temp_file_extension = temp_file_arr[1];
 
-//         callback(
-//           null,
-//           temp_file_name + "-" + Date.now() + "." + temp_file_extension
-//         );
-//       },
-//     });
+      callback(
+        null,
+        temp_file_name + "-" + Date.now() + "." + temp_file_extension
+      );
+    },
+  });
 
-//     let upload = multer({ storage: storage }).single("image");
-//     upload(req, res, async () => {
-//       // console.log(req.file);
-//       let obj = {
-//         email: req.body.email,
-//         img: {
-//           data: fs.readFileSync(
-//             path.join(__dirname + "/../../uploads/" + req.file.filename)
-//           ),
-//           contentType: req.file.mimetype,
-//         },
-//       };
-//       try {
-//         await photosModel.create(obj);
-//         res.status(200).json(obj);
-//       } catch (error) {
-//         res.status(400).json({ error });
-//       }
-//     });
-//   });
-// }
+  let upload = multer({ storage: storage }).single("image");
+  upload(req, res, async () => {
+    // console.log(req.file);
+    let obj = {
+      email: req.body.email,
+      img: {
+        data: fs.readFileSync(
+          path.join(__dirname + "/../../uploads/" + req.file.filename)
+        ),
+        contentType: req.file.mimetype,
+      },
+    };
+    try {
+      await photosModel.deleteOne({ email: req.body.email });
+      await photosModel.create(obj);
+      res.status(200).json(obj);
+    } catch (error) {
+      res.status(400).json({ error });
+    }
+  });
+}
 
-module.exports = { uploadPicture, getProfileByEmail };
+module.exports = { uploadPicture, getProfileByEmail, updatePicture };

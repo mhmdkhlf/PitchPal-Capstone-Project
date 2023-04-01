@@ -7,6 +7,6 @@ router.get(
   "/getProfilePictureByEmail/:email",
   pictureController.getProfileByEmail
 );
-//router.post("/updateProfilePicture", pictureController.updatePicture);
+router.post("/updateProfilePicture", pictureController.updatePicture);
 
 module.exports = router;
