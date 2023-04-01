@@ -145,7 +145,7 @@ export default {
           reservation_price: 0,
         },
       ],
-      facilities: [{ name: "", decription: "" }],
+      facilities: [{ name: "", description: "" }],
     };
   },
   methods: {
