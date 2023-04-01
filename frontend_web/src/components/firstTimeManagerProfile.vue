@@ -100,15 +100,15 @@ export default {
       phone: "",
       centerName: "",
       fields: [
-        {
-          dimensions: "",
-          fieldNumber: "",
-          grassType: "",
-          length: "",
-          width: "",
-          recommendedTeamSize: 0,
-          reservation_price: 0,
-        },
+        // {
+        //   dimensions: "",
+        //   fieldNumber: "",
+        //   grassType: "",
+        //   length: "",
+        //   width: "",
+        //   recommendedTeamSize: 0,
+        //   reservation_price: 0,
+        // },
       ],
     };
   },
@@ -128,15 +128,14 @@ export default {
   },
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 * {
   color: #2dce89;
 }
-
-.profile-pic-div {
+::v-deep .profile-pic-div {
   position: relative !important;
 }
-.all {
+::v-deep .all {
   padding-bottom: 0 !important;
 }
 .field-manager-form-container {
