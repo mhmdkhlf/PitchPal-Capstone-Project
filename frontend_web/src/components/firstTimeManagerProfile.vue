@@ -8,79 +8,34 @@
       </div>
 
       <div class="form-group">
-        <label for="name">Name:</label>
+        <label for="name" class="required">Name:</label>
         <input type="text" id="name" v-model="name" />
       </div>
 
       <div class="form-group">
-        <label for="email">Email:</label>
+        <label for="email" class="required">Email:</label>
         <input type="email" id="email" v-model="email" />
       </div>
 
       <div class="form-group">
-        <label for="phone">Phone Number:</label>
+        <label for="phone" class="required">Phone Number:</label>
         <input type="tel" id="phone" v-model="phone" />
       </div>
 
       <div class="form-group">
-        <label for="center-name">Sport Center Name:</label>
+        <label for="center-name" class="required">Sport Center Name:</label>
         <input type="text" id="center-name" v-model="centerName" />
       </div>
-
-      <h3 class="field-title">Fields</h3>
-      <div v-for="(field, index) in fields" :key="index" class="field-group">
-        <h3>Field {{ index + 1 }}</h3>
-        <div class="form-group">
-          <label for="dimensions">Dimensions:</label>
-          <input type="text" id="dimensions" v-model="field.dimensions" />
-        </div>
-
-        <div class="form-group">
-          <label for="field-number">Field Number:</label>
-          <input type="text" id="field-number" v-model="field.fieldNumber" />
-        </div>
-        <div class="form-group">
-          <label for="field-number">Field Length:</label>
-          <input type="text" id="field-number" v-model="field.length" />
-        </div>
-        <div class="form-group">
-          <label for="field-number">Field Width:</label>
-          <input type="text" id="field-number" v-model="field.width" />
-        </div>
-        <div class="form-group">
-          <label for="field-number">Reservation Price:</label>
-          <input
-            type="text"
-            id="field-number"
-            v-model="field.reservation_price"
-          />
-        </div>
-        <div class="form-group">
-          <label for="field-number">Grass Type:</label>
-          <input type="text" id="field-number" v-model="field.grassType" />
-        </div>
-        <div class="form-group">
-          <label for="field-number">Recommended Team Size:</label>
-          <input
-            type="text"
-            id="field-number"
-            v-model="field.recommendedTeamSize"
-          />
-        </div>
-
-        <button
-          type="button"
-          class="remove-field-button"
-          @click="removeField(index)"
-        >
-          Remove Field
-        </button>
+      <div class="form-group">
+        <h3>
+          If the sport center is not registered before in the system. Please
+          Register it
+          <button class="here-button" @click="goToSportCenterCreation">
+            Here
+          </button>
+          and then create your profile
+        </h3>
       </div>
-
-      <button type="button" class="add-field-button" @click="addField">
-        Add Field
-      </button>
-
       <button type="submit" class="submit-button">Submit</button>
     </form>
   </div>
@@ -99,36 +54,28 @@ export default {
       email: "",
       phone: "",
       centerName: "",
-      fields: [
-        // {
-        //   dimensions: "",
-        //   fieldNumber: "",
-        //   grassType: "",
-        //   length: "",
-        //   width: "",
-        //   recommendedTeamSize: 0,
-        //   reservation_price: 0,
-        // },
-      ],
     };
   },
   methods: {
-    addField() {
-      this.fields.push({
-        dimensions: "",
-        fieldNumber: "",
-      });
-    },
-    removeField(index) {
-      this.fields.splice(index, 1);
-    },
     submitForm() {
       // Do something with the form data, e.g. send it to the server
+    },
+    goToSportCenterCreation() {
+      this.$router.push("/sport-center-form");
     },
   },
 };
 </script>
 <style lang="scss" scoped>
+.required:after {
+  content: " *";
+  color: red;
+}
+.here-button {
+  border: #2dce89;
+  height: 40px;
+  border-radius: 30%;
+}
 * {
   color: #2dce89;
 }
@@ -189,56 +136,6 @@ export default {
   background-color: #f5f5f5;
   font-size: 16px;
 }
-/* input {
-  width: 100%;
-} */
-
-.field-group {
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  margin-bottom: 20px;
-}
-
-.field-group h4 {
-  margin-top: 0;
-}
-
-.field-group .form-group {
-  margin-bottom: 10px;
-}
-
-.add-field-button,
-.remove-field-button {
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.add-field-button {
-  background-color: transparent;
-  color: green;
-  margin-bottom: 20px;
-  transition: all 0.2s ease-in-out;
-}
-
-.add-field-button:hover {
-  background-color: #2dce89;
-  color: #fff;
-}
-
-.remove-field-button {
-  background-color: #f5f5f5;
-  color: #2dce89;
-  transition: all 0.2s ease-in-out;
-}
-
-/* .remove-field-button:hover {
-  background-color: #333;
-  color: #fff;
-} */
 
 .submit-button {
   padding: 10px;
