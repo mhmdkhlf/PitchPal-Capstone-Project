@@ -44,7 +44,7 @@ const SportCenterSchema = new mongoose.Schema(
       default: 0,
     },
     facilitiesAvailable: {
-      type: String,
+      type: [Object],
     },
     workingHours: {
       type: TimeSlotSchema,

@@ -87,7 +87,7 @@ export default {
                 .then((res) => {
                   if (res.data.result) {
                     this.$store.dispatch("stopLoading");
-                    this.$router.push("/first-profile");
+                    this.$router.push("/first-player-profile");
                   } else {
                     this.$store.dispatch("stopLoading");
                     this.$router.push("/");

@@ -2,8 +2,10 @@ import { createRouter, createWebHistory } from "vue-router";
 import homePage from "../views/homePage.vue";
 import logInPage from "../views/logInView.vue";
 import signUpPage from "../views/signUpView.vue";
-import profilePage from "../components/Profile.vue";
-import firstProfilePage from "../components/firstTimeProfile.vue";
+import profilePage from "../views/playerProfilePage.vue";
+import firstPlayerProfilePage from "../views/firstTimePlayerProfilePage.vue";
+import firstManagerProfilePage from "../views/firstTimeManagerProfile.vue";
+import sportCenterForm from "../views/sportCenterFormPage.vue";
 const routes = [
   {
     path: "/",
@@ -31,9 +33,19 @@ const routes = [
     // }),
   },
   {
-    path: "/first-profile",
-    name: "FirstProfile",
-    component: firstProfilePage,
+    path: "/first-player-profile",
+    name: "FirstPlayerProfile",
+    component: firstPlayerProfilePage,
+  },
+  {
+    path: "/first-manager-profile",
+    name: "FirstManagerProfile",
+    component: firstManagerProfilePage,
+  },
+  {
+    path: "/sport-center-form",
+    name: "sportCenterForm",
+    component: sportCenterForm,
   },
 ];
 
