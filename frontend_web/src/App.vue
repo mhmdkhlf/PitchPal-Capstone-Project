@@ -1,7 +1,8 @@
 <template>
   <div></div>
   <!-- <loader /> -->
-  <router-view />
+  <!-- <router-view /> -->
+  <prr />
   <!-- <p>hello</p>
   <img :src="src" alt="failed" ref="test" v-if="done" /> -->
   <!-- <pf /> -->
@@ -13,7 +14,11 @@
 // import axios from "axios";
 // import { Buffer } from "buffer";
 //import pf from "@/components/profilePicture.vue";
+import prr from "./components/firstTimeManagerProfile.vue";
 export default {
+  components: {
+    prr,
+  },
   // mounted() {
   //   this.$router.push({
   //     name: "Profile",
