@@ -1,7 +1,11 @@
 <template>
   <errorPopup v-if="error" :errorMessage="error" />
   <loader v-if="isLoading && !error" />
-  <div class="field-manager-form-container">
+  <div
+    class="field-manager-form-container"
+    v-if="!isLoading"
+    :class="{ hidden: error }"
+  >
     <h2 class="form-title">Field Manager Information</h2>
     <form class="field-manager-form" @submit.prevent="submitForm">
       <div class="form-group">
