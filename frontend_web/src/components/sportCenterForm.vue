@@ -191,6 +191,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.hidden {
+  opacity: 0.07;
+}
 .required:after {
   content: " *";
   color: red;

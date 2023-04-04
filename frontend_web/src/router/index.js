@@ -6,6 +6,7 @@ import profilePage from "../views/playerProfilePage.vue";
 import firstPlayerProfilePage from "../views/firstTimePlayerProfilePage.vue";
 import firstManagerProfilePage from "../views/firstTimeManagerProfile.vue";
 import sportCenterForm from "../views/sportCenterFormPage.vue";
+import managerHomePage from "../views/managerHomePage.vue";
 const routes = [
   {
     path: "/",
@@ -46,6 +47,11 @@ const routes = [
     path: "/sport-center-form",
     name: "sportCenterForm",
     component: sportCenterForm,
+  },
+  {
+    path: "/manager-home-page",
+    name: "managerHomePage",
+    component: managerHomePage,
   },
 ];
 

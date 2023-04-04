@@ -18,6 +18,10 @@ async function newSportCenter(req: Request, res: Response) {
     workingHours: req.body.workingHours,
   });
   try {
+    const isExist = await SportCenterModel.findOne({ name: req.body.name });
+    if (isExist) {
+      throw Error("The name is already taken by another sport center");
+    }
     const sportCenterToSave = await sportCenterData.save();
     res.status(200).json(sportCenterToSave);
   } catch (error) {
@@ -39,6 +43,10 @@ async function updateSportCenterById(req: Request, res: Response) {
     const id = req.params.id;
     const updatedData = req.body;
     const options = { new: true };
+    const isExist = await SportCenterModel.findOne({ name: req.body.name });
+    if (isExist) {
+      throw Error("The name is already taken by another sport center");
+    }
     const result = await SportCenterModel.findByIdAndUpdate(
       id,
       updatedData,
