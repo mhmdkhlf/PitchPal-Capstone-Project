@@ -1,10 +1,16 @@
 <template>
-  <div class="field-manager-form-container">
+  <errorPopup v-if="error" :errorMessage="error" />
+  <loader v-if="isLoading && !error" />
+  <div
+    class="field-manager-form-container"
+    v-if="!isLoading"
+    :class="{ hidden: error }"
+  >
     <h2 class="form-title">Field Manager Information</h2>
-    <form class="field-manager-form" @submit.prevent="submitForm">
+    <form class="field-manager-form">
       <div class="form-group">
         <label for="name">Profile Picture</label>
-        <profilePicture />
+        <profilePicture @pictureUploaded="getImage" />
       </div>
 
       <div class="form-group">
@@ -36,17 +42,28 @@
           and then create your profile
         </h3>
       </div>
-      <button type="submit" class="submit-button">Submit</button>
+      <button
+        type="button"
+        class="submit-button"
+        @click="createManager($event)"
+      >
+        Submit
+      </button>
     </form>
   </div>
 </template>
 
 <script>
 import profilePicture from "./profilePicture.vue";
+import errorPopup from "./errorPopup.vue";
+import loader from "./loader.vue";
+import axios from "axios";
 export default {
   name: "ManagerProfile",
   components: {
     profilePicture,
+    errorPopup,
+    loader,
   },
   data() {
     return {
@@ -54,19 +71,68 @@ export default {
       email: "",
       phone: "",
       centerName: "",
+      error: null,
+      image: null,
     };
   },
   methods: {
-    submitForm() {
-      // Do something with the form data, e.g. send it to the server
+    getImage(value) {
+      this.image = value;
+    },
+    createManager(e) {
+      e.preventDefault();
+      this.$store.dispatch("setLoading");
+      let { name, email, phone, centerName } = this;
+      if (!name || !email || !phone || !centerName) {
+        this.error = "All fields must be filled";
+        this.$store.dispatch("stopLoading");
+      } else {
+        axios
+          .post("http://localhost:5000/api/newManagerProfile", {
+            email,
+            mobileNumber: phone,
+            name,
+            sportCenterName: centerName,
+          })
+          .then(
+            (res) => {
+              if (res.status === 200) {
+                if (this.image) {
+                  var bodyFormData = new FormData();
+                  bodyFormData.append("image", this.image);
+                  bodyFormData.append("email", email);
+                  axios({
+                    url: "http://localhost:5000/api/uploadPicture",
+                    method: "POST",
+                    data: bodyFormData,
+                  });
+                }
+                this.$store.dispatch("stopLoading");
+                this.$router.push("/manager-home-page");
+              }
+            },
+            (err) => {
+              this.$store.dispatch("stopLoading");
+              this.error = err.response.data.error;
+            }
+          );
+      }
     },
     goToSportCenterCreation() {
       this.$router.push("/sport-center-form");
     },
   },
+  computed: {
+    isLoading() {
+      return this.$store.state.isLoading;
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>
+.hidden {
+  opacity: 0.07;
+}
 .required:after {
   content: " *";
   color: red;

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 let playerModel = require("../models/player.model.ts");
 let friendsModel = require("../models/friends.model");
+let managerModel = require("../models/field-manager.model");
 async function randomNumberGenerator(): Promise<Number> {
   var playerID = Math.floor(100000 + Math.random() * 900000);
   let user = await playerModel.findOne({ playerID });
@@ -14,6 +15,11 @@ async function updatePlayerById(req: Request, res: Response) {
     let id = req.params.id;
     let updatedData = req.body;
     let options = { new: true };
+    const isExist = await playerModel.findOne({ email: req.body.email });
+    const isExist2 = await managerModel.findOne({ email: req.body.email });
+    if (isExist || isExist2) {
+      throw Error("Email already taken. Please use Another Email");
+    }
     let result = await playerModel.findByIdAndUpdate(id, updatedData, options);
     res.send(result);
   } catch (error) {
@@ -39,6 +45,11 @@ async function createProfileInformation(req: Request, res: Response) {
       position: req.body.position,
       description: req.body.description,
     };
+    const isExist = await playerModel.findOne({ email: data.email });
+    const isExist2 = await managerModel.findOne({ email: data.email });
+    if (isExist || isExist2) {
+      throw Error("Email already taken. Please use Another Email");
+    }
     let playerInfo = await playerModel.create(data);
     await friendsModel.create({ playerID, friendsIDs: [] });
     res.status(200).json(playerInfo);

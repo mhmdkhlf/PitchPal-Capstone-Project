@@ -5,7 +5,18 @@
       @mouseenter="showButton()"
       @mouseleave="rmvButton()"
     >
-      <img src="../assets/images/image.jpg" id="photo" ref="img" />
+      <img
+        src="../assets/images/image.jpg"
+        id="photo"
+        ref="img"
+        v-if="!fromSportCenter"
+      />
+      <img
+        src="../assets/images/background.jpg"
+        id="photo"
+        ref="img"
+        v-if="fromSportCenter"
+      />
       <input type="file" ref="image" @change="imageSelect()" id="file" />
       <label for="file" id="uploadBtn" ref="button">Choose Photo</label>
     </div>
@@ -14,6 +25,7 @@
 <script>
 export default {
   name: "profilePicture",
+  props: ["fromSportCenter"],
   methods: {
     showButton() {
       this.$refs.button.style.display = "block";
