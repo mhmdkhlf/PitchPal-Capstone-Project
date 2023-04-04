@@ -1,10 +1,12 @@
 <template>
+  <errorPopup v-if="error" :errorMessage="error" />
+  <loader v-if="isLoading && !error" />
   <div class="field-manager-form-container">
     <h2 class="form-title">Field Manager Information</h2>
     <form class="field-manager-form" @submit.prevent="submitForm">
       <div class="form-group">
         <label for="name">Sport Center Profile Picture</label>
-        <profilePicture />
+        <profilePicture :fromSportCenter="true" />
       </div>
       <div class="form-group">
         <label for="name" class="required">Name:</label>
@@ -121,10 +123,14 @@
 
 <script>
 import profilePicture from "./profilePicture.vue";
+import errorPopup from "./errorPopup.vue";
+import loader from "./loader.vue";
 export default {
   name: "ManagerProfile",
   components: {
     profilePicture,
+    errorPopup,
+    loader,
   },
   data() {
     return {
@@ -134,6 +140,7 @@ export default {
       linkToFB: "",
       linkToInsta: "",
       workingHours: "",
+      error: null,
       fields: [
         {
           dimensions: "",
@@ -171,6 +178,11 @@ export default {
       // Do something with the form data, e.g. send it to the server
     },
   },
+  computed: {
+    isLoading() {
+      return this.$store.state.isLoading;
+    },
+  },
 };
 </script>
 
@@ -184,6 +196,9 @@ export default {
 }
 ::v-deep .profile-pic-div {
   position: relative !important;
+  height: 180px !important;
+  width: 251px !important;
+  border-radius: 1% !important;
 }
 ::v-deep .all {
   padding-bottom: 0 !important;
