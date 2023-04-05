@@ -13,7 +13,7 @@ async function createProfileInformation(req: Request, res: Response) {
         `There is no registered sport-center with the name '${sportCenterName}'`
       );
     }
-    const emailExist = await SportCenterModel.findOne({ email });
+    const emailExist = await ManagerModel.findOne({ email });
     const emailExist2 = await playerModel.find({ email });
     if (emailExist || emailExist2) {
       throw Error("The email is already taken by another user");
@@ -34,7 +34,7 @@ async function updateManagerById(req: Request, res: Response) {
     const id = req.params.id;
     const updatedData = req.body;
     const options = { new: true };
-    const emailExist = await SportCenterModel.findOne({
+    const emailExist = await ManagerModel.findOne({
       email: req.body.email,
     });
     const emailExist2 = await playerModel.find({ email: req.body.email });
