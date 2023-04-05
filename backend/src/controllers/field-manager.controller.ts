@@ -14,7 +14,7 @@ async function createProfileInformation(req: Request, res: Response) {
       );
     }
     const emailExist = await ManagerModel.findOne({ email });
-    const emailExist2 = await playerModel.find({ email });
+    const emailExist2 = await playerModel.findOne({ email });
     if (emailExist || emailExist2) {
       throw Error("The email is already taken by another user");
     }
@@ -37,7 +37,7 @@ async function updateManagerById(req: Request, res: Response) {
     const emailExist = await ManagerModel.findOne({
       email: req.body.email,
     });
-    const emailExist2 = await playerModel.find({ email: req.body.email });
+    const emailExist2 = await playerModel.findOne({ email: req.body.email });
     if (emailExist || emailExist2) {
       throw Error("The email is already taken by another user");
     }
