@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_mobile/components/submit_button.dart';
+import 'package:frontend_mobile/data/sport_center.dart';
 import 'package:intl_phone_field/phone_number.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import '../components/textfield_input.dart';
 import '../components/number_input_field.dart';
+import '../components/time_input.dart';
 import '../constants.dart';
 
 class NewSportCenterForm extends StatefulWidget {
@@ -18,11 +21,14 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
   final TextEditingController googleMapsLinkController =
       TextEditingController();
   late PhoneNumber phoneNumberInput;
-  final TextEditingController socialLinkController = TextEditingController();
-  final TextEditingController numberOfFieldsController =
-      TextEditingController();
-  final TextEditingController facilitiesController = TextEditingController();
-
+  TimeInput openingTimeInput =
+      TimeInput(timeInput: const TimeOfDay(hour: 10, minute: 0));
+  TimeInput closingTimeInput =
+      TimeInput(timeInput: const TimeOfDay(hour: 22, minute: 0));
+  final TextEditingController fbLinkController = TextEditingController();
+  final TextEditingController instaLinkController = TextEditingController();
+  final TextEditingController nbOfFieldsController = TextEditingController();
+  final List<FacilityInput> facilitiesInput = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,7 +48,6 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Divider(color: kDarkGreen),
                 const SizedBox(height: 20),
                 TextFieldInput(
                   controller: sportCenterNameController,
@@ -51,7 +56,7 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
                 const SizedBox(height: 15),
                 TextFieldInput(
                   controller: googleMapsLinkController,
-                  hintText: 'Google-Maps link',
+                  hintText: 'Google Maps link',
                 ),
                 const SizedBox(height: 15),
                 Padding(
@@ -68,42 +73,134 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
                     onChanged: (phone) => phoneNumberInput = phone,
                   ),
                 ),
-                const SizedBox(height: 15),
+                const Divider(color: kDarkGreen, thickness: 1),
+                const Text(
+                  'Working Hours',
+                  style: TextStyle(fontSize: 20),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Opening Time: ',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    openingTimeInput,
+                    const SizedBox(width: 10),
+                    const Text(
+                      'Closing Time: ',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    closingTimeInput,
+                  ],
+                ),
+                const SizedBox(height: 10),
+                const Divider(color: kDarkGreen, thickness: 1),
+                Container(
+                  padding: const EdgeInsets.fromLTRB(25, 0, 0, 0),
+                  constraints: const BoxConstraints(maxWidth: 150),
+                  child: NumberInputField(
+                    controller: nbOfFieldsController,
+                    hintText: "Nb of Fields",
+                  ),
+                ),
+                const SizedBox(width: 20),
+                const Divider(color: kDarkGreen, thickness: 1),
+                const Text(
+                  'Social Media Pages',
+                  style: TextStyle(fontSize: 20),
+                ),
+                const SizedBox(height: 10),
                 TextFieldInput(
-                  controller: socialLinkController,
-                  hintText: 'Social media link',
+                  controller: fbLinkController,
+                  hintText: 'Facebook link',
                 ),
                 const SizedBox(height: 15),
+                TextFieldInput(
+                  controller: instaLinkController,
+                  hintText: 'Instagram link',
+                ),
+                const SizedBox(height: 10),
+                const Divider(color: kDarkGreen, thickness: 1),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.fromLTRB(25, 0, 0, 0),
-                      constraints: const BoxConstraints(maxWidth: 150),
-                      child: NumberInputField(
-                        controller: numberOfFieldsController,
-                        hintText: "Nb of Fields",
-                      ),
+                    const Text(
+                      'Facilities Available',
+                      style: TextStyle(fontSize: 20),
                     ),
                     const SizedBox(width: 20),
-                    Column(
-                      children: const [
-                        Text('input opening time'),
-                        Text('input closing time'),
-                      ],
+                    ElevatedButton(
+                      onPressed: () =>
+                          setState(() => facilitiesInput.add(FacilityInput())),
+                      child: const Icon(Icons.add),
+                    ),
+                    const SizedBox(width: 5),
+                    ElevatedButton(
+                      onPressed: () => setState(() {
+                        if (facilitiesInput.isNotEmpty) {
+                          facilitiesInput.removeLast();
+                        }
+                      }),
+                      child: const Icon(Icons.remove),
                     ),
                   ],
                 ),
-                const SizedBox(height: 15),
-                TextFieldInput(
-                  controller: facilitiesController,
-                  hintText: 'Facilities available',
-                  isMultiLine: true,
+                const SizedBox(height: 5),
+                ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: facilitiesInput.length,
+                  itemBuilder: (context, index) {
+                    return Column(
+                      children: [
+                        const SizedBox(height: 10),
+                        Text(
+                          'Facility #${index + 1}',
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                        const SizedBox(height: 10),
+                        TextFieldInput(
+                          controller: facilitiesInput[index].nameController,
+                          hintText: 'Facility name',
+                        ),
+                        const SizedBox(height: 10),
+                        TextFieldInput(
+                          controller:
+                              facilitiesInput[index].descriptionController,
+                          hintText: 'Description',
+                          isMultiLine: true,
+                        ),
+                      ],
+                    );
+                  },
                 ),
+                const SizedBox(height: 10),
+                const Divider(color: kDarkGreen, thickness: 1),
+                SubmitButton(
+                  text: 'Submit',
+                  onTap: () => {},
+                  fontSize: 20,
+                )
               ],
             ),
           ),
         ),
       ),
     );
+  }
+}
+
+class FacilityInput {
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+
+  TextEditingController get getNameController {
+    return nameController;
+  }
+
+  TextEditingController get getDescriptionController {
+    return descriptionController;
   }
 }

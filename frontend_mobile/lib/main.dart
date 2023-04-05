@@ -34,6 +34,10 @@ class MyApp extends StatelessWidget {
       title: 'Pitch-Pal',
       theme: ThemeData(primarySwatch: materialColor),
       home: LogInPage(apiRoute: apiRoute),
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+        child: child!,
+      ),
     );
   }
 }
