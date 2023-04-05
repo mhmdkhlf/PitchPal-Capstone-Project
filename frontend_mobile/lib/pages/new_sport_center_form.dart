@@ -29,6 +29,11 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
   final TextEditingController instaLinkController = TextEditingController();
   final TextEditingController nbOfFieldsController = TextEditingController();
   final List<FacilityInput> facilitiesInput = [];
+
+  void createSportCenter() async {
+    //TODO api call
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,6 +53,7 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // TODO: input sport center profile picture photo
                 const SizedBox(height: 20),
                 TextFieldInput(
                   controller: sportCenterNameController,
@@ -105,6 +111,7 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
                     hintText: "Nb of Fields",
                   ),
                 ),
+                // TODO: figure out field input will be done
                 const SizedBox(width: 20),
                 const Divider(color: kDarkGreen, thickness: 1),
                 const Text(
@@ -180,7 +187,7 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
                 const Divider(color: kDarkGreen, thickness: 1),
                 SubmitButton(
                   text: 'Submit',
-                  onTap: () => {},
+                  onTap: createSportCenter,
                   fontSize: 20,
                 )
               ],
