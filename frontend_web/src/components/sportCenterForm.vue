@@ -218,7 +218,8 @@ export default {
         !this.workingHours ||
         !this.checkAllRequiredInfoAreFilled
       ) {
-        this.error = "All fields must be filled";
+        console.log("in");
+        this.error = "All Required fields must be filled";
         this.$store.dispatch("stopLoading");
       } else {
         axios
@@ -245,6 +246,39 @@ export default {
                     (res2) => {
                       if (res2.status === 200) {
                         //image and iterate over fields and add them
+                        for (let i = 0; i < this.fields.length; i++) {
+                          let f = this.fields[i];
+                          axios.post("http://localhost:5000/api/newField", {
+                            sportCenterName: f.sportCenterName,
+                            fieldNumber: f.fieldNumber,
+                            fieldLength: f.length,
+                            fieldWidth: f.width,
+                            reservation_price: f.reservation_price,
+                            grassType: f.grassType,
+                            recommendedTeamSize: f.recommendedTeamSize,
+                          });
+                        }
+                        var bodyFormData = new FormData();
+                        if (this.image) {
+                          bodyFormData.append("image", this.image);
+                          bodyFormData.append("sportCenterName", this.name);
+                          axios({
+                            url: "http://localhost:5000/api/uploadSportCenterPicture",
+                            method: "POST",
+                            data: bodyFormData,
+                          }).then(
+                            (res) => {
+                              if (res.status === 200) {
+                                this.$store.dispatch("stopLoading");
+                                this.$router.push("/sport-center-form");
+                              }
+                            },
+                            (err) => {
+                              this.$store.dispatch("stopLoading");
+                              this.error = err.response.data.error;
+                            }
+                          );
+                        }
                       }
                     },
                     (err2) => {
