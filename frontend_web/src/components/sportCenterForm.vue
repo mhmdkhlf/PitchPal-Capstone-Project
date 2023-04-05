@@ -36,9 +36,17 @@
         <label for="center-name">Link To Instagram</label>
         <input type="text" id="center-name" v-model="linkToInsta" />
       </div>
-      <div class="form-group">
+      <!-- <div class="form-group">
         <label for="center-name" class="required">Working Hours</label>
-        <input type="text" id="center-name" v-model="workingHours" />
+        <input type="number" id="center-name" v-model="workingHours" />
+      </div> -->
+      <div class="form-group">
+        <label for="center-name" class="required">Start Time</label>
+        <input type="date" id="center-name" v-model="startTime" />
+      </div>
+      <div class="form-group">
+        <label for="center-name" class="required">End Time</label>
+        <input type="date" id="center-name" v-model="endTime" />
       </div>
       <h3 class="field-title">Facilities Avaialable</h3>
       <div
@@ -71,26 +79,28 @@
         <h3>Field {{ index + 1 }}</h3>
         <div class="form-group">
           <label for="field-number" class="required">Field Number:</label>
-          <input type="text" id="field-number" v-model="field.fieldNumber" />
+          <input type="number" id="field-number" v-model="field.fieldNumber" />
         </div>
         <div class="form-group">
           <label for="field-number" class="required">Field Length:</label>
-          <input type="text" id="field-number" v-model="field.length" />
+          <input type="number" id="field-number" v-model="field.length" />
         </div>
         <div class="form-group">
           <label for="field-number" class="required">Field Width:</label>
-          <input type="text" id="field-number" v-model="field.width" />
+          <input type="number" id="field-number" v-model="field.width" />
         </div>
         <div class="form-group">
           <label for="field-number" class="required">Reservation Price:</label>
           <input
-            type="text"
+            type="number"
             id="field-number"
-            v-model="field.reservation_price"
+            v-model="field.reservationPrice"
           />
         </div>
         <div class="form-group">
-          <label for="field-number" class="required">Grass Type:</label>
+          <label for="field-number" class="required"
+            >Grass Type: (turf or grass )</label
+          >
           <input type="text" id="field-number" v-model="field.grassType" />
         </div>
         <div class="form-group">
@@ -98,7 +108,7 @@
             >Recommended Team Size:</label
           >
           <input
-            type="text"
+            type="number"
             id="field-number"
             v-model="field.recommendedTeamSize"
           />
@@ -130,7 +140,7 @@ import errorPopup from "./errorPopup.vue";
 import loader from "./loader.vue";
 import axios from "axios";
 export default {
-  name: "ManagerProfile",
+  name: "sportCenterProfile",
   components: {
     profilePicture,
     errorPopup,
@@ -143,34 +153,26 @@ export default {
       phoneNumber: "",
       linkToFB: "",
       linkToInsta: "",
-      workingHours: "",
+      //workingHours: 0,
+      startTime: null,
+      endTime: null,
       error: null,
       image: null,
       location: null,
-      fields: [
-        {
-          sportCenterName: this.name,
-          fieldNumber: "",
-          grassType: "",
-          length: "",
-          width: "",
-          recommendedTeamSize: 0,
-          reservation_price: 0,
-        },
-      ],
-      facilities: [{ name: "", description: "" }],
+      fields: [],
+      facilities: [],
     };
   },
   methods: {
     addField() {
       this.fields.push({
         sportCenterName: this.name,
-        fieldNumber: "",
+        fieldNumber: 0,
         grassType: "",
-        length: "",
-        width: "",
+        length: 0,
+        width: 0,
         recommendedTeamSize: 0,
-        reservation_price: 0,
+        reservationPrice: 0,
       });
     },
     addFacility() {
@@ -190,12 +192,12 @@ export default {
         let field = this.fields[i];
         if (
           !field.sportCenterName ||
-          !field.fieldNumber ||
+          field.fieldNumber === 0 ||
           !field.grassType ||
-          !field.length ||
-          !field.width ||
-          !field.recommendedTeamSize ||
-          !field.reservation_price
+          field.length === 0 ||
+          field.width === 0 ||
+          field.recommendedTeamSize === 0 ||
+          field.reservationPrice === 0
         ) {
           return false;
         }
@@ -215,10 +217,10 @@ export default {
         !this.name ||
         !this.locationLink ||
         !this.phoneNumber ||
-        !this.workingHours ||
-        !this.checkAllRequiredInfoAreFilled
+        !this.startTime ||
+        !this.endTime ||
+        !this.checkAllRequiredInfoAreFilled()
       ) {
-        console.log("in");
         this.error = "All Required fields must be filled";
         this.$store.dispatch("stopLoading");
       } else {
@@ -229,63 +231,94 @@ export default {
           .then(
             (res) => {
               if (res.status === 200) {
-                this.location = res.data;
-                axios
-                  .post("http://localhost:5000/api/newSportCenter", {
-                    location,
-                    name: this.name,
-                    locationLink: this.locationLink,
-                    phoneNumber: this.phoneNumber,
-                    linkToFB: this.linkToFB,
-                    linkToInsta: this.linkToInsta,
-                    nbOfFields: this.fields.length,
-                    workingHours: this.workingHours,
-                    facilitiesAvailable: this.facilities,
-                  })
-                  .then(
-                    (res2) => {
-                      if (res2.status === 200) {
-                        //image and iterate over fields and add them
-                        for (let i = 0; i < this.fields.length; i++) {
-                          let f = this.fields[i];
-                          axios.post("http://localhost:5000/api/newField", {
-                            sportCenterName: f.sportCenterName,
-                            fieldNumber: f.fieldNumber,
-                            fieldLength: f.length,
-                            fieldWidth: f.width,
-                            reservation_price: f.reservation_price,
-                            grassType: f.grassType,
-                            recommendedTeamSize: f.recommendedTeamSize,
-                          });
-                        }
-                        var bodyFormData = new FormData();
-                        if (this.image) {
-                          bodyFormData.append("image", this.image);
-                          bodyFormData.append("sportCenterName", this.name);
-                          axios({
-                            url: "http://localhost:5000/api/uploadSportCenterPicture",
-                            method: "POST",
-                            data: bodyFormData,
-                          }).then(
-                            (res) => {
-                              if (res.status === 200) {
-                                this.$store.dispatch("stopLoading");
-                                this.$router.push("/sport-center-form");
-                              }
-                            },
-                            (err) => {
-                              this.$store.dispatch("stopLoading");
-                              this.error = err.response.data.error;
+                let temploc = Object.assign({}, res.data);
+                fetch(
+                  `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${temploc.latitude}&longitude=${temploc.longitude}&localityLanguage=en`
+                )
+                  .then((response) => response.json())
+                  .then((response) => {
+                    let { countryName, city, locality } = response;
+                    const address = `${locality}, ${city}, ${countryName}`;
+                    this.location = {
+                      longitude: temploc.longitude,
+                      latitude: temploc.latitude,
+                      place: address,
+                    };
+                    this.locationLoader = false;
+                    axios
+                      .post("http://localhost:5000/api/newSportCenter", {
+                        location: this.location,
+                        name: this.name,
+                        locationLink: this.locationLink,
+                        phoneNumber: this.phoneNumber,
+                        linkToFB: this.linkToFB,
+                        linkToInsta: this.linkToInsta,
+                        nbOfFields: this.fields.length,
+                        workingHours: {
+                          startTime: this.startTime,
+                          endTime: this.endTime,
+                        },
+                        facilitiesAvailable: this.facilities,
+                      })
+                      .then(
+                        (res2) => {
+                          if (res2.status === 200) {
+                            //image and iterate over fields and add them
+                            for (let i = 0; i < this.fields.length; i++) {
+                              let f = this.fields[i];
+                              axios.post(
+                                "http://localhost:5000/api/newField",
+                                {
+                                  sportCenterName: f.sportCenterName,
+                                  fieldNumber: f.fieldNumber,
+                                  fieldLength: f.length,
+                                  fieldWidth: f.width,
+                                  reservationPrice: f.reservationPrice,
+                                  grassType: f.grassType,
+                                  recommendedTeamSize: f.recommendedTeamSize,
+                                },
+                                (err) => {
+                                  this.$store.dispatch("stopLoading");
+                                  this.error = err.response.data.message;
+                                }
+                              );
                             }
-                          );
+
+                            if (this.image) {
+                              var bodyFormData = new FormData();
+                              bodyFormData.append("image", this.image);
+                              bodyFormData.append("sportCenterName", this.name);
+                              axios({
+                                url: "http://localhost:5000/api/uploadSportCenterPicture",
+                                method: "POST",
+                                data: bodyFormData,
+                              }).then(
+                                (res) => {
+                                  if (res.status === 200) {
+                                    this.$store.dispatch("stopLoading");
+                                    this.$router.push("/sport-center-form");
+                                  }
+                                },
+                                (err) => {
+                                  this.$store.dispatch("stopLoading");
+                                  this.error = err.response.data.error;
+                                }
+                              );
+                            } else {
+                              this.$store.dispatch("stopLoading");
+                              this.$router.push("/sport-center-form");
+                            }
+                          }
+                        },
+                        (err2) => {
+                          this.$store.dispatch("stopLoading");
+                          this.error = err2.response.data.message;
                         }
-                      }
-                    },
-                    (err2) => {
-                      this.$store.dispatch("stopLoading");
-                      this.error = err2.response.data.error;
-                    }
-                  );
+                      );
+                  })
+                  .catch(() => {
+                    this.error = "Something went wrong";
+                  });
               }
             },
             (err) => {
@@ -368,7 +401,9 @@ export default {
 
 .form-group input[type="text"],
 .form-group input[type="email"],
-.form-group input[type="tel"] {
+.form-group input[type="tel"],
+.form-group input[type="number"],
+.form-group input[type="date"] {
   padding: 10px;
   border: none;
   border-radius: 5px;
