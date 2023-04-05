@@ -7,3 +7,4 @@ const kDarkColor = Color(0xFF21162F);
 const kBlack = Color(0xFF050517);
 const kDarkGreen = Color(0xFF054A29);
 const String defaultProfilePath = 'assets/profile.png';
+const String defaultSportCenterImagePath = 'assets/sportCenter.png';
