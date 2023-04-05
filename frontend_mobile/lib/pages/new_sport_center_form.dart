@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/components/submit_button.dart';
 import 'package:frontend_mobile/data/sport_center.dart';
+import 'package:frontend_mobile/data/field.dart';
 import 'package:intl_phone_field/phone_number.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import '../components/textfield_input.dart';
 import '../components/number_input_field.dart';
+import '../components/sport_center_image.dart';
 import '../components/time_input.dart';
 import '../constants.dart';
 
@@ -16,6 +18,8 @@ class NewSportCenterForm extends StatefulWidget {
 }
 
 class _NewSportCenterFormState extends State<NewSportCenterForm> {
+  SportCenterPicture profilePicture =
+      SportCenterPicture(path: defaultSportCenterImagePath);
   final TextEditingController sportCenterNameController =
       TextEditingController();
   final TextEditingController googleMapsLinkController =
@@ -29,6 +33,8 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
   final TextEditingController instaLinkController = TextEditingController();
   final TextEditingController nbOfFieldsController = TextEditingController();
   final List<FacilityInput> facilitiesInput = [];
+  final List<FieldInput> fieldInputs = [];
+  int numberOfFields = 0;
 
   void createSportCenter() async {
     //TODO api call
@@ -53,7 +59,10 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // TODO: input sport center profile picture photo
+                const SizedBox(height: 20),
+                SportCenterPictureInput(
+                  profilePicture: profilePicture,
+                ),
                 const SizedBox(height: 20),
                 TextFieldInput(
                   controller: sportCenterNameController,
@@ -103,16 +112,111 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
                 ),
                 const SizedBox(height: 10),
                 const Divider(color: kDarkGreen, thickness: 1),
-                Container(
-                  padding: const EdgeInsets.fromLTRB(25, 0, 0, 0),
-                  constraints: const BoxConstraints(maxWidth: 150),
-                  child: NumberInputField(
-                    controller: nbOfFieldsController,
-                    hintText: "Nb of Fields",
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(15),
+                      constraints: const BoxConstraints(maxWidth: 150),
+                      child: NumberInputField(
+                        controller: nbOfFieldsController,
+                        hintText: "Nb of Fields",
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    ElevatedButton(
+                      onPressed: () => setState(() {
+                        try {
+                          numberOfFields = int.parse(nbOfFieldsController.text);
+                        } on FormatException {
+                          numberOfFields = 0;
+                        }
+                      }),
+                      child: const Text(
+                        "Fill out Field(s) info",
+                        style: TextStyle(fontSize: 14),
+                      ),
+                    ),
+                  ],
                 ),
-                // TODO: figure out field input will be done
-                const SizedBox(width: 20),
+                const SizedBox(height: 5),
+                ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: numberOfFields,
+                  itemBuilder: (context, index) {
+                    for (int i = 0; i < numberOfFields; i++) {
+                      fieldInputs.add(FieldInput(
+                        sportCenterName: sportCenterNameController.text,
+                        fieldNumber: i + 1,
+                      ));
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 50),
+                      child: Column(
+                        children: [
+                          Text(
+                            'Field #${index + 1}',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          const SizedBox(height: 10),
+                          NumberInputField(
+                            controller:
+                                fieldInputs[index].fieldLengthController,
+                            hintText: 'Field Length',
+                          ),
+                          const SizedBox(height: 10),
+                          NumberInputField(
+                            controller: fieldInputs[index].fieldWidthController,
+                            hintText: 'Field Width',
+                          ),
+                          const SizedBox(height: 3),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                'Grass Type:',
+                                style:
+                                    TextStyle(color: kDarkGreen, fontSize: 16),
+                              ),
+                              Radio(
+                                activeColor: kDarkGreen,
+                                groupValue: fieldInputs[index].grassTypeInput,
+                                value: Grass.grass,
+                                onChanged: (value) => setState(() =>
+                                    fieldInputs[index].grassTypeInput = value!),
+                              ),
+                              const Text('Grass'),
+                              Radio(
+                                activeColor: kDarkGreen,
+                                groupValue: fieldInputs[index].grassTypeInput,
+                                value: Grass.turf,
+                                onChanged: (value) => setState(() =>
+                                    fieldInputs[index].grassTypeInput = value!),
+                              ),
+                              const Text('Turf'),
+                            ],
+                          ),
+                          const SizedBox(height: 3),
+                          NumberInputField(
+                            controller:
+                                fieldInputs[index].reservationPriceController,
+                            hintText: 'Reservation Price',
+                          ),
+                          const SizedBox(height: 10),
+                          NumberInputField(
+                            controller: fieldInputs[index]
+                                .recommendedTeamSizeController,
+                            hintText: 'Recommended Team size',
+                          ),
+                          if (index != numberOfFields - 1)
+                            const Divider(thickness: 0.5, color: kDarkGreen),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 15),
                 const Divider(color: kDarkGreen, thickness: 1),
                 const Text(
                   'Social Media Pages',
@@ -202,12 +306,25 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
 class FacilityInput {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
+}
 
-  TextEditingController get getNameController {
-    return nameController;
-  }
+class FieldInput {
+  FieldInput({
+    required this.sportCenterName,
+    required this.fieldNumber,
+  });
 
-  TextEditingController get getDescriptionController {
-    return descriptionController;
+  final String sportCenterName;
+  final int fieldNumber;
+  final TextEditingController fieldLengthController = TextEditingController();
+  final TextEditingController fieldWidthController = TextEditingController();
+  final TextEditingController reservationPriceController =
+      TextEditingController();
+  late Grass grassTypeInput = Grass.turf;
+  final TextEditingController recommendedTeamSizeController =
+      TextEditingController();
+
+  void createField() async {
+    //TODO api call
   }
 }

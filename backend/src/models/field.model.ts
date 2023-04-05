@@ -17,7 +17,7 @@ const fieldSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    reservation_price: {
+    reservationPrice: {
         type: Number,
         required: true
     },
