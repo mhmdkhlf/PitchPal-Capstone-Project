@@ -7,7 +7,7 @@
     :class="{ hidden: error }"
   >
     <h2 class="form-title">Field Manager Information</h2>
-    <form class="field-manager-form" @submit.prevent="submitForm">
+    <form class="field-manager-form">
       <div class="form-group">
         <label for="name">Sport Center Profile Picture</label>
         <profilePicture :fromSportCenter="true" />
@@ -48,12 +48,12 @@
       >
         <h3>Facility {{ index + 1 }}</h3>
         <div class="form-group">
-          <label for="dimensions">Facility Name</label>
+          <label for="dimensions" class="required">Facility Name</label>
           <input type="text" id="dimensions" v-model="facility.name" />
         </div>
         <div class="form-group">
-          <label for="dimensions">Facility Description</label>
-          <input type="text" id="dimensions" v-model="facility.decription" />
+          <label for="dimensions" class="required">Facility Description</label>
+          <input type="text" id="dimensions" v-model="facility.description" />
         </div>
         <button
           type="button"
@@ -70,24 +70,19 @@
       <div v-for="(field, index) in fields" :key="index" class="field-group">
         <h3>Field {{ index + 1 }}</h3>
         <div class="form-group">
-          <label for="dimensions">Dimensions:</label>
-          <input type="text" id="dimensions" v-model="field.dimensions" />
-        </div>
-
-        <div class="form-group">
-          <label for="field-number">Field Number:</label>
+          <label for="field-number" class="required">Field Number:</label>
           <input type="text" id="field-number" v-model="field.fieldNumber" />
         </div>
         <div class="form-group">
-          <label for="field-number">Field Length:</label>
+          <label for="field-number" class="required">Field Length:</label>
           <input type="text" id="field-number" v-model="field.length" />
         </div>
         <div class="form-group">
-          <label for="field-number">Field Width:</label>
+          <label for="field-number" class="required">Field Width:</label>
           <input type="text" id="field-number" v-model="field.width" />
         </div>
         <div class="form-group">
-          <label for="field-number">Reservation Price:</label>
+          <label for="field-number" class="required">Reservation Price:</label>
           <input
             type="text"
             id="field-number"
@@ -95,11 +90,13 @@
           />
         </div>
         <div class="form-group">
-          <label for="field-number">Grass Type:</label>
+          <label for="field-number" class="required">Grass Type:</label>
           <input type="text" id="field-number" v-model="field.grassType" />
         </div>
         <div class="form-group">
-          <label for="field-number">Recommended Team Size:</label>
+          <label for="field-number" class="required"
+            >Recommended Team Size:</label
+          >
           <input
             type="text"
             id="field-number"
@@ -120,7 +117,9 @@
         Add Field
       </button>
 
-      <button type="submit" class="submit-button">Submit</button>
+      <button type="button" class="submit-button" @click="submitForm($event)">
+        Submit
+      </button>
     </form>
   </div>
 </template>
@@ -129,6 +128,7 @@
 import profilePicture from "./profilePicture.vue";
 import errorPopup from "./errorPopup.vue";
 import loader from "./loader.vue";
+import axios from "axios";
 export default {
   name: "ManagerProfile",
   components: {
@@ -145,9 +145,11 @@ export default {
       linkToInsta: "",
       workingHours: "",
       error: null,
+      image: null,
+      location: null,
       fields: [
         {
-          dimensions: "",
+          sportCenterName: this.name,
           fieldNumber: "",
           grassType: "",
           length: "",
@@ -162,14 +164,19 @@ export default {
   methods: {
     addField() {
       this.fields.push({
-        dimensions: "",
+        sportCenterName: this.name,
         fieldNumber: "",
+        grassType: "",
+        length: "",
+        width: "",
+        recommendedTeamSize: 0,
+        reservation_price: 0,
       });
     },
     addFacility() {
       this.facilities.push({
         name: "",
-        desciption: "",
+        description: "",
       });
     },
     removeField(index) {
@@ -178,8 +185,81 @@ export default {
     removeFacility(index) {
       this.facilities.splice(index, 1);
     },
-    submitForm() {
-      // Do something with the form data, e.g. send it to the server
+    checkAllRequiredInfoAreFilled() {
+      for (let i = 0; i < this.fields.length; i++) {
+        let field = this.fields[i];
+        if (
+          !field.sportCenterName ||
+          !field.fieldNumber ||
+          !field.grassType ||
+          !field.length ||
+          !field.width ||
+          !field.recommendedTeamSize ||
+          !field.reservation_price
+        ) {
+          return false;
+        }
+      }
+      for (let i = 0; i < this.facilities.length; i++) {
+        let fac = this.facilities[i];
+        if (!fac.description || !fac.name) {
+          return false;
+        }
+      }
+      return true;
+    },
+    submitForm(e) {
+      e.preventDefault();
+      this.$store.dispatch("setLoading");
+      if (
+        !this.name ||
+        !this.locationLink ||
+        !this.phoneNumber ||
+        !this.workingHours ||
+        !this.checkAllRequiredInfoAreFilled
+      ) {
+        this.error = "All fields must be filled";
+        this.$store.dispatch("stopLoading");
+      } else {
+        axios
+          .post("http://localhost:5000/api/linkToCoordinates", {
+            link: this.locationLink,
+          })
+          .then(
+            (res) => {
+              if (res.status === 200) {
+                this.location = res.data;
+                axios
+                  .post("http://localhost:5000/api/newSportCenter", {
+                    location,
+                    name: this.name,
+                    locationLink: this.locationLink,
+                    phoneNumber: this.phoneNumber,
+                    linkToFB: this.linkToFB,
+                    linkToInsta: this.linkToInsta,
+                    nbOfFields: this.fields.length,
+                    workingHours: this.workingHours,
+                    facilitiesAvailable: this.facilities,
+                  })
+                  .then(
+                    (res2) => {
+                      if (res2.status === 200) {
+                        //image and iterate over fields and add them
+                      }
+                    },
+                    (err2) => {
+                      this.$store.dispatch("stopLoading");
+                      this.error = err2.response.data.error;
+                    }
+                  );
+              }
+            },
+            (err) => {
+              this.$store.dispatch("stopLoading");
+              this.error = err.response.data.error;
+            }
+          );
+      }
     },
   },
   computed: {
