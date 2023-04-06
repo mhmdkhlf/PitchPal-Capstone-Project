@@ -6,7 +6,7 @@ import 'package:intl_phone_field/phone_number.dart';
 import 'package:frontend_mobile/pages/home.dart';
 import '../components/textfield_input.dart';
 import '../components/submit_button.dart';
-import '../components/profile_picture_input.dart';
+import '../components/profile_picture.dart';
 import '../components/failed_request_dialog.dart';
 import '../pages/new_sport_center_form.dart';
 import '../data/field_manager.dart';
@@ -38,7 +38,14 @@ class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
       : 'http://localhost:5000/api';
 
   void createProfile() async {
-    await uploadImage(profilePicture, widget.emailFromLogIn);
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
     final String fullName = nameController.text;
     final String email = widget.emailFromLogIn;
     final String phoneNumber = _getPhoneNumberString(phoneNumberInput);
@@ -54,8 +61,11 @@ class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
         '$apiRoute/newManagerProfile',
         data: fieldManagerProfile.toJsonMap(),
       );
-      FieldManager.fromJson(response.data); //object to be used later on
+      if (response.statusCode != 200) {
+        throw Exception('Invalid status code on field manager post');
+      }
       if (context.mounted) {
+        Navigator.pop(context);
         Navigator.pop(context);
         Navigator.push(
           context,
@@ -78,6 +88,7 @@ class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
         );
       }
     }
+    await uploadImage(profilePicture, widget.emailFromLogIn);
   }
 
   String _getPhoneNumberString(PhoneNumber phoneNumber) {

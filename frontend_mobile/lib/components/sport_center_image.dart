@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../constants.dart';
@@ -9,8 +10,27 @@ class SportCenterPicture {
 }
 
 Future<void> uploadImage(
-    SportCenterPicture profilePicture, String email) async {
-  //TODO: api call
+    SportCenterPicture sportCenterPicture, String sportCenterName) async {
+  if (sportCenterPicture.path == defaultSportCenterImagePath) return;
+  final dio = Dio();
+  final String apiRoute = Platform.isAndroid
+      ? 'http://10.0.2.2:5000/api'
+      : 'http://localhost:5000/api';
+  try {
+    File image = File(sportCenterPicture.path);
+    String filePath = image.path;
+    String fileName = filePath.split('/').last;
+    var formData = FormData.fromMap({
+      'sportCenterName': sportCenterName,
+      'img': await MultipartFile.fromFile(filePath, filename: fileName),
+    });
+    await dio.post(
+      '$apiRoute/uploadSportCenterPicture',
+      data: formData,
+    );
+  } on DioError catch (e) {
+    throw Exception(e.response);
+  }
 }
 
 // ignore: must_be_immutable

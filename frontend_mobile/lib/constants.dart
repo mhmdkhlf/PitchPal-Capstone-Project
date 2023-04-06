@@ -8,3 +8,6 @@ const kBlack = Color(0xFF050517);
 const kDarkGreen = Color(0xFF054A29);
 const String defaultProfilePath = 'assets/profile.png';
 const String defaultSportCenterImagePath = 'assets/sportCenter.png';
+const String defaultProfilePictureEmail = 'Default Profile Picture';
+const String defaultPictureSportCenterName = 'Default Sport-Center Picture';
+const String defaultDatePrefixForTimeAttributes = "1970-01-01T";

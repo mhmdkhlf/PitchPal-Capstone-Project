@@ -3,12 +3,29 @@ import 'package:dio/dio.dart';
 import 'package:geolocator/geolocator.dart';
 import '../data/location.dart';
 
-class _Position {
-  const _Position({
+class LongLat {
+  const LongLat({
     required this.longitude,
     required this.latitude,
   });
   final double longitude, latitude;
+}
+
+Future<String> getCurrentAdress(LongLat position) async {
+  String address;
+  final dio = Dio();
+  final response = await dio.get(
+    'https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${position.latitude}&longitude=${position.longitude}&localityLanguage=en',
+  );
+  if (response.statusCode == 200) {
+    final String countryName = response.data['countryName'];
+    final String principalSubdivision = response.data['principalSubdivision'];
+    final String locality = response.data['locality'];
+    address = '$locality, $principalSubdivision, $countryName';
+  } else {
+    throw Exception('failed to create player profile');
+  }
+  return address;
 }
 
 class LocationInput extends StatefulWidget {
@@ -70,7 +87,7 @@ class _LocationInputState extends State<LocationInput> {
     return true;
   }
 
-  Future<_Position> _getCurrentPosition() async {
+  Future<LongLat> _getCurrentPosition() async {
     double longitude = 0;
     double latitude = 0;
     final hasPermission = await _handleLocationPermission();
@@ -84,32 +101,15 @@ class _LocationInputState extends State<LocationInput> {
     }).catchError((e) {
       throw Exception(e);
     });
-    return _Position(
+    return LongLat(
       longitude: longitude,
       latitude: latitude,
     );
   }
 
-  Future<String> _getCurrentAdress(_Position position) async {
-    String address;
-    final dio = Dio();
-    final response = await dio.get(
-      'https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${position.latitude}&longitude=${position.longitude}&localityLanguage=en',
-    );
-    if (response.statusCode == 200) {
-      final String countryName = response.data['countryName'];
-      final String principalSubdivision = response.data['principalSubdivision'];
-      final String locality = response.data['locality'];
-      address = '$locality, $principalSubdivision, $countryName';
-    } else {
-      throw Exception('failed to create player profile');
-    }
-    return address;
-  }
-
   void getCurrentLocation() async {
-    _Position position = await _getCurrentPosition();
-    String address = await _getCurrentAdress(position);
+    LongLat position = await _getCurrentPosition();
+    String address = await getCurrentAdress(position);
     widget.location.latitude = position.latitude;
     widget.location.longitude = position.longitude;
     widget.location.place = address;
