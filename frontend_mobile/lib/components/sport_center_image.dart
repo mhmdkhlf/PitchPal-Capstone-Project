@@ -22,14 +22,14 @@ Future<void> uploadImage(
     String fileName = filePath.split('/').last;
     var formData = FormData.fromMap({
       'sportCenterName': sportCenterName,
-      'img': await MultipartFile.fromFile(filePath, filename: fileName),
+      'image': await MultipartFile.fromFile(filePath, filename: fileName),
     });
     await dio.post(
       '$apiRoute/uploadSportCenterPicture',
       data: formData,
     );
   } on DioError catch (e) {
-    throw Exception(e.response);
+    throw Exception(e.stackTrace);
   }
 }
 
@@ -64,7 +64,10 @@ class _SportCenterPictureInputState extends State<SportCenterPictureInput> {
         children: <Widget>[
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
-            child: Image(image: displayImage()),
+            child: Image(
+              image: displayImage(),
+              fit: BoxFit.contain, //TODO fix widget manzar after input
+            ),
           ),
           Positioned(
             bottom: 20.0,
