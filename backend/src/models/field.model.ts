@@ -1,36 +1,37 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const fieldSchema = new mongoose.Schema({
+const fieldSchema = new mongoose.Schema(
+  {
     sportCenterName: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     fieldNumber: {
-        type: Number,
-        unique: true
+      type: Number,
     },
     fieldLength: {
-        type: Number,
-        required: true
+      type: Number,
+      required: true,
     },
     fieldWidth: {
-        type: Number,
-        required: true
+      type: Number,
+      required: true,
     },
     reservationPrice: {
-        type: Number,
-        required: true
+      type: Number,
+      required: true,
     },
     grassType: {
-        type: String,
-        required: true,
-        enum: ["turf", "grass"]
+      type: String,
+      required: true,
+      enum: ["turf", "grass"],
     },
     recommendedTeamSize: {
-        type: Number,
-        required: true
-    }
-}, { collection: 'Field' }
+      type: Number,
+      required: true,
+    },
+  },
+  { collection: "Field" }
 );
 
-module.exports = mongoose.model('Field', fieldSchema);
+module.exports = mongoose.model("Field", fieldSchema);
