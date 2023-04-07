@@ -1,15 +1,17 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const TimeSlotSchema = new mongoose.Schema({
+const TimeSlotSchema = new mongoose.Schema(
+  {
     startTime: {
-        type: Date,
-        required: true,
+      type: String,
+      required: true,
     },
     endTime: {
-        type: Date,
-        required: true
+      type: String,
+      required: true,
     },
-}, { collection: 'TimeSlot' }
+  },
+  { collection: "TimeSlot" }
 );
 
 module.exports = TimeSlotSchema;
