@@ -42,11 +42,11 @@
       </div> -->
       <div class="form-group">
         <label for="center-name" class="required">Start Time</label>
-        <input type="date" id="center-name" v-model="startTime" />
+        <input type="time" id="center-name" v-model="startTime" />
       </div>
       <div class="form-group">
         <label for="center-name" class="required">End Time</label>
-        <input type="date" id="center-name" v-model="endTime" />
+        <input type="time" id="center-name" v-model="endTime" />
       </div>
       <h3 class="field-title">Facilities Avaialable</h3>
       <div
@@ -403,7 +403,7 @@ export default {
 .form-group input[type="email"],
 .form-group input[type="tel"],
 .form-group input[type="number"],
-.form-group input[type="date"] {
+.form-group input[type="time"] {
   padding: 10px;
   border: none;
   border-radius: 5px;
