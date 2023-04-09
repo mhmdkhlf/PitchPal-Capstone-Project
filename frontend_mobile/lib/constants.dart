@@ -10,4 +10,3 @@ const String defaultProfilePath = 'assets/profile.png';
 const String defaultSportCenterImagePath = 'assets/sportCenter.png';
 const String defaultProfilePictureEmail = 'Default Profile Picture';
 const String defaultPictureSportCenterName = 'Default Sport-Center Picture';
-const String defaultDatePrefixForTimeAttributes = "1970-01-01T";

@@ -66,7 +66,9 @@ class _SportCenterPictureInputState extends State<SportCenterPictureInput> {
             borderRadius: BorderRadius.circular(10),
             child: Image(
               image: displayImage(),
-              fit: BoxFit.contain, //TODO fix widget manzar after input
+              height: 168,
+              width: 300,
+              fit: BoxFit.fill,
             ),
           ),
           Positioned(
@@ -135,8 +137,14 @@ class _SportCenterPictureInputState extends State<SportCenterPictureInput> {
     final pickedFile = await _picker.pickImage(
       source: source,
     );
-    setState(() {
-      widget.profilePicture.path = pickedFile!.path;
-    });
+    if (pickedFile != null) {
+      setState(() {
+        widget.profilePicture.path = pickedFile.path;
+      });
+    } else {
+      setState(() {
+        widget.profilePicture.path = defaultSportCenterImagePath;
+      });
+    }
   }
 }

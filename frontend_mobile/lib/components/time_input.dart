@@ -12,7 +12,7 @@ class TimeInput extends StatefulWidget {
   String getTimeString() {
     String hour = timeInput.hour.toString().padLeft(2, '0');
     String minute = timeInput.minute.toString().padLeft(2, '0');
-    return '$defaultDatePrefixForTimeAttributes$hour:$minute';
+    return '$hour:$minute';
   }
 
   @override

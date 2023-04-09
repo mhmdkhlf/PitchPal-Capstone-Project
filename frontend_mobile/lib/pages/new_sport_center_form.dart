@@ -207,64 +207,107 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
                 ),
                 const SizedBox(height: 10),
                 const Divider(color: kDarkGreen, thickness: 1),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(15),
-                      constraints: const BoxConstraints(maxWidth: 150),
-                      child: NumberInputField(
-                        controller: nbOfFieldsController,
-                        hintText: "Nb of Fields",
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'Number of Fields',
+                        style: TextStyle(fontSize: 20),
                       ),
-                    ),
-                    const SizedBox(width: 20),
-                    ElevatedButton(
-                      onPressed: () => setState(() {
-                        try {
-                          numberOfFields = int.parse(nbOfFieldsController.text);
-                        } on FormatException {
-                          numberOfFields = 0;
-                        }
-                      }),
-                      child: const Text(
-                        "Fill out Field(s) info",
-                        style: TextStyle(fontSize: 14),
+                      const SizedBox(width: 15),
+                      Expanded(
+                        child: NumberInputField(
+                          controller: nbOfFieldsController,
+                          hintText: "?   ",
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 10),
+                      ElevatedButton(
+                        onPressed: () => setState(() {
+                          try {
+                            numberOfFields =
+                                int.parse(nbOfFieldsController.text);
+                          } on FormatException {
+                            numberOfFields = 0;
+                          }
+                        }),
+                        child: const Icon(Icons.refresh),
+                      ),
+                      // const SizedBox(width: 20),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 5),
+                const SizedBox(height: 10),
                 ListView.builder(
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: numberOfFields,
                   itemBuilder: (context, index) {
-                    fieldInputs.clear();
-                    for (int i = 0; i < numberOfFields; i++) {
-                      fieldInputs.add(FieldInput(
-                        sportCenterName: sportCenterNameController.text,
-                        fieldNumber: i + 1,
-                      ));
+                    if (fieldInputs.isEmpty) {
+                      for (int i = 0; i < numberOfFields; i++) {
+                        fieldInputs.add(
+                          FieldInput(
+                            sportCenterName: sportCenterNameController.text,
+                            fieldNumber: i + 1,
+                          ),
+                        );
+                      }
+                    } else {
+                      int diff = fieldInputs.length - numberOfFields;
+                      if (diff > 0) {
+                        for (int i = 0; i < diff; i++) {
+                          fieldInputs.removeLast();
+                        }
+                      } else {
+                        int old = fieldInputs.length;
+                        for (int i = old; i < numberOfFields; i++) {
+                          fieldInputs.add(
+                            FieldInput(
+                              sportCenterName: sportCenterNameController.text,
+                              fieldNumber: i + 1,
+                            ),
+                          );
+                        }
+                      }
                     }
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 50),
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
                       child: Column(
                         children: [
                           Text(
                             'Field #${index + 1}',
-                            style: const TextStyle(fontSize: 16),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                           const SizedBox(height: 10),
-                          NumberInputField(
-                            controller:
-                                fieldInputs[index].fieldLengthController,
-                            hintText: 'Field Length',
-                          ),
-                          const SizedBox(height: 10),
-                          NumberInputField(
-                            controller: fieldInputs[index].fieldWidthController,
-                            hintText: 'Field Width',
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Dimensions:',
+                                style: TextStyle(fontWeight: FontWeight.w500),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: NumberInputField(
+                                  controller:
+                                      fieldInputs[index].fieldLengthController,
+                                  hintText: 'Length',
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: NumberInputField(
+                                  controller:
+                                      fieldInputs[index].fieldWidthController,
+                                  hintText: 'Width',
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 3),
                           Row(
@@ -272,14 +315,13 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
                             children: [
                               const Text(
                                 'Grass Type:',
-                                style:
-                                    TextStyle(color: kDarkGreen, fontSize: 16),
+                                style: TextStyle(fontWeight: FontWeight.w500),
                               ),
-                              Radio(
+                              Radio<Grass>(
                                 activeColor: kDarkGreen,
                                 groupValue: fieldInputs[index].grassTypeInput,
                                 value: Grass.grass,
-                                onChanged: (value) => setState(() =>
+                                onChanged: (Grass? value) => setState(() =>
                                     fieldInputs[index].grassTypeInput = value!),
                               ),
                               const Text('Grass'),
@@ -294,25 +336,34 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
                             ],
                           ),
                           const SizedBox(height: 3),
-                          NumberInputField(
-                            controller:
-                                fieldInputs[index].reservationPriceController,
-                            hintText: 'Reservation Price in \$',
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: NumberInputField(
+                                  controller: fieldInputs[index]
+                                      .reservationPriceController,
+                                  hintText: 'Price in \$',
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: NumberInputField(
+                                  controller: fieldInputs[index]
+                                      .recommendedTeamSizeController,
+                                  hintText: 'Team Size',
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 10),
-                          NumberInputField(
-                            controller: fieldInputs[index]
-                                .recommendedTeamSizeController,
-                            hintText: 'Recommended Team size',
-                          ),
-                          if (index != numberOfFields - 1)
-                            const Divider(thickness: 0.5, color: kDarkGreen),
+                          index != numberOfFields - 1
+                              ? const Divider(thickness: 0.8, color: kDarkGreen)
+                              : const SizedBox(height: 10),
                         ],
                       ),
                     );
                   },
                 ),
-                const SizedBox(height: 15),
                 const Divider(color: kDarkGreen, thickness: 1),
                 const Text(
                   'Social Media Pages',
