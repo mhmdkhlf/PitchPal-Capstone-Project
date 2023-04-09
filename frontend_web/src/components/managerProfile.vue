@@ -29,6 +29,14 @@
                       />
                     </a>
                   </div>
+                  <div class="card-body card-body-center">
+                    <div class="text-center">
+                      <h3 id="go-to-sport-center" @click="goToSportCenter()">
+                        {{ managerInfo.sportCenterName }}
+                      </h3>
+                      <a href="#" v-if="isSelfVisit">Edit Profile</a>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -50,7 +58,7 @@
                   </h6>
                   <div class="pl-lg-4">
                     <div class="row">
-                      <div class="col-lg-6">
+                      <div class="col-md-12">
                         <div class="form-group focused">
                           <label class="form-control-label" for="input-username"
                             >Name</label
@@ -59,21 +67,7 @@
                             type="text"
                             id="input-username"
                             class="form-control form-control-alternative"
-                            :value="playerInfo.name"
-                            disabled
-                          />
-                        </div>
-                      </div>
-                      <div class="col-lg-6">
-                        <div class="form-group">
-                          <label class="form-control-label" for="input-email"
-                            >Email address</label
-                          >
-                          <input
-                            id="input-email"
-                            type="email"
-                            class="form-control form-control-alternative"
-                            :value="playerInfo.email"
+                            :value="managerInfo.name"
                             disabled
                           />
                         </div>
@@ -87,23 +81,7 @@
                   </h6>
                   <div class="pl-lg-4">
                     <div class="row">
-                      <div class="col-md-12">
-                        <div class="form-group focused">
-                          <label class="form-control-label" for="input-address"
-                            >Address</label
-                          >
-                          <input
-                            id="input-address"
-                            class="form-control form-control-alternative"
-                            disabled
-                            :value="playerInfo.location.place"
-                            type="text"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-12">
+                      <div class="col-lg-6">
                         <div class="form-group focused">
                           <label class="form-control-label" for="phoneNumber"
                             >PhoneNumber</label
@@ -112,15 +90,52 @@
                             id="phoneNumber"
                             class="form-control form-control-alternative"
                             disabled
-                            :value="playerInfo.phoneNumber"
+                            :value="managerInfo.mobileNumber"
+                            type="text"
+                          />
+                        </div>
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                          <label class="form-control-label" for="input-email"
+                            >Email address</label
+                          >
+                          <input
+                            id="input-email"
+                            type="email"
+                            class="form-control form-control-alternative"
+                            :value="managerInfo.email"
+                            disabled
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <hr class="my-4" />
+                  <!-- Address -->
+                  <h6 class="heading-small text-muted mb-4">
+                    Sport Center information
+                  </h6>
+                  <div class="pl-lg-4">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group focused">
+                          <label
+                            class="form-control-label"
+                            for="sportCenterName"
+                            >Sport Center Name</label
+                          >
+                          <input
+                            id="sportCenterName"
+                            class="form-control form-control-alternative"
+                            disabled
+                            :value="managerInfo.sportCenterName"
                             type="text"
                           />
                         </div>
                       </div>
                     </div>
                   </div>
-
-                  <!-- Description -->
                 </form>
               </div>
             </div>
@@ -141,8 +156,7 @@ export default {
   },
   data() {
     return {
-      playerInfo: null,
-      numberOfFriends: 0,
+      managerInfo: null,
       done: false,
       isSelfVisit: this.$route.params.isSelfVisit === "true" ? true : false,
       src: "",
@@ -156,17 +170,15 @@ export default {
     }
     this.$store.dispatch("setLoading");
     axios
-      .get("http://localhost:5000/api/getPlayer/" + this.$route.params.id)
+      .get("http://localhost:5000/api/getManager/" + this.$route.params.email)
       .then((res) => {
-        console.log(res);
-        this.playerInfo = res.data;
+        this.managerInfo = res.data;
         axios
           .get(
             "http://localhost:5000/api/getProfilePictureByEmail/" +
               res.data.email
           )
           .then((res2) => {
-            console.log(res2.data);
             if (res2.data) {
               //no image
               this.src = `data:${
@@ -175,35 +187,21 @@ export default {
                 "base64"
               )}`;
             }
+            this.done = true;
 
-            axios
-              .get(
-                "http://localhost:5000/api/getNumberOfFriends/" +
-                  this.playerInfo.playerID
-              )
-              .then((res3) => {
-                this.numberOfFriends = res3.data.numberOfFriends;
-
-                this.done = true;
-
-                this.$store.dispatch("stopLoading");
-              });
+            this.$store.dispatch("stopLoading");
           });
       });
   },
 
   computed: {
-    Age() {
-      if (this.playerInfo.dateOfBirth) {
-        const dob = new Date(this.playerInfo.dateOfBirth);
-        const ageInMs = Date.now() - dob.getTime();
-        const ageInDate = new Date(ageInMs);
-        return Math.abs(ageInDate.getUTCFullYear() - 1970).toString();
-      }
-      return null;
-    },
     isLoading() {
       return this.$store.state.isLoading;
+    },
+  },
+  methods: {
+    goToSportCenter() {
+      this.$router.push("/sport-center-view");
     },
   },
 };
@@ -211,6 +209,9 @@ export default {
 <style lang="scss" scoped>
 * {
   color: #2dce89 !important;
+}
+#go-to-sport-center {
+  cursor: pointer;
 }
 .common {
   color: white !important;
@@ -257,6 +258,12 @@ export default {
 *::before,
 *::after {
   box-sizing: border-box;
+}
+.card-body-center {
+  margin-top: 120px;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
 }
 
 html {

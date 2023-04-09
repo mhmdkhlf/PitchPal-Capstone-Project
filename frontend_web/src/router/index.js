@@ -61,9 +61,10 @@ const routes = [
     component: sportCenterView,
   },
   {
-    path: "/manager-profile",
+    path: "/manager-profile/:email/:isSelfVisit",
     name: "managerProfile",
     component: managerProfile,
+    params: true,
   },
 ];
 

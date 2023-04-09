@@ -27,10 +27,6 @@
                         ref="image"
                         v-if="!src"
                       />
-                      <!-- <img
-                        src="https://demos.creative-tim.com/argon-dashboard/assets-old/img/theme/team-4.jpg"
-                        class="rounded-circle"
-                      /> -->
                     </a>
                   </div>
                 </div>
@@ -139,22 +135,6 @@
                           />
                         </div>
                       </div>
-                      <div class="col-lg-6">
-                        <div class="form-group">
-                          <label class="form-control-label" for="input-email"
-                            >Email address</label
-                          >
-                          <input
-                            id="input-email"
-                            type="email"
-                            class="form-control form-control-alternative"
-                            :value="playerInfo.email"
-                            disabled
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
                       <div class="col-lg-6" v-if="Age">
                         <div class="form-group focused">
                           <label class="form-control-label" for="age"
@@ -169,6 +149,8 @@
                           />
                         </div>
                       </div>
+                    </div>
+                    <div class="row">
                       <div class="col-lg-6">
                         <div class="form-group focused">
                           <label class="form-control-label" for="sex"
@@ -183,8 +165,6 @@
                           />
                         </div>
                       </div>
-                    </div>
-                    <div class="row">
                       <div class="col-lg-6">
                         <div class="form-group focused">
                           <label class="form-control-label" for="pos"
@@ -199,6 +179,8 @@
                           />
                         </div>
                       </div>
+                    </div>
+                    <div class="row">
                       <div class="col-lg-6" v-if="playerInfo.weight !== 0">
                         <div class="form-group focused">
                           <label class="form-control-label" for="weight"
@@ -213,8 +195,6 @@
                           />
                         </div>
                       </div>
-                    </div>
-                    <div class="row">
                       <div class="col-lg-6" v-if="playerInfo.height !== 0">
                         <div class="form-group focused">
                           <label class="form-control-label" for="height"
@@ -269,6 +249,22 @@
                         </div>
                       </div>
                     </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="form-control-label" for="input-email"
+                            >Email address</label
+                          >
+                          <input
+                            id="input-email"
+                            type="email"
+                            class="form-control form-control-alternative"
+                            :value="playerInfo.email"
+                            disabled
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   <!-- Description -->
@@ -309,7 +305,6 @@ export default {
     axios
       .get("http://localhost:5000/api/getPlayer/" + this.$route.params.id)
       .then((res) => {
-        console.log(res);
         this.playerInfo = res.data;
         axios
           .get(
@@ -317,7 +312,6 @@ export default {
               res.data.email
           )
           .then((res2) => {
-            console.log(res2.data);
             if (res2.data) {
               //no image
               this.src = `data:${

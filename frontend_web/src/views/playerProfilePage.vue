@@ -4,7 +4,7 @@
 <script>
 import playerProfile from "../components/playerProfile.vue";
 export default {
-  name: "firstTimePlayerProfilePage",
+  name: "PlayerProfilePage",
   components: {
     playerProfile,
   },
