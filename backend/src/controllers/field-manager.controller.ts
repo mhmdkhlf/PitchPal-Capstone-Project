@@ -51,10 +51,11 @@ async function updateManagerById(req: Request, res: Response) {
     res.status(400).json({ error: error.message });
   }
 }
-async function getManager(req: Request, res: Response) {
+
+async function getManagerByEmail(req: Request, res: Response) {
   try {
-    const name = req.params.name;
-    const managerInfo = await ManagerModel.findOne({ name });
+    const email = req.params.email;
+    const managerInfo = await ManagerModel.findOne({ email });
     res.status(200).json(managerInfo);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -70,7 +71,7 @@ async function getAllManagers(req: Request, res: Response) {
 
 module.exports = {
   createProfileInformation,
-  getManager,
+  getManagerByEmail,
   getAllManagers,
   updateManagerById,
 };

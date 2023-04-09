@@ -27,75 +27,8 @@
                         ref="image"
                         v-if="!src"
                       />
-                      <!-- <img
-                        src="https://demos.creative-tim.com/argon-dashboard/assets-old/img/theme/team-4.jpg"
-                        class="rounded-circle"
-                      /> -->
                     </a>
                   </div>
-                </div>
-              </div>
-              <div
-                class="card-header text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4"
-              >
-                <div class="d-flex justify-content-between">
-                  <a
-                    href="#"
-                    class="btn btn-sm btn-info mr-4 common"
-                    v-if="!isSelfVisit"
-                    >Connect</a
-                  >
-                  <a
-                    href="#"
-                    class="btn btn-sm btn-default float-right common"
-                    v-if="!isSelfVisit"
-                    >Rate</a
-                  >
-                </div>
-              </div>
-              <div class="card-body pt-0 pt-md-4">
-                <div class="row">
-                  <div class="col">
-                    <div
-                      class="card-profile-stats d-flex justify-content-center mt-md-5"
-                    >
-                      <div>
-                        <span class="heading">{{ numberOfFriends }}</span>
-                        <span class="description">Friends</span>
-                      </div>
-                      <div>
-                        <span class="heading">{{
-                          playerInfo.averageMoralityRating
-                        }}</span>
-                        <span class="description">Morality Rating</span>
-                      </div>
-                      <div>
-                        <span class="heading">{{
-                          playerInfo.averageSkillRating
-                        }}</span>
-                        <span class="description">Skill Rating</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="text-center">
-                  <h3>
-                    {{ playerInfo.name
-                    }}<span class="font-weight-light">, {{ Age }}</span>
-                  </h3>
-                  <div class="h5 font-weight-300">
-                    <i class="ni location_pin mr-2"></i
-                    >{{ playerInfo.location.place }}
-                  </div>
-                  <div>
-                    <i class="ni education_hat mr-2"></i
-                    >{{ playerInfo.position }}
-                  </div>
-                  <hr class="my-4" />
-                  <p>
-                    {{ playerInfo.description }}
-                  </p>
-                  <a href="#" v-if="isSelfVisit">Edit Profile</a>
                 </div>
               </div>
             </div>
@@ -107,14 +40,6 @@
                   <div class="col-8">
                     <h3 class="mb-0" v-if="isSelfVisit">My Account</h3>
                     <h3 class="mb-0" v-if="!isSelfVisit">User Account</h3>
-                  </div>
-                  <div class="col-4 text-right">
-                    <h4 v-if="isSelfVisit">
-                      Your ID: {{ playerInfo.playerID }}
-                    </h4>
-                    <h4 v-if="!isSelfVisit">
-                      User ID: {{ playerInfo.playerID }}
-                    </h4>
                   </div>
                 </div>
               </div>
@@ -149,82 +74,6 @@
                             type="email"
                             class="form-control form-control-alternative"
                             :value="playerInfo.email"
-                            disabled
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-lg-6">
-                        <div class="form-group focused">
-                          <label class="form-control-label" for="age"
-                            >Age</label
-                          >
-                          <input
-                            type="text"
-                            id="age"
-                            class="form-control form-control-alternative"
-                            :value="Age"
-                            disabled
-                          />
-                        </div>
-                      </div>
-                      <div class="col-lg-6">
-                        <div class="form-group focused">
-                          <label class="form-control-label" for="sex"
-                            >Sex</label
-                          >
-                          <input
-                            type="text"
-                            id="sex"
-                            class="form-control form-control-alternative"
-                            disabled
-                            :value="playerInfo.sex"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-lg-6">
-                        <div class="form-group focused">
-                          <label class="form-control-label" for="pos"
-                            >Position</label
-                          >
-                          <input
-                            type="text"
-                            id="pos"
-                            class="form-control form-control-alternative"
-                            :value="playerInfo.position"
-                            disabled
-                          />
-                        </div>
-                      </div>
-                      <div class="col-lg-6">
-                        <div class="form-group focused">
-                          <label class="form-control-label" for="weight"
-                            >weight</label
-                          >
-                          <input
-                            type="text"
-                            id="weight"
-                            class="form-control form-control-alternative"
-                            disabled
-                            :value="playerInfo.weight"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-lg-6">
-                        <div class="form-group focused">
-                          <label class="form-control-label" for="height"
-                            >Height</label
-                          >
-                          <input
-                            type="text"
-                            id="height"
-                            class="form-control form-control-alternative"
-                            :value="playerInfo.height"
                             disabled
                           />
                         </div>
@@ -286,7 +135,7 @@ import axios from "axios";
 import loader from "./loader.vue";
 import { Buffer } from "buffer";
 export default {
-  name: "profileComponent",
+  name: "playerProfileComponent",
   components: {
     loader,
   },
@@ -300,11 +149,11 @@ export default {
     };
   },
   mounted() {
-    // console.log(this.isSelfVisit);
-    // console.log(this.$route.params.id);
-    // if (!this.src) {
-    //   this.$refs.image.setAttribute("src", "../assets/images/image.jpg");
-    // }
+    if (this.isSelfVisit) {
+      if (sessionStorage.getItem("user") === null) {
+        this.$router.push("/login");
+      }
+    }
     this.$store.dispatch("setLoading");
     axios
       .get("http://localhost:5000/api/getPlayer/" + this.$route.params.id)
@@ -342,12 +191,16 @@ export default {
           });
       });
   },
+
   computed: {
     Age() {
-      const dob = new Date(this.playerInfo.dateOfBirth);
-      const ageInMs = Date.now() - dob.getTime();
-      const ageInDate = new Date(ageInMs);
-      return Math.abs(ageInDate.getUTCFullYear() - 1970).toString();
+      if (this.playerInfo.dateOfBirth) {
+        const dob = new Date(this.playerInfo.dateOfBirth);
+        const ageInMs = Date.now() - dob.getTime();
+        const ageInDate = new Date(ageInMs);
+        return Math.abs(ageInDate.getUTCFullYear() - 1970).toString();
+      }
+      return null;
     },
     isLoading() {
       return this.$store.state.isLoading;

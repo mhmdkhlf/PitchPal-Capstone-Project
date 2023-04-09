@@ -6,7 +6,7 @@
     v-if="!isLoading"
     :class="{ hidden: error }"
   >
-    <h2 class="form-title">Field Manager Information</h2>
+    <h2 class="form-title">Sport Center Information</h2>
     <form class="field-manager-form">
       <div class="form-group">
         <label for="name">Sport Center Profile Picture</label>
@@ -87,15 +87,21 @@
           />
         </div>
         <div class="form-group">
-          <label for="field-number" class="required">Field Length:</label>
+          <label for="field-number" class="required"
+            >Field Length (in km):</label
+          >
           <input type="number" id="field-number" v-model="field.length" />
         </div>
         <div class="form-group">
-          <label for="field-number" class="required">Field Width:</label>
+          <label for="field-number" class="required"
+            >Field Width (in km):</label
+          >
           <input type="number" id="field-number" v-model="field.width" />
         </div>
         <div class="form-group">
-          <label for="field-number" class="required">Reservation Price:</label>
+          <label for="field-number" class="required"
+            >Reservation Price (in $):</label
+          >
           <input
             type="number"
             id="field-number"
@@ -158,7 +164,6 @@ export default {
       phoneNumber: "",
       linkToFB: "",
       linkToInsta: "",
-      //workingHours: 0,
       startTime: null,
       endTime: null,
       error: null,
@@ -315,7 +320,7 @@ export default {
                                 (res) => {
                                   if (res.status === 200) {
                                     this.$store.dispatch("stopLoading");
-                                    this.$router.push("/sport-center-form");
+                                    //this.$router.push("/sport-center-form");
                                   }
                                 },
                                 (err) => {
@@ -325,7 +330,7 @@ export default {
                               );
                             } else {
                               this.$store.dispatch("stopLoading");
-                              this.$router.push("/sport-center-form");
+                              //this.$router.push("/sport-center-form");
                             }
                           }
                         },
