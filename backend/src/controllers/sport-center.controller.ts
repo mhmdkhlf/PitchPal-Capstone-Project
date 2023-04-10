@@ -37,6 +37,15 @@ async function getAllSportCenters(req: Request, res: Response) {
     res.status(400).json(error.message);
   }
 }
+async function getSportCenter(req: Request, res: Response) {
+  try {
+    const name = req.params.name;
+    const sportCenters = await SportCenterModel.findOne({ name });
+    res.status(200).json(sportCenters);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
 
 async function updateSportCenterById(req: Request, res: Response) {
   try {
@@ -74,4 +83,5 @@ module.exports = {
   getAllSportCenters,
   updateSportCenterById,
   deleteSportCenterById,
+  getSportCenter,
 };
