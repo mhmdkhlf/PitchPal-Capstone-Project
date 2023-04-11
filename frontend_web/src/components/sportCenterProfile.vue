@@ -27,15 +27,11 @@
                         ref="image"
                         v-if="!src"
                       />
-                      <!-- <img
-                        src="https://demos.creative-tim.com/argon-dashboard/assets-old/img/theme/team-4.jpg"
-                        class="rounded-circle"
-                      /> -->
                     </a>
                   </div>
                 </div>
               </div>
-              <div
+              <!-- <div
                 class="card-header text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4"
               >
                 <div class="d-flex justify-content-between">
@@ -52,50 +48,45 @@
                     >Rate</a
                   >
                 </div>
-              </div>
+              </div> -->
               <div class="card-body pt-0 pt-md-4">
                 <div class="row">
                   <div class="col">
                     <div
                       class="card-profile-stats d-flex justify-content-center mt-md-5"
                     >
-                      <div>
+                      <!-- <div>
                         <span class="heading">{{ numberOfFriends }}</span>
                         <span class="description">Friends</span>
+                      </div> -->
+                      <div>
+                        <span class="heading">{{
+                          sportCenterInfo.staffServiceAverageRating
+                        }}</span>
+                        <span class="description">Staff Rating</span>
                       </div>
                       <div>
                         <span class="heading">{{
-                          playerInfo.averageMoralityRating
+                          sportCenterInfo.facilityQualityAverageRating
                         }}</span>
-                        <span class="description">Morality Rating</span>
-                      </div>
-                      <div>
-                        <span class="heading">{{
-                          playerInfo.averageSkillRating
-                        }}</span>
-                        <span class="description">Skill Rating</span>
+                        <span class="description">Facilities Rating</span>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div class="text-center">
                   <h3>
-                    {{ playerInfo.name
-                    }}<span class="font-weight-light">, {{ Age }}</span>
+                    {{ sportCenterInfo.name }}
                   </h3>
                   <div class="h5 font-weight-300">
                     <i class="ni location_pin mr-2"></i
-                    >{{ playerInfo.location.place }}
-                  </div>
-                  <div>
-                    <i class="ni education_hat mr-2"></i
-                    >{{ playerInfo.position }}
+                    >{{ sportCenterInfo.location.place }}
                   </div>
                   <hr class="my-4" />
-                  <p>
-                    {{ playerInfo.description }}
-                  </p>
-                  <a href="#" v-if="isSelfVisit">Edit Profile</a>
+                  <!-- <p>
+                    {{ sportCenterInfo.description }}
+                  </p> -->
+                  <a href="#" v-if="isSelfVisit">Edit Sport Center</a>
                 </div>
               </div>
             </div>
@@ -105,27 +96,18 @@
               <div class="card-header bg-white border-0">
                 <div class="row align-items-center">
                   <div class="col-8">
-                    <h3 class="mb-0" v-if="isSelfVisit">My Account</h3>
-                    <h3 class="mb-0" v-if="!isSelfVisit">User Account</h3>
-                  </div>
-                  <div class="col-4 text-right">
-                    <h4 v-if="isSelfVisit">
-                      Your ID: {{ playerInfo.playerID }}
-                    </h4>
-                    <h4 v-if="!isSelfVisit">
-                      User ID: {{ playerInfo.playerID }}
-                    </h4>
+                    <h3 class="mb-0">Sport Center Information</h3>
                   </div>
                 </div>
               </div>
               <div class="card-body">
                 <form>
                   <h6 class="heading-small text-muted mb-4">
-                    User information
+                    General Information
                   </h6>
                   <div class="pl-lg-4">
                     <div class="row">
-                      <div class="col-lg-6">
+                      <div class="col-md-12">
                         <div class="form-group focused">
                           <label class="form-control-label" for="input-username"
                             >Name</label
@@ -134,99 +116,35 @@
                             type="text"
                             id="input-username"
                             class="form-control form-control-alternative"
-                            :value="playerInfo.name"
+                            :value="sportCenterInfo.name"
                             disabled
                           />
                         </div>
                       </div>
-                      <div class="col-lg-6">
-                        <div class="form-group">
-                          <label class="form-control-label" for="input-email"
-                            >Email address</label
+                      <div class="col-md-12">
+                        <div class="form-group focused">
+                          <label class="form-control-label" for="input-username"
+                            >Working Hours</label
                           >
                           <input
-                            id="input-email"
-                            type="email"
+                            type="text"
+                            id="input-username"
                             class="form-control form-control-alternative"
-                            :value="playerInfo.email"
+                            :value="workingHours"
                             disabled
                           />
                         </div>
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-lg-6">
+                      <div class="col-lg-6" v-if="sportCenterInfo.linkToFB">
                         <div class="form-group focused">
-                          <label class="form-control-label" for="age"
-                            >Age</label
-                          >
-                          <input
-                            type="text"
-                            id="age"
-                            class="form-control form-control-alternative"
-                            :value="Age"
-                            disabled
-                          />
+                          <a :href="sportCenterInfo.linkToFB">Facebook</a>
                         </div>
                       </div>
-                      <div class="col-lg-6">
+                      <div class="col-lg-6" v-if="sportCenterInfo.linkToInsta">
                         <div class="form-group focused">
-                          <label class="form-control-label" for="sex"
-                            >Sex</label
-                          >
-                          <input
-                            type="text"
-                            id="sex"
-                            class="form-control form-control-alternative"
-                            disabled
-                            :value="playerInfo.sex"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-lg-6">
-                        <div class="form-group focused">
-                          <label class="form-control-label" for="pos"
-                            >Position</label
-                          >
-                          <input
-                            type="text"
-                            id="pos"
-                            class="form-control form-control-alternative"
-                            :value="playerInfo.position"
-                            disabled
-                          />
-                        </div>
-                      </div>
-                      <div class="col-lg-6">
-                        <div class="form-group focused">
-                          <label class="form-control-label" for="weight"
-                            >weight</label
-                          >
-                          <input
-                            type="text"
-                            id="weight"
-                            class="form-control form-control-alternative"
-                            disabled
-                            :value="playerInfo.weight"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-lg-6">
-                        <div class="form-group focused">
-                          <label class="form-control-label" for="height"
-                            >Height</label
-                          >
-                          <input
-                            type="text"
-                            id="height"
-                            class="form-control form-control-alternative"
-                            :value="playerInfo.height"
-                            disabled
-                          />
+                          <a :href="sportCenterInfo.linkToInsta">Instagram</a>
                         </div>
                       </div>
                     </div>
@@ -247,9 +165,18 @@
                             id="input-address"
                             class="form-control form-control-alternative"
                             disabled
-                            :value="playerInfo.location.place"
+                            :value="sportCenterInfo.location.place"
                             type="text"
                           />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <a :href="sportCenterInfo.locationLink"
+                            >Location Link</a
+                          >
                         </div>
                       </div>
                     </div>
@@ -263,15 +190,93 @@
                             id="phoneNumber"
                             class="form-control form-control-alternative"
                             disabled
-                            :value="playerInfo.phoneNumber"
+                            :value="sportCenterInfo.phoneNumber"
                             type="text"
                           />
                         </div>
                       </div>
                     </div>
                   </div>
-
-                  <!-- Description -->
+                  <hr class="my-4" />
+                  <!-- Address -->
+                  <h6 class="heading-small text-muted mb-4">
+                    Facilities Available
+                  </h6>
+                  <div class="pl-lg-4">
+                    <div
+                      v-for="(
+                        facility, index
+                      ) in sportCenterInfo.facilitiesAvailable"
+                      :key="index"
+                      class="field-group"
+                    >
+                      <h3>Facility {{ index + 1 }}</h3>
+                      <div class="form-group focused">
+                        <label for="dimensions" class="required"
+                          >Facility Name</label
+                        >
+                        <input
+                          disabled
+                          type="text"
+                          id="dimensions"
+                          :value="facility.name"
+                          class="form-control form-control-alternative"
+                        />
+                      </div>
+                      <div class="form-group focused">
+                        <label for="dimensions" class="required"
+                          >Facility Description</label
+                        >
+                        <input
+                          disabled
+                          type="text"
+                          id="dimensions"
+                          :value="facility.description"
+                          class="form-control form-control-alternative"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <hr class="my-4" />
+                  <!-- Address -->
+                  <!-- <h6 class="heading-small text-muted mb-4">
+                    Fields Available
+                  </h6>
+                  <div class="pl-lg-4">
+                    <div
+                      v-for="(
+                        field, index
+                      ) in sportCenterInfo.facilitiesAvailable"
+                      :key="index"
+                      class="field-group"
+                    >
+                      <h3>Field {{ index + 1 }}</h3>
+                      <div class="form-group focused">
+                        <label for="dimensions" class="required"
+                          >Field Name</label
+                        >
+                        <input
+                          disabled
+                          type="text"
+                          id="dimensions"
+                          :value="facility.name"
+                          class="form-control form-control-alternative"
+                        />
+                      </div>
+                      <div class="form-group focused">
+                        <label for="dimensions" class="required"
+                          >Facility Description</label
+                        >
+                        <input
+                          disabled
+                          type="text"
+                          id="dimensions"
+                          :value="facility.description"
+                          class="form-control form-control-alternative"
+                        />
+                      </div>
+                    </div>
+                  </div> -->
                 </form>
               </div>
             </div>
@@ -286,38 +291,37 @@ import axios from "axios";
 import loader from "./loader.vue";
 import { Buffer } from "buffer";
 export default {
-  name: "profileComponent",
+  name: "sportCenterProfileComponent",
   components: {
     loader,
   },
   data() {
     return {
-      playerInfo: null,
-      numberOfFriends: 0,
+      sportCenterInfo: null,
       done: false,
       isSelfVisit: this.$route.params.isSelfVisit === "true" ? true : false,
       src: "",
     };
   },
   mounted() {
-    // console.log(this.isSelfVisit);
-    // console.log(this.$route.params.id);
-    // if (!this.src) {
-    //   this.$refs.image.setAttribute("src", "../assets/images/image.jpg");
-    // }
+    if (this.isSelfVisit) {
+      if (sessionStorage.getItem("user") === null) {
+        this.$router.push("/login");
+      }
+    }
     this.$store.dispatch("setLoading");
     axios
-      .get("http://localhost:5000/api/getPlayer/" + this.$route.params.id)
+      .get(
+        "http://localhost:5000/api/getSportCenter/" + this.$route.params.name
+      )
       .then((res) => {
-        console.log(res);
-        this.playerInfo = res.data;
+        this.sportCenterInfo = res.data;
         axios
           .get(
-            "http://localhost:5000/api/getProfilePictureByEmail/" +
-              res.data.email
+            "http://localhost:5000/api/getSportCenterProfilePictureByName/" +
+              res.data.name
           )
           .then((res2) => {
-            console.log(res2.data);
             if (res2.data) {
               //no image
               this.src = `data:${
@@ -326,31 +330,42 @@ export default {
                 "base64"
               )}`;
             }
+            this.done = true;
 
-            axios
-              .get(
-                "http://localhost:5000/api/getNumberOfFriends/" +
-                  this.playerInfo.playerID
-              )
-              .then((res3) => {
-                this.numberOfFriends = res3.data.numberOfFriends;
-
-                this.done = true;
-
-                this.$store.dispatch("stopLoading");
-              });
+            this.$store.dispatch("stopLoading");
           });
       });
   },
+
   computed: {
-    Age() {
-      const dob = new Date(this.playerInfo.dateOfBirth);
-      const ageInMs = Date.now() - dob.getTime();
-      const ageInDate = new Date(ageInMs);
-      return Math.abs(ageInDate.getUTCFullYear() - 1970).toString();
-    },
     isLoading() {
       return this.$store.state.isLoading;
+    },
+    workingHours() {
+      const t1 = this.sportCenterInfo.workingHours.startTime;
+      const t2 = this.sportCenterInfo.workingHours.endTime;
+      let start = t1.split(":");
+      let end = t2.split(":");
+      var startDate = new Date(0, 0, 0, start[0], start[1], 0);
+      var endDate = new Date(0, 0, 0, end[0], end[1], 0);
+      var diff = endDate.getTime() - startDate.getTime();
+      var hours = Math.floor(diff / 1000 / 60 / 60);
+      diff -= hours * 1000 * 60 * 60;
+      var minutes = Math.floor(diff / 1000 / 60);
+      if (hours < 0) hours = hours + 24;
+
+      return (
+        (hours <= 9 ? "0" : "") +
+        hours +
+        ":" +
+        (minutes <= 9 ? "0" : "") +
+        minutes +
+        " (From " +
+        t1 +
+        " to " +
+        t2 +
+        ")"
+      );
     },
   },
 };
@@ -405,7 +420,20 @@ export default {
 *::after {
   box-sizing: border-box;
 }
+.field-group {
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
 
+.field-group h4 {
+  margin-top: 0;
+}
+
+.field-group .form-group {
+  margin-bottom: 10px;
+}
 html {
   font-family: sans-serif;
   line-height: 1.15;

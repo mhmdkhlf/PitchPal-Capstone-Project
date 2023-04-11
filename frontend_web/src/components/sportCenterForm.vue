@@ -6,11 +6,11 @@
     v-if="!isLoading"
     :class="{ hidden: error }"
   >
-    <h2 class="form-title">Field Manager Information</h2>
+    <h2 class="form-title">Sport Center Information</h2>
     <form class="field-manager-form">
       <div class="form-group">
         <label for="name">Sport Center Profile Picture</label>
-        <profilePicture :fromSportCenter="true" />
+        <profilePicture :fromSportCenter="true" @pictureUploaded="getImage" />
       </div>
       <div class="form-group">
         <label for="name" class="required">Name:</label>
@@ -79,18 +79,29 @@
         <h3>Field {{ index + 1 }}</h3>
         <div class="form-group">
           <label for="field-number" class="required">Field Number:</label>
-          <input type="number" id="field-number" v-model="field.fieldNumber" />
+          <input
+            type="number"
+            id="field-number"
+            @change="checkValidity(index)"
+            v-model="field.fieldNumber"
+          />
         </div>
         <div class="form-group">
-          <label for="field-number" class="required">Field Length:</label>
+          <label for="field-number" class="required"
+            >Field Length (in km):</label
+          >
           <input type="number" id="field-number" v-model="field.length" />
         </div>
         <div class="form-group">
-          <label for="field-number" class="required">Field Width:</label>
+          <label for="field-number" class="required"
+            >Field Width (in km):</label
+          >
           <input type="number" id="field-number" v-model="field.width" />
         </div>
         <div class="form-group">
-          <label for="field-number" class="required">Reservation Price:</label>
+          <label for="field-number" class="required"
+            >Reservation Price (in $):</label
+          >
           <input
             type="number"
             id="field-number"
@@ -153,7 +164,6 @@ export default {
       phoneNumber: "",
       linkToFB: "",
       linkToInsta: "",
-      //workingHours: 0,
       startTime: null,
       endTime: null,
       error: null,
@@ -181,11 +191,27 @@ export default {
         description: "",
       });
     },
+    getImage(value) {
+      this.image = value;
+    },
     removeField(index) {
       this.fields.splice(index, 1);
     },
     removeFacility(index) {
       this.facilities.splice(index, 1);
+    },
+    checkValidity(index) {
+      let error = this.fields[index].fieldNumber;
+      for (let i = 0; i < this.fields.length; i++) {
+        if (i !== index) {
+          if (this.fields[i].fieldNumber === error) {
+            this.error =
+              "Two fields cannot have the same number because they belong to the same sport center";
+            this.fields[index].fieldNumber = 0;
+            break;
+          }
+        }
+      }
     },
     checkAllRequiredInfoAreFilled() {
       for (let i = 0; i < this.fields.length; i++) {
@@ -266,9 +292,8 @@ export default {
                             //image and iterate over fields and add them
                             for (let i = 0; i < this.fields.length; i++) {
                               let f = this.fields[i];
-                              axios.post(
-                                "http://localhost:5000/api/newField",
-                                {
+                              axios
+                                .post("http://localhost:5000/api/newField", {
                                   sportCenterName: f.sportCenterName,
                                   fieldNumber: f.fieldNumber,
                                   fieldLength: f.length,
@@ -276,12 +301,11 @@ export default {
                                   reservationPrice: f.reservationPrice,
                                   grassType: f.grassType,
                                   recommendedTeamSize: f.recommendedTeamSize,
-                                },
-                                (err) => {
+                                })
+                                .catch((errr) => {
                                   this.$store.dispatch("stopLoading");
-                                  this.error = err.response.data.message;
-                                }
-                              );
+                                  this.error = errr.response.data.message;
+                                });
                             }
 
                             if (this.image) {
@@ -296,7 +320,7 @@ export default {
                                 (res) => {
                                   if (res.status === 200) {
                                     this.$store.dispatch("stopLoading");
-                                    this.$router.push("/sport-center-form");
+                                    //this.$router.push("/sport-center-form");
                                   }
                                 },
                                 (err) => {
@@ -306,7 +330,7 @@ export default {
                               );
                             } else {
                               this.$store.dispatch("stopLoading");
-                              this.$router.push("/sport-center-form");
+                              //this.$router.push("/sport-center-form");
                             }
                           }
                         },

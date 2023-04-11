@@ -7,6 +7,8 @@ import firstPlayerProfilePage from "../views/firstTimePlayerProfilePage.vue";
 import firstManagerProfilePage from "../views/firstTimeManagerProfile.vue";
 import sportCenterForm from "../views/sportCenterFormPage.vue";
 import managerHomePage from "../views/managerHomePage.vue";
+import sportCenterView from "../views/sportCenterPage.vue";
+import managerProfile from "../views/managerProfileView.vue";
 const routes = [
   {
     path: "/",
@@ -52,6 +54,17 @@ const routes = [
     path: "/manager-home-page",
     name: "managerHomePage",
     component: managerHomePage,
+  },
+  {
+    path: "/sport-center-view/:name/:isSelfVisit",
+    name: "sportCenterView",
+    component: sportCenterView,
+  },
+  {
+    path: "/manager-profile/:email/:isSelfVisit",
+    name: "managerProfile",
+    component: managerProfile,
+    params: true,
   },
 ];
 

@@ -2,9 +2,9 @@
   <playerProfile />
 </template>
 <script>
-import playerProfile from "../components/Profile.vue";
+import playerProfile from "../components/playerProfile.vue";
 export default {
-  name: "firstTimePlayerProfilePage",
+  name: "PlayerProfilePage",
   components: {
     playerProfile,
   },
