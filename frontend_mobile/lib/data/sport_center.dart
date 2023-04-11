@@ -60,9 +60,6 @@ class SportCenter {
     this.linkToFB,
     this.linkToInsta,
     this.facilitiesAvailable,
-    this.facilityQualityAverageRating,
-    this.staffServiceAverageRating,
-    this.nbOfRatings,
   });
 
   Map<String, dynamic> toJsonMap() {
@@ -72,10 +69,14 @@ class SportCenter {
       'locationLink': locationLink,
       'phoneNumber': phoneNumber,
       'nbOfFields': nbOfFields,
-      'workingHours': workingHours,
+      'workingHours': workingHours.toJsonMap(),
       'linkToFB': linkToFB ?? '',
       'linkToInsta': linkToInsta ?? '',
-      'facilitiesAvailable': facilitiesAvailable ?? [],
+      'facilitiesAvailable': facilitiesAvailable == null
+          ? []
+          : facilitiesAvailable!
+              .map((facility) => facility.toJsonMap())
+              .toList(),
       'facilityQualityAverageRating': facilityQualityAverageRating ?? 0.0,
       'staffServiceAverageRating': staffServiceAverageRating ?? 0.0,
       'nbOfRatings': nbOfRatings ?? 0,

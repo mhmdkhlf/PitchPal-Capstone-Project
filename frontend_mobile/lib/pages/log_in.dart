@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:frontend_mobile/pages/sign_up.dart';
 import 'package:frontend_mobile/pages/home.dart';
 import 'package:frontend_mobile/pages/player_create_profile.dart';
+import 'package:frontend_mobile/pages/new_sport_center_form.dart';
 import 'package:frontend_mobile/pages/field_manager_create_profile.dart';
 import '../components/submit_button.dart';
 import '../components/textfield_input.dart';
@@ -140,7 +141,7 @@ class _LoginPageState extends State<LogInPage> {
                   width: 200,
                   fit: BoxFit.fitWidth,
                 ),
-                const SizedBox(height: 35),
+                const SizedBox(height: 30),
                 if (widget.comingFromSignUp)
                   const Text("Log In with you new account",
                       style: TextStyle(
@@ -158,7 +159,7 @@ class _LoginPageState extends State<LogInPage> {
                   hintText: 'Password',
                   obscureText: true,
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 30),
                 SubmitButton(
                   text: 'Log In',
                   onTap: logUserIn,
@@ -192,7 +193,44 @@ class _LoginPageState extends State<LogInPage> {
                           decoration: TextDecoration.underline,
                         ),
                       ),
-                    )
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 40),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  child: Divider(
+                    color: kDarkGreen,
+                    thickness: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Want to register your Sports-Center?',
+                      style: TextStyle(color: kDarkColor),
+                    ),
+                    const SizedBox(height: 4),
+                    GestureDetector(
+                      onTap: () => {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const NewSportCenterForm(),
+                          ),
+                        )
+                      },
+                      child: const Text(
+                        'Register it here',
+                        style: TextStyle(
+                          color: kDarkColor,
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 10),

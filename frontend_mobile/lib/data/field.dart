@@ -49,7 +49,7 @@ class Field {
       'fieldWidth': fieldWidth,
       'fieldLength': fieldLength,
       'reservationPrice': reservationPrice,
-      'grassType': grassType,
+      'grassType': grassType.value,
       'recommendedTeamSize': recommendedTeamSize
     };
   }

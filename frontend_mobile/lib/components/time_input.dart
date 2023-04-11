@@ -9,8 +9,10 @@ class TimeInput extends StatefulWidget {
   });
   TimeOfDay timeInput;
 
-  TimeOfDay get getTimeInput {
-    return timeInput;
+  String getTimeString() {
+    String hour = timeInput.hour.toString().padLeft(2, '0');
+    String minute = timeInput.minute.toString().padLeft(2, '0');
+    return '$hour:$minute';
   }
 
   @override

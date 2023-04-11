@@ -9,7 +9,7 @@ import '../components/textfield_input.dart';
 import '../components/location_input.dart';
 import '../components/number_input_field.dart';
 import '../components/submit_button.dart';
-import '../components/profile_picture_input.dart';
+import '../components/profile_picture.dart';
 import '../data/player.dart';
 import '../data/location.dart';
 import '../constants.dart';
@@ -44,7 +44,14 @@ class _PlayerCreateProfileState extends State<PlayerCreateProfile> {
       : 'http://localhost:5000/api';
 
   void createProfile() async {
-    await uploadImage(profilePicture, widget.emailFromLogIn);
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
     final String fullName = nameController.text;
     final String email = widget.emailFromLogIn;
     final String phoneNumber = _getPhoneNumberString(phoneNumberInput);
@@ -74,6 +81,7 @@ class _PlayerCreateProfileState extends State<PlayerCreateProfile> {
       if (response.statusCode == 200) {
         if (context.mounted) {
           Navigator.pop(context);
+          Navigator.pop(context);
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -84,10 +92,13 @@ class _PlayerCreateProfileState extends State<PlayerCreateProfile> {
             ),
           );
         }
+      } else {
+        throw Exception("Invalid status code for sport center post");
       }
     } on DioError catch (e) {
       throw Exception(e.response);
     }
+    await uploadImage(profilePicture, widget.emailFromLogIn);
   }
 
   String _getPhoneNumberString(PhoneNumber phoneNumber) {
