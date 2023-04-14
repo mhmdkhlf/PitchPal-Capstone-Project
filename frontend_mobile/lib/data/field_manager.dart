@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 class FieldManager {
   String? uuid;
+  Uint8List? imageByteArray;
   final String name;
   final String email;
   final String mobileNumber;

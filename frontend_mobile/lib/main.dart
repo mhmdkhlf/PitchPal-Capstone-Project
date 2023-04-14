@@ -1,14 +1,12 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'pages/log_in.dart';
-import 'dart:io';
 
 final String apiRoute = Platform.isAndroid
     ? 'http://10.0.2.2:5000/api'
     : 'http://localhost:5000/api';
 
-void main() async {
-  runApp(const MyApp());
-}
+void main() async => runApp(const MyApp());
 
 const Map<int, Color> color = {
   50: Color.fromRGBO(5, 74, 41, .1),

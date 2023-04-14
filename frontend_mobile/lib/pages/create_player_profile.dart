@@ -1,10 +1,11 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
 import 'package:intl/intl.dart';
-import 'package:frontend_mobile/pages/home.dart';
+import 'package:frontend_mobile/pages/player_home.dart';
 import '../components/textfield_input.dart';
 import '../components/location_input.dart';
 import '../components/number_input_field.dart';
@@ -71,27 +72,34 @@ class _PlayerCreateProfileState extends State<PlayerCreateProfile> {
       sex: sex,
       height: height,
       weight: weight,
-      bio: bio,
+      description: bio,
     );
     try {
       final response = await dio.post(
         '$apiRoute/newPlayerProfile',
         data: playerProfile.toJsonMap(),
       );
-      if (response.statusCode == 200) {
-        if (context.mounted) {
-          Navigator.pop(context);
-          Navigator.pop(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => HomePage(
-                userEmail: email,
-                role: 'player',
-              ),
+      Player player = Player.fromJson(response.data);
+      final imageResponse = await dio.get(
+        '$apiRoute/getProfilePictureByEmail/${player.email}',
+      );
+      if (imageResponse.data != null) {
+        List<dynamic> dynamicList = imageResponse.data['img']['data']['data'];
+        List<int> intList = dynamicList.map((e) => e as int).toList();
+        Uint8List imageData = Uint8List.fromList(intList);
+        player.imageByteArray = imageData;
+      }
+      if (context.mounted) {
+        Navigator.pop(context);
+        Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PlayerHomePage(
+              player: player,
             ),
-          );
-        }
+          ),
+        );
       } else {
         throw Exception("Invalid status code for sport center post");
       }
@@ -131,7 +139,7 @@ class _PlayerCreateProfileState extends State<PlayerCreateProfile> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 20),
-                ProfilePictureInput(
+                ProfilePictureWidget(
                   profilePicture: profilePicture,
                 ),
                 const SizedBox(height: 20),

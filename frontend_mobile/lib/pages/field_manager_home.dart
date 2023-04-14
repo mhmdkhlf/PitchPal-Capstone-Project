@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
+import 'view_field_manager_profile.dart';
+import '../data/field_manager.dart';
 import '../constants.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({
+class FieldManagerHomePage extends StatefulWidget {
+  const FieldManagerHomePage({
     super.key,
-    required this.userEmail,
-    required this.role,
+    required this.fieldManager,
   });
 
-  final String userEmail, role;
+  final FieldManager fieldManager;
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<FieldManagerHomePage> createState() => _FieldManagerHomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _FieldManagerHomePageState extends State<FieldManagerHomePage> {
   int _selectNavBarItemIndex = 0;
 
   void _onItemTapped(int index) {
@@ -27,7 +28,7 @@ class _HomePageState extends State<HomePage> {
     if (_selectNavBarItemIndex == 0) {
       return Center(
         child: Text(
-          'Welcome ${widget.userEmail}',
+          'Welcome ${widget.fieldManager.name}',
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontSize: 15,
@@ -36,16 +37,7 @@ class _HomePageState extends State<HomePage> {
         ),
       );
     }
-    return Center(
-      child: Text(
-        "Viewing ${widget.userEmail}'s profile",
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-    );
+    return ViewFieldManagerProfile(fieldManager: widget.fieldManager);
   }
 
   @override
@@ -53,10 +45,10 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Center(
+        title: const Center(
           child: Text(
-            '${widget.role} home page',
-            style: const TextStyle(
+            'Field-Manager Home Page',
+            style: TextStyle(
               color: kLightColor,
               fontSize: 24,
               fontWeight: FontWeight.w400,
