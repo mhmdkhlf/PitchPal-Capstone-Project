@@ -1,7 +1,7 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
 import 'package:intl/intl.dart';
@@ -80,15 +80,7 @@ class _PlayerCreateProfileState extends State<PlayerCreateProfile> {
         data: playerProfile.toJsonMap(),
       );
       Player player = Player.fromJson(response.data);
-      final imageResponse = await dio.get(
-        '$apiRoute/getProfilePictureByEmail/${player.email}',
-      );
-      if (imageResponse.data != null) {
-        List<dynamic> dynamicList = imageResponse.data['img']['data']['data'];
-        List<int> intList = dynamicList.map((e) => e as int).toList();
-        Uint8List imageData = Uint8List.fromList(intList);
-        player.imageByteArray = imageData;
-      }
+      player.imageByteArray = await uploadImage(profilePicture, player.email);
       if (context.mounted) {
         Navigator.pop(context);
         Navigator.pop(context);
@@ -106,7 +98,6 @@ class _PlayerCreateProfileState extends State<PlayerCreateProfile> {
     } on DioError catch (e) {
       throw Exception(e.response);
     }
-    await uploadImage(profilePicture, widget.emailFromLogIn);
   }
 
   String _getPhoneNumberString(PhoneNumber phoneNumber) {
@@ -194,6 +185,9 @@ class _PlayerCreateProfileState extends State<PlayerCreateProfile> {
                         borderSide: BorderSide(width: 3),
                       ),
                     ),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
+                    ],
                     initialCountryCode: 'LB',
                     onChanged: (phone) => phoneNumberInput = phone,
                   ),

@@ -1,7 +1,7 @@
-import 'dart:typed_data';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
 import 'package:frontend_mobile/pages/field_manager_home.dart';
@@ -63,15 +63,8 @@ class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
         data: fieldManagerProfile.toJsonMap(),
       );
       FieldManager fieldManager = FieldManager.fromJson(response.data);
-      final imageResponse = await dio.get(
-        '$apiRoute/getProfilePictureByEmail/${fieldManager.email}',
-      );
-      if (imageResponse.data != null) {
-        List<dynamic> dynamicList = imageResponse.data['img']['data']['data'];
-        List<int> intList = dynamicList.map((e) => e as int).toList();
-        Uint8List imageData = Uint8List.fromList(intList);
-        fieldManager.imageByteArray = imageData;
-      }
+      fieldManager.imageByteArray =
+          await uploadImage(profilePicture, fieldManager.email);
       if (context.mounted) {
         Navigator.pop(context);
         Navigator.pop(context);
@@ -95,7 +88,6 @@ class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
         );
       }
     }
-    await uploadImage(profilePicture, widget.emailFromLogIn);
   }
 
   String _getPhoneNumberString(PhoneNumber phoneNumber) {
@@ -147,6 +139,9 @@ class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
                         borderSide: BorderSide(width: 3),
                       ),
                     ),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
+                    ],
                     initialCountryCode: 'LB',
                     onChanged: (phone) => phoneNumberInput = phone,
                   ),
@@ -218,7 +213,7 @@ class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      const NewSportCenterForm(),
+                                      const CreateSportCenter(),
                                 ),
                               )
                             },

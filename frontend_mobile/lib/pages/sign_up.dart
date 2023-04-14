@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:frontend_mobile/pages/log_in.dart';
 import '../components/textfield_input.dart';
 import '../components/submit_button.dart';
@@ -8,9 +9,7 @@ import '../data/auth.dart';
 import '../constants.dart';
 
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key, required this.apiRoute});
-
-  final String apiRoute;
+  const SignUpPage({super.key});
 
   @override
   State<SignUpPage> createState() => _SignUpPageState();
@@ -21,9 +20,11 @@ class _SignUpPageState extends State<SignUpPage> {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   late Role role = Role.player;
-  late String apiRoute = widget.apiRoute;
 
   void signUpUser() async {
+    final String apiRoute = Platform.isAndroid
+        ? 'http://10.0.2.2:5000/api'
+        : 'http://localhost:5000/api';
     if (!confirmPassword()) {
       showDialog(
         context: context,
@@ -59,7 +60,6 @@ class _SignUpPageState extends State<SignUpPage> {
           context,
           MaterialPageRoute(
             builder: (context) => LogInPage(
-              apiRoute: apiRoute,
               emailFromSignUp: email,
               comingFromSignUp: true,
             ),
@@ -169,9 +169,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => LogInPage(
-                              apiRoute: apiRoute,
-                            ),
+                            builder: (context) => const LogInPage(),
                           ),
                         )
                       },

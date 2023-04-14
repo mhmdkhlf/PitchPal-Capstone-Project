@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -9,8 +10,9 @@ class ProfilePicture {
   ProfilePicture({required this.path});
 }
 
-Future<void> uploadImage(ProfilePicture profilePicture, String email) async {
-  if (profilePicture.path == defaultProfilePath) return;
+Future<Uint8List?> uploadImage(
+    ProfilePicture profilePicture, String email) async {
+  if (profilePicture.path == defaultProfilePath) return null;
   final dio = Dio();
   final String apiRoute = Platform.isAndroid
       ? 'http://10.0.2.2:5000/api'
@@ -23,10 +25,14 @@ Future<void> uploadImage(ProfilePicture profilePicture, String email) async {
       'email': email,
       'image': await MultipartFile.fromFile(filePath, filename: fileName),
     });
-    await dio.post(
+    Response response = await dio.post(
       '$apiRoute/uploadPicture',
       data: formData,
     );
+    if (response.data == null) return null;
+    List<dynamic> dynamicList = response.data['img']['data']['data'];
+    List<int> intList = dynamicList.map((e) => e as int).toList();
+    return Uint8List.fromList(intList);
   } on DioError catch (e) {
     throw Exception(e.response);
   }

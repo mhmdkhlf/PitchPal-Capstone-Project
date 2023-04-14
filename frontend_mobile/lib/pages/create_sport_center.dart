@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:frontend_mobile/components/submit_button.dart';
 import 'package:frontend_mobile/data/location.dart';
 import 'package:frontend_mobile/data/sport_center.dart';
@@ -20,14 +21,14 @@ final String apiRoute = Platform.isAndroid
     ? 'http://10.0.2.2:5000/api'
     : 'http://localhost:5000/api';
 
-class NewSportCenterForm extends StatefulWidget {
-  const NewSportCenterForm({super.key});
+class CreateSportCenter extends StatefulWidget {
+  const CreateSportCenter({super.key});
 
   @override
-  State<NewSportCenterForm> createState() => _NewSportCenterFormState();
+  State<CreateSportCenter> createState() => _CreateSportCenterState();
 }
 
-class _NewSportCenterFormState extends State<NewSportCenterForm> {
+class _CreateSportCenterState extends State<CreateSportCenter> {
   SportCenterPicture sportCenterPicture =
       SportCenterPicture(path: defaultSportCenterImagePath);
   final TextEditingController sportCenterNameController =
@@ -181,6 +182,9 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
                     ),
                     initialCountryCode: 'LB',
                     onChanged: (phone) => phoneNumberInput = phone,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
+                    ],
                   ),
                 ),
                 const Divider(color: kDarkGreen, thickness: 1),

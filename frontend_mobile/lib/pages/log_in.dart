@@ -1,12 +1,13 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:frontend_mobile/constants.dart';
 import 'package:dio/dio.dart';
+import 'package:frontend_mobile/constants.dart';
 import 'package:frontend_mobile/pages/sign_up.dart';
 import 'package:frontend_mobile/pages/player_home.dart';
 import 'package:frontend_mobile/pages/field_manager_home.dart';
 import 'package:frontend_mobile/pages/create_player_profile.dart';
-import 'package:frontend_mobile/pages/sport_center_form.dart';
+import 'package:frontend_mobile/pages/create_sport_center.dart';
 import 'package:frontend_mobile/pages/create_field_manager_profile.dart';
 import '../components/submit_button.dart';
 import '../components/textfield_input.dart';
@@ -18,12 +19,10 @@ import '../data/field_manager.dart';
 class LogInPage extends StatefulWidget {
   const LogInPage({
     super.key,
-    required this.apiRoute,
     this.emailFromSignUp = '',
     this.comingFromSignUp = false,
   });
 
-  final String apiRoute;
   final String emailFromSignUp;
   final bool comingFromSignUp;
 
@@ -35,10 +34,12 @@ class _LoginPageState extends State<LogInPage> {
   late TextEditingController emailController =
       TextEditingController(text: widget.emailFromSignUp);
   final passwordController = TextEditingController();
-  late String apiRoute = widget.apiRoute;
 
   void logUserIn() async {
     final Dio dio = Dio();
+    final String apiRoute = Platform.isAndroid
+        ? 'http://10.0.2.2:5000/api'
+        : 'http://localhost:5000/api';
     showDialog(
       context: context,
       builder: (context) {
@@ -68,18 +69,12 @@ class _LoginPageState extends State<LogInPage> {
         );
         bool isNewUser = isNewUserResponse.data['result'];
         if (isNewUser) {
-          if (context.mounted) {
-            Navigator.pop(context);
-          }
           if (role == 'player') {
             _routeNewPlayerFormToProfileCreation(email);
           } else if (role == 'field manager') {
             _routeNewFieldManagerToProfileCreation(email);
           }
         } else {
-          if (context.mounted) {
-            Navigator.pop(context);
-          }
           if (role == 'player') {
             _routePlayerToHomePage(email);
           } else if (role == 'field manager') {
@@ -125,6 +120,7 @@ class _LoginPageState extends State<LogInPage> {
       player.imageByteArray = imageData;
     }
     if (context.mounted) {
+      Navigator.pop(context);
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -151,6 +147,7 @@ class _LoginPageState extends State<LogInPage> {
       fieldManager.imageByteArray = imageData;
     }
     if (context.mounted) {
+      Navigator.pop(context);
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -163,6 +160,7 @@ class _LoginPageState extends State<LogInPage> {
   }
 
   void _routeNewPlayerFormToProfileCreation(String email) {
+    Navigator.pop(context);
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -172,6 +170,7 @@ class _LoginPageState extends State<LogInPage> {
   }
 
   void _routeNewFieldManagerToProfileCreation(String email) {
+    Navigator.pop(context);
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -243,9 +242,7 @@ class _LoginPageState extends State<LogInPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => SignUpPage(
-                              apiRoute: apiRoute,
-                            ),
+                            builder: (context) => const SignUpPage(),
                           ),
                         )
                       },
@@ -282,7 +279,7 @@ class _LoginPageState extends State<LogInPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const NewSportCenterForm(),
+                            builder: (context) => const CreateSportCenter(),
                           ),
                         )
                       },
