@@ -1,16 +1,14 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:frontend_mobile/components/submit_button.dart';
 import 'package:frontend_mobile/data/location.dart';
 import 'package:frontend_mobile/data/sport_center.dart';
 import 'package:frontend_mobile/data/field.dart';
 import 'package:frontend_mobile/data/time_slot.dart';
-import 'package:intl_phone_field/phone_number.dart';
-import 'package:intl_phone_field/intl_phone_field.dart';
 import '../components/textfield_input.dart';
 import '../components/number_input_field.dart';
+import '../components/phone_number_input.dart';
 import '../components/sport_center_image.dart';
 import '../components/time_input.dart';
 import '../components/location_input.dart';
@@ -35,7 +33,7 @@ class _CreateSportCenterState extends State<CreateSportCenter> {
       TextEditingController();
   final TextEditingController googleMapsLinkController =
       TextEditingController();
-  late PhoneNumber phoneNumberInput;
+  UserPhoneNumber phoneNumberInput = UserPhoneNumber();
   TimeInput openingTimeInput = TimeInput(
     timeInput: const TimeOfDay(hour: 10, minute: 0),
   );
@@ -58,8 +56,9 @@ class _CreateSportCenterState extends State<CreateSportCenter> {
         );
       },
     );
+    // TODO validate inputs (sport center and child fields)
     final String sportCenterName = sportCenterNameController.text;
-    final String phoneNumber = _getPhoneNumberString(phoneNumberInput);
+    final String phoneNumber = phoneNumberInput.getPhoneNumberString();
     final String googleMapsLink = googleMapsLinkController.text;
     final LongLat position = await _getPositionFromLink(googleMapsLink);
     String address = await getCurrentAdress(position);
@@ -130,12 +129,6 @@ class _CreateSportCenterState extends State<CreateSportCenter> {
     }
   }
 
-  String _getPhoneNumberString(PhoneNumber phoneNumber) {
-    final String countryCode = phoneNumber.countryCode;
-    final String number = phoneNumber.number;
-    return '$countryCode $number';
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -172,19 +165,8 @@ class _CreateSportCenterState extends State<CreateSportCenter> {
                 const SizedBox(height: 15),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
-                  child: IntlPhoneField(
-                    decoration: const InputDecoration(
-                      fillColor: kDarkGreen,
-                      labelText: 'Phone Number',
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(width: 3),
-                      ),
-                    ),
-                    initialCountryCode: 'LB',
-                    onChanged: (phone) => phoneNumberInput = phone,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
-                    ],
+                  child: PhoneNumberInput(
+                    userPhoneNumber: phoneNumberInput,
                   ),
                 ),
                 const Divider(color: kDarkGreen, thickness: 1),

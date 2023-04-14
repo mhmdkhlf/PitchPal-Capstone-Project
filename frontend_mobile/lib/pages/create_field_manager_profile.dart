@@ -1,15 +1,13 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:intl_phone_field/phone_number.dart';
 import 'package:frontend_mobile/pages/field_manager_home.dart';
-import '../components/textfield_input.dart';
-import '../components/submit_button.dart';
-import '../components/profile_picture.dart';
+import 'package:frontend_mobile/pages/create_sport_center.dart';
 import '../components/failed_request_dialog.dart';
-import 'sport_center_form.dart';
+import '../components/phone_number_input.dart';
+import '../components/profile_picture.dart';
+import '../components/submit_button.dart';
+import '../components/textfield_input.dart';
 import '../data/field_manager.dart';
 import '../constants.dart';
 
@@ -29,7 +27,7 @@ class FieldManagerCreateProfile extends StatefulWidget {
 class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
   ProfilePicture profilePicture = ProfilePicture(path: defaultProfilePath);
   final nameController = TextEditingController();
-  late PhoneNumber phoneNumberInput;
+  final UserPhoneNumber phoneNumberInput = UserPhoneNumber();
   final sportCenterController = TextEditingController();
   bool isSportCenterRegistered = true;
 
@@ -39,6 +37,26 @@ class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
       : 'http://localhost:5000/api';
 
   void createProfile() async {
+    if (nameController.text.isEmpty || sportCenterController.text.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return const FailedRequestDialog(
+              errorText: 'You didn\'t answer all required fields');
+        },
+      );
+      return;
+    }
+    if (!phoneNumberInput.isPhoneNumberValid()) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return const FailedRequestDialog(
+              errorText: 'Phone Number is not filled correctly');
+        },
+      );
+      return;
+    }
     showDialog(
       context: context,
       builder: (context) {
@@ -49,7 +67,7 @@ class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
     );
     final String fullName = nameController.text;
     final String email = widget.emailFromLogIn;
-    final String phoneNumber = _getPhoneNumberString(phoneNumberInput);
+    final String phoneNumber = phoneNumberInput.getPhoneNumberString();
     final String sportCenterName = sportCenterController.text;
     final FieldManager fieldManagerProfile = FieldManager.createProfile(
       name: fullName,
@@ -80,6 +98,7 @@ class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
     } on DioError catch (e) {
       String error = e.response?.data['error'];
       if (context.mounted) {
+        Navigator.pop(context);
         showDialog(
           context: context,
           builder: (context) {
@@ -88,12 +107,6 @@ class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
         );
       }
     }
-  }
-
-  String _getPhoneNumberString(PhoneNumber phoneNumber) {
-    final String countryCode = phoneNumber.countryCode;
-    final String number = phoneNumber.number;
-    return '$countryCode $number';
   }
 
   @override
@@ -131,19 +144,8 @@ class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
                 const SizedBox(height: 20),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
-                  child: IntlPhoneField(
-                    decoration: const InputDecoration(
-                      fillColor: kDarkGreen,
-                      labelText: 'Phone Number',
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(width: 3),
-                      ),
-                    ),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
-                    ],
-                    initialCountryCode: 'LB',
-                    onChanged: (phone) => phoneNumberInput = phone,
+                  child: PhoneNumberInput(
+                    userPhoneNumber: phoneNumberInput,
                   ),
                 ),
                 const SizedBox(height: 8),

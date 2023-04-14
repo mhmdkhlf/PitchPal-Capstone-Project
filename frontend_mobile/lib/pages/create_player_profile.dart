@@ -1,16 +1,15 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:intl_phone_field/phone_number.dart';
+import 'package:frontend_mobile/components/failed_request_dialog.dart';
 import 'package:intl/intl.dart';
 import 'package:frontend_mobile/pages/player_home.dart';
 import '../components/textfield_input.dart';
 import '../components/location_input.dart';
 import '../components/number_input_field.dart';
-import '../components/submit_button.dart';
 import '../components/profile_picture.dart';
+import '../components/phone_number_input.dart';
+import '../components/submit_button.dart';
 import '../data/player.dart';
 import '../data/location.dart';
 import '../constants.dart';
@@ -31,12 +30,12 @@ class _PlayerCreateProfileState extends State<PlayerCreateProfile> {
   ProfilePicture profilePicture = ProfilePicture(path: defaultProfilePath);
   final nameController = TextEditingController();
   final dateInput = TextEditingController();
-  late PhoneNumber phoneNumberInput;
+  final UserPhoneNumber phoneNumberInput = UserPhoneNumber();
   final Location location = Location.initial();
-  late Sex sexInput = Sex.male;
+  Sex sexInput = Sex.male;
   final weightController = TextEditingController();
   final heightController = TextEditingController();
-  late Position positionInput = Position.attacker;
+  Position positionInput = Position.attacker;
   final bioController = TextEditingController();
 
   final dio = Dio();
@@ -45,6 +44,29 @@ class _PlayerCreateProfileState extends State<PlayerCreateProfile> {
       : 'http://localhost:5000/api';
 
   void createProfile() async {
+    if (nameController.text.isEmpty ||
+        dateInput.text.isEmpty ||
+        weightController.text.isEmpty ||
+        heightController.text.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return const FailedRequestDialog(
+              errorText: 'You didn\'t answer all required fields');
+        },
+      );
+      return;
+    }
+    if (!phoneNumberInput.isPhoneNumberValid()) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return const FailedRequestDialog(
+              errorText: 'Phone Number is not filled correctly');
+        },
+      );
+      return;
+    }
     showDialog(
       context: context,
       builder: (context) {
@@ -55,7 +77,7 @@ class _PlayerCreateProfileState extends State<PlayerCreateProfile> {
     );
     final String fullName = nameController.text;
     final String email = widget.emailFromLogIn;
-    final String phoneNumber = _getPhoneNumberString(phoneNumberInput);
+    final String phoneNumber = phoneNumberInput.getPhoneNumberString();
     final String dateOfBirth = dateInput.text;
     final Sex sex = sexInput;
     final int weight = int.parse(weightController.text);
@@ -92,18 +114,10 @@ class _PlayerCreateProfileState extends State<PlayerCreateProfile> {
             ),
           ),
         );
-      } else {
-        throw Exception("Invalid status code for sport center post");
       }
     } on DioError catch (e) {
       throw Exception(e.response);
     }
-  }
-
-  String _getPhoneNumberString(PhoneNumber phoneNumber) {
-    final String countryCode = phoneNumber.countryCode;
-    final String number = phoneNumber.number;
-    return '$countryCode $number';
   }
 
   @override
@@ -163,13 +177,13 @@ class _PlayerCreateProfileState extends State<PlayerCreateProfile> {
                           context: context,
                           initialDate: DateTime.now(),
                           firstDate: DateTime(1940),
-                          lastDate: DateTime(2100),
+                          lastDate: DateTime(DateTime.now().year + 1),
                         );
                         if (pickedDate != null) {
                           String formattedDate =
                               DateFormat('yyyy-MM-dd').format(pickedDate);
                           setState(() => dateInput.text = formattedDate);
-                        } else {}
+                        }
                       },
                     ),
                   ),
@@ -177,26 +191,13 @@ class _PlayerCreateProfileState extends State<PlayerCreateProfile> {
                 const SizedBox(height: 20),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
-                  child: IntlPhoneField(
-                    decoration: const InputDecoration(
-                      fillColor: kDarkGreen,
-                      labelText: 'Phone Number',
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(width: 3),
-                      ),
-                    ),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
-                    ],
-                    initialCountryCode: 'LB',
-                    onChanged: (phone) => phoneNumberInput = phone,
-                  ),
+                  child: PhoneNumberInput(userPhoneNumber: phoneNumberInput),
                 ),
                 const SizedBox(height: 5),
                 LocationInput(
                   location: location,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 15),
                 const Divider(color: kDarkGreen),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
