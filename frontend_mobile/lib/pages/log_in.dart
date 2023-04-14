@@ -1,15 +1,19 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/constants.dart';
 import 'package:dio/dio.dart';
 import 'package:frontend_mobile/pages/sign_up.dart';
-import 'package:frontend_mobile/pages/home.dart';
-import 'package:frontend_mobile/pages/player_create_profile.dart';
-import 'package:frontend_mobile/pages/new_sport_center_form.dart';
-import 'package:frontend_mobile/pages/field_manager_create_profile.dart';
+import 'package:frontend_mobile/pages/player_home.dart';
+import 'package:frontend_mobile/pages/field_manager_home.dart';
+import 'package:frontend_mobile/pages/create_player_profile.dart';
+import 'package:frontend_mobile/pages/sport_center_form.dart';
+import 'package:frontend_mobile/pages/create_field_manager_profile.dart';
 import '../components/submit_button.dart';
 import '../components/textfield_input.dart';
 import '../components/failed_request_dialog.dart';
 import '../data/auth.dart';
+import '../data/player.dart';
+import '../data/field_manager.dart';
 
 class LogInPage extends StatefulWidget {
   const LogInPage({
@@ -34,6 +38,7 @@ class _LoginPageState extends State<LogInPage> {
   late String apiRoute = widget.apiRoute;
 
   void logUserIn() async {
+    final Dio dio = Dio();
     showDialog(
       context: context,
       builder: (context) {
@@ -46,63 +51,44 @@ class _LoginPageState extends State<LogInPage> {
       email: emailController.text,
       password: passwordController.text,
     );
-    final dio = Dio();
     try {
-      Response response = await dio.post(
+      Response logInResponse = await dio.post(
         '$apiRoute/logIn',
         data: auth.toJsonMap(),
       );
-      String email = response.data['email'];
-      String role = response.data['user']['role'];
-      if (context.mounted) {
-        try {
-          response = await dio.post(
-            '$apiRoute/isFirstTimeLogIn',
-            data: {
-              "userType": role,
-              "userEmail": email,
-            },
-          );
-          bool isNewUser = response.data['result'];
-          if (isNewUser) {
-            if (context.mounted) {
-              Navigator.pop(context);
-              if (role == 'player') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PlayerCreateProfile(
-                      emailFromLogIn: email,
-                    ),
-                  ),
-                );
-              } else if (role == 'field manager') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => FieldManagerCreateProfile(
-                      emailFromLogIn: email,
-                    ),
-                  ),
-                );
-              }
-            }
-          } else {
-            if (context.mounted) {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => HomePage(
-                    userEmail: email,
-                    role: role,
-                  ),
-                ),
-              );
-            }
+      String email = logInResponse.data['email'];
+      String role = logInResponse.data['user']['role'];
+      try {
+        Response isNewUserResponse = await dio.post(
+          '$apiRoute/isFirstTimeLogIn',
+          data: {
+            "userType": role,
+            "userEmail": email,
+          },
+        );
+        bool isNewUser = isNewUserResponse.data['result'];
+        if (isNewUser) {
+          if (context.mounted) {
+            Navigator.pop(context);
           }
-        } on DioError catch (e) {
-          String error = e.response?.data['error'];
+          if (role == 'player') {
+            _routeNewPlayerFormToProfileCreation(email);
+          } else if (role == 'field manager') {
+            _routeNewFieldManagerToProfileCreation(email);
+          }
+        } else {
+          if (context.mounted) {
+            Navigator.pop(context);
+          }
+          if (role == 'player') {
+            _routePlayerToHomePage(email);
+          } else if (role == 'field manager') {
+            _routeFieldManagerToHomePage(email);
+          }
+        }
+      } on DioError catch (e) {
+        String error = e.response?.data['error'];
+        if (context.mounted) {
           Navigator.pop(context);
           showDialog(
             context: context,
@@ -124,6 +110,78 @@ class _LoginPageState extends State<LogInPage> {
     }
   }
 
+  void _routePlayerToHomePage(String email) async {
+    final response = await dio.get(
+      '$apiRoute/getPlayerByEmail/$email',
+    );
+    Player player = Player.fromJson(response.data);
+    final imageResponse = await dio.get(
+      '$apiRoute/getProfilePictureByEmail/${player.email}',
+    );
+    if (imageResponse.data != null) {
+      List<dynamic> dynamicList = imageResponse.data['img']['data']['data'];
+      List<int> intList = dynamicList.map((e) => e as int).toList();
+      Uint8List imageData = Uint8List.fromList(intList);
+      player.imageByteArray = imageData;
+    }
+    if (context.mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PlayerHomePage(
+            player: player,
+          ),
+        ),
+      );
+    }
+  }
+
+  void _routeFieldManagerToHomePage(String email) async {
+    final response = await dio.get(
+      '$apiRoute/getManager/$email',
+    );
+    FieldManager fieldManager = FieldManager.fromJson(response.data);
+    final imageResponse = await dio.get(
+      '$apiRoute/getProfilePictureByEmail/${fieldManager.email}',
+    );
+    if (imageResponse.data != null) {
+      List<dynamic> dynamicList = imageResponse.data['img']['data']['data'];
+      List<int> intList = dynamicList.map((e) => e as int).toList();
+      Uint8List imageData = Uint8List.fromList(intList);
+      fieldManager.imageByteArray = imageData;
+    }
+    if (context.mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => FieldManagerHomePage(
+            fieldManager: fieldManager,
+          ),
+        ),
+      );
+    }
+  }
+
+  void _routeNewPlayerFormToProfileCreation(String email) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PlayerCreateProfile(emailFromLogIn: email),
+      ),
+    );
+  }
+
+  void _routeNewFieldManagerToProfileCreation(String email) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FieldManagerCreateProfile(
+          emailFromLogIn: email,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -134,12 +192,18 @@ class _LoginPageState extends State<LogInPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 100),
-                const Image(
-                  image: AssetImage('assets/logo.png'),
-                  height: 100,
-                  width: 200,
-                  fit: BoxFit.fitWidth,
+                const SizedBox(height: 80),
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(width: 3, color: kDarkColor),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: const Image(
+                    image: AssetImage('assets/logo.png'),
+                    height: 100,
+                    width: 200,
+                    fit: BoxFit.fitWidth,
+                  ),
                 ),
                 const SizedBox(height: 30),
                 if (widget.comingFromSignUp)

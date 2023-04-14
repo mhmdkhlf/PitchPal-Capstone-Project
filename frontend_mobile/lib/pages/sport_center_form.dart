@@ -317,11 +317,11 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
                                 'Grass Type:',
                                 style: TextStyle(fontWeight: FontWeight.w500),
                               ),
-                              Radio<Grass>(
+                              Radio(
                                 activeColor: kDarkGreen,
                                 groupValue: fieldInputs[index].grassTypeInput,
                                 value: Grass.grass,
-                                onChanged: (Grass? value) => setState(() =>
+                                onChanged: (value) => setState(() =>
                                     fieldInputs[index].grassTypeInput = value!),
                               ),
                               const Text('Grass'),

@@ -33,8 +33,8 @@ Future<void> uploadImage(ProfilePicture profilePicture, String email) async {
 }
 
 // ignore: must_be_immutable
-class ProfilePictureInput extends StatefulWidget {
-  ProfilePictureInput({
+class ProfilePictureWidget extends StatefulWidget {
+  ProfilePictureWidget({
     super.key,
     required this.profilePicture,
   });
@@ -42,40 +42,42 @@ class ProfilePictureInput extends StatefulWidget {
   ProfilePicture profilePicture;
 
   @override
-  State<ProfilePictureInput> createState() => _ProfilePictureInputState();
+  State<ProfilePictureWidget> createState() => _ProfilePictureWidgetState();
 }
 
-class _ProfilePictureInputState extends State<ProfilePictureInput> {
+class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
   final ImagePicker _picker = ImagePicker();
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Stack(children: <Widget>[
-        CircleAvatar(
-          radius: 80.0,
-          backgroundImage: widget.profilePicture.path == defaultProfilePath
-              ? const AssetImage(defaultProfilePath)
-              : FileImage(File(widget.profilePicture.path)) as ImageProvider,
-        ),
-        Positioned(
-          bottom: 20.0,
-          right: 20.0,
-          child: InkWell(
-            onTap: () {
-              showModalBottomSheet(
-                context: context,
-                builder: ((builder) => bottomSheet()),
-              );
-            },
-            child: const Icon(
-              Icons.camera_alt,
-              color: kDarkGreen,
-              size: 28.0,
+      child: Stack(
+        children: <Widget>[
+          CircleAvatar(
+            radius: 80.0,
+            backgroundImage: widget.profilePicture.path == defaultProfilePath
+                ? const AssetImage(defaultProfilePath)
+                : FileImage(File(widget.profilePicture.path)) as ImageProvider,
+          ),
+          Positioned(
+            bottom: 20.0,
+            right: 20.0,
+            child: InkWell(
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: ((builder) => bottomSheet()),
+                );
+              },
+              child: const Icon(
+                Icons.camera_alt,
+                color: kDarkGreen,
+                size: 28.0,
+              ),
             ),
           ),
-        ),
-      ]),
+        ],
+      ),
     );
   }
 

@@ -1,8 +1,10 @@
 import 'location.dart';
+import 'dart:typed_data';
 
 class Player {
   String? uuid;
   String? playerID;
+  Uint8List? imageByteArray;
   final String name;
   final String email;
   final String phoneNumber;
@@ -12,7 +14,7 @@ class Player {
   final Position position;
   num? height;
   num? weight;
-  String? bio;
+  String? description;
   num? averageMoralityRating;
   num? averageSkillRating;
   int? numberOfReviews;
@@ -32,7 +34,7 @@ class Player {
     required this.averageSkillRating,
     required this.numberOfReviews,
     required this.position,
-    required this.bio,
+    required this.description,
   });
 
   factory Player.fromJson(Map<String, dynamic> json) {
@@ -51,7 +53,7 @@ class Player {
       averageMoralityRating: json['averageMoralityRating'],
       averageSkillRating: json['averageSkillRating'],
       numberOfReviews: json['numberOfReviews'],
-      bio: json['bio'],
+      description: json['description'],
     );
   }
 
@@ -65,7 +67,7 @@ class Player {
     required this.sex,
     this.height,
     this.weight,
-    this.bio,
+    this.description,
   });
 
   Map<String, dynamic> toJsonMap() {
@@ -79,7 +81,7 @@ class Player {
       'sex': sex.value,
       'height': height ?? 0,
       'weight': weight ?? 0,
-      'bio': bio ?? '',
+      'description': description ?? '',
     };
   }
 
@@ -90,7 +92,7 @@ email = $email; phoneNumber = $phoneNumber;
 location: $location;
 dateOfBirth = $dateOfBirth; height = $height; weight = $weight; sex = $sex;
 averageMoralityRating = $averageMoralityRating; averageSkillRating = $averageSkillRating;
-numberOfReviews = $numberOfReviews; position = $position;''';
+numberOfReviews = $numberOfReviews; position = $position; description: $description''';
   }
 }
 

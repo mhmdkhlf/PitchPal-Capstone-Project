@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 let playerModel = require("../models/player.model.ts");
 let friendsModel = require("../models/friends.model");
 let managerModel = require("../models/field-manager.model");
+
 async function randomNumberGenerator(): Promise<Number> {
   var playerID = Math.floor(100000 + Math.random() * 900000);
   let user = await playerModel.findOne({ playerID });
@@ -10,6 +11,7 @@ async function randomNumberGenerator(): Promise<Number> {
   }
   return playerID;
 }
+
 async function updatePlayerById(req: Request, res: Response) {
   try {
     let id = req.params.id;
@@ -26,7 +28,7 @@ async function updatePlayerById(req: Request, res: Response) {
     res.status(400).json({ message: error.message });
   }
 }
-//create player
+
 async function createProfileInformation(req: Request, res: Response) {
   try {
     let id = await randomNumberGenerator();
@@ -69,6 +71,16 @@ async function getPlayerInformation(req: Request, res: Response) {
   }
 }
 
+async function getPlayerInformationByEmail(req: Request, res: Response) {
+  try {
+    let email = req.params.email;
+    let playerInfo = await playerModel.findOne({ email });
+    res.status(200).json(playerInfo);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
+
 async function getAllPlayers(req: Request, res: Response) {
   try {
     let playerInfo = await playerModel.find();
@@ -83,4 +95,5 @@ module.exports = {
   getPlayerInformation,
   getAllPlayers,
   updatePlayerById,
+  getPlayerInformationByEmail,
 };

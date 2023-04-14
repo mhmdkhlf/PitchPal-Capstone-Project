@@ -1,14 +1,15 @@
+import 'dart:typed_data';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
-import 'package:frontend_mobile/pages/home.dart';
+import 'package:frontend_mobile/pages/field_manager_home.dart';
 import '../components/textfield_input.dart';
 import '../components/submit_button.dart';
 import '../components/profile_picture.dart';
 import '../components/failed_request_dialog.dart';
-import '../pages/new_sport_center_form.dart';
+import 'sport_center_form.dart';
 import '../data/field_manager.dart';
 import '../constants.dart';
 
@@ -61,8 +62,15 @@ class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
         '$apiRoute/newManagerProfile',
         data: fieldManagerProfile.toJsonMap(),
       );
-      if (response.statusCode != 200) {
-        throw Exception('Invalid status code on field manager post');
+      FieldManager fieldManager = FieldManager.fromJson(response.data);
+      final imageResponse = await dio.get(
+        '$apiRoute/getProfilePictureByEmail/${fieldManager.email}',
+      );
+      if (imageResponse.data != null) {
+        List<dynamic> dynamicList = imageResponse.data['img']['data']['data'];
+        List<int> intList = dynamicList.map((e) => e as int).toList();
+        Uint8List imageData = Uint8List.fromList(intList);
+        fieldManager.imageByteArray = imageData;
       }
       if (context.mounted) {
         Navigator.pop(context);
@@ -70,9 +78,8 @@ class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => HomePage(
-              userEmail: email,
-              role: 'field manager',
+            builder: (context) => FieldManagerHomePage(
+              fieldManager: fieldManager,
             ),
           ),
         );
@@ -121,7 +128,7 @@ class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 20),
-                ProfilePictureInput(
+                ProfilePictureWidget(
                   profilePicture: profilePicture,
                 ),
                 const SizedBox(height: 20),
