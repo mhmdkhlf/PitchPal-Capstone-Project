@@ -5,7 +5,7 @@ async function makeReservation(req: Request, res: Response) {
   const {
     reserverEmail,
     reserverType,
-    fieldID,
+    fieldNumber,
     isPublic,
     comment,
     teamOneIds,
@@ -19,7 +19,7 @@ async function makeReservation(req: Request, res: Response) {
     sportCenterName,
     reserverEmail,
     reserverType,
-    fieldID,
+    fieldNumber,
     isPublic,
     reservationStatus,
     reservationDate,
@@ -41,12 +41,13 @@ async function getAllPendingReservationsBySportCenterForToday(
   res: Response
 ) {
   let currentDate = new Date().toJSON().slice(0, 10);
+  console.log(new Date(currentDate));
   try {
     const sportCenterName = req.params.sportCenterName;
     const reservationInfo = await reservationModel.find({
       reservationStatus: "pending",
       sportCenterName,
-      reservationDate: currentDate,
+      reservationDate: new Date(currentDate),
     });
     res.status(200).json(reservationInfo);
   } catch (error) {
@@ -75,7 +76,7 @@ async function getAllPendingReservationsBySportCenterForTodayAndAfter(
 //after the manager responds: (ie change to accepted or rejected)
 async function editReservationStatus(req: Request, res: Response) {
   try {
-    let id = req.params.reservationId;
+    let id = req.body.reservationId;
     let status = req.body.status;
     let updatedData = { reservationStatus: status };
     let options = { new: true };
@@ -128,7 +129,7 @@ async function getAllPublicReservationsOfToday(req: Request, res: Response) {
     let currentDate = new Date().toJSON().slice(0, 10);
     const reservationInfo = await reservationModel.find({
       isPublic: true,
-      reservationDate: currentDate,
+      reservationDate: new Date(currentDate),
       reservationStatus: "accepted",
     });
     res.status(200).json(reservationInfo);
@@ -146,7 +147,7 @@ async function getAllReservationsOfTodayBysportCenterName(
     let sportCenterName = req.params.sportCenterName;
     const reservationInfo = await reservationModel.find({
       sportCenterName,
-      reservationDate: currentDate,
+      reservationDate: new Date(currentDate),
       reservationStatus: "accepted",
     });
     res.status(200).json(reservationInfo);
@@ -183,7 +184,7 @@ async function getReservationsByReserverEmail(req: Request, res: Response) {
         { reservationStatus: "pending" },
         { reservationStatus: "accepted" },
       ],
-      reservationDate: currentDate,
+      reservationDate: new Date(currentDate),
     });
     res.status(200).json(reservationInfo);
   } catch (error) {
