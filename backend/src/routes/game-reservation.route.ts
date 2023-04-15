@@ -25,8 +25,8 @@ router.patch(
   reservationController.editReservationStatus
 );
 router.get(
-  "/getReservationsById/:reserverId",
-  reservationController.getReservationsByReserverId
+  "/getReservationsById/:reserverEmail",
+  reservationController.getReservationsByReserverEmail
 );
 router.post("/addPlayerToMatch", reservationController.addPlayerToTeam);
 router.post("/updateTeamPlayers", reservationController.updateTeamPlayers);

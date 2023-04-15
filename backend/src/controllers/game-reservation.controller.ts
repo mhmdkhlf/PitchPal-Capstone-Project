@@ -1,10 +1,9 @@
 import { Request, Response } from "express";
 const reservationModel = require("../models/reservation.model");
-const fieldModel = require("../models/field.model");
 
 async function makeReservation(req: Request, res: Response) {
   const {
-    reserverID,
+    reserverEmail,
     reserverType,
     fieldID,
     isPublic,
@@ -18,7 +17,7 @@ async function makeReservation(req: Request, res: Response) {
   } = req.body;
   const reservationDetails = {
     sportCenterName,
-    reserverID,
+    reserverEmail,
     reserverType,
     fieldID,
     isPublic,
@@ -173,12 +172,18 @@ async function getAccepteddReservationsBySportCenterNameOfTodayAndAfter(
     res.status(400).json(error.message);
   }
 }
-async function getReservationsByReserverId(req: Request, res: Response) {
-  const reserverID = req.params.reserverId;
+async function getReservationsByReserverEmail(req: Request, res: Response) {
+  const reserverEmail = req.params.reserverEmail;
+  let currentDate = new Date().toJSON().slice(0, 10);
   try {
     const reservationInfo = await reservationModel.find({
-      reserverID,
+      reserverEmail,
       isPublic: true,
+      $or: [
+        { reservationStatus: "pending" },
+        { reservationStatus: "accepted" },
+      ],
+      reservationDate: currentDate,
     });
     res.status(200).json(reservationInfo);
   } catch (error) {
@@ -191,7 +196,7 @@ module.exports = {
   addPlayerToTeam,
   getAllPendingReservationsBySportCenterForToday,
   getAllPendingReservationsBySportCenterForTodayAndAfter,
-  getReservationsByReserverId,
+  getReservationsByReserverEmail,
   updateTeamPlayers,
   editReservationStatus,
   getAllPublicReservationsOfToday,
