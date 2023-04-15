@@ -239,44 +239,92 @@
                   </div>
                   <hr class="my-4" />
                   <!-- Address -->
-                  <!-- <h6 class="heading-small text-muted mb-4">
+                  <h6 class="heading-small text-muted mb-4">
                     Fields Available
                   </h6>
                   <div class="pl-lg-4">
                     <div
-                      v-for="(
-                        field, index
-                      ) in sportCenterInfo.facilitiesAvailable"
+                      v-for="(field, index) in fields"
                       :key="index"
                       class="field-group"
                     >
                       <h3>Field {{ index + 1 }}</h3>
-                      <div class="form-group focused">
-                        <label for="dimensions" class="required"
-                          >Field Name</label
+                      <div class="form-group">
+                        <label for="field-number" class="required"
+                          >Field Number:</label
                         >
                         <input
                           disabled
-                          type="text"
-                          id="dimensions"
-                          :value="facility.name"
+                          type="number"
+                          id="field-number"
+                          @change="checkValidity(index)"
+                          :value="field.fieldNumber"
                           class="form-control form-control-alternative"
                         />
                       </div>
-                      <div class="form-group focused">
-                        <label for="dimensions" class="required"
-                          >Facility Description</label
+                      <div class="form-group">
+                        <label for="field-number" class="required"
+                          >Field Length (in km):</label
+                        >
+                        <input
+                          disabled
+                          type="number"
+                          id="field-number"
+                          :value="field.fieldLength"
+                          class="form-control form-control-alternative"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="field-number" class="required"
+                          >Field Width (in km):</label
+                        >
+                        <input
+                          disabled
+                          type="number"
+                          id="field-number"
+                          :value="field.fieldWidth"
+                          class="form-control form-control-alternative"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="field-number" class="required"
+                          >Reservation Price (in $):</label
+                        >
+                        <input
+                          disabled
+                          type="number"
+                          id="field-number"
+                          :value="field.reservationPrice"
+                          class="form-control form-control-alternative"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="field-number" class="required"
+                          >Grass Type</label
                         >
                         <input
                           disabled
                           type="text"
-                          id="dimensions"
-                          :value="facility.description"
+                          id="field-number"
+                          :value="field.grassType"
+                          class="form-control form-control-alternative"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="field-number" class="required"
+                          >Recommended Team Size:</label
+                        >
+                        <input
+                          disabled
+                          type="number"
+                          id="field-number"
+                          :value="field.recommendedTeamSize"
                           class="form-control form-control-alternative"
                         />
                       </div>
                     </div>
-                  </div> -->
+                  </div>
+                  <hr class="my-4" />
                 </form>
               </div>
             </div>
@@ -301,6 +349,7 @@ export default {
       done: false,
       isSelfVisit: this.$route.params.isSelfVisit === "true" ? true : false,
       src: "",
+      fields: [],
     };
   },
   mounted() {
@@ -317,23 +366,36 @@ export default {
       .then((res) => {
         this.sportCenterInfo = res.data;
         axios
-          .get(
-            "http://localhost:5000/api/getSportCenterProfilePictureByName/" +
-              res.data.name
-          )
-          .then((res2) => {
-            if (res2.data) {
-              //no image
-              this.src = `data:${
-                res2.data.img.contentType
-              };base64,${Buffer.from(res2.data.img.data, "utf-8").toString(
-                "base64"
-              )}`;
-            }
-            this.done = true;
+          .get("http://localhost:5000/api/getFields/" + this.$route.params.name)
+          .then(
+            (ress) => {
+              this.fields = ress.data;
 
-            this.$store.dispatch("stopLoading");
-          });
+              axios
+                .get(
+                  "http://localhost:5000/api/getSportCenterProfilePictureByName/" +
+                    res.data.name
+                )
+                .then((res2) => {
+                  if (res2.data) {
+                    //no image
+                    this.src = `data:${
+                      res2.data.img.contentType
+                    };base64,${Buffer.from(
+                      res2.data.img.data,
+                      "utf-8"
+                    ).toString("base64")}`;
+                  }
+                  this.done = true;
+
+                  this.$store.dispatch("stopLoading");
+                });
+            },
+            (errr) => {
+              this.error = errr.response.data.message;
+              this.$store.dispatch("stopLoading");
+            }
+          );
       });
   },
 
