@@ -22,7 +22,7 @@
                         v-if="src"
                       />
                       <img
-                        src="../assets/images/image.jpg"
+                        src="../assets/images/background.jpg"
                         class="rounded-circle"
                         ref="image"
                         v-if="!src"
@@ -38,13 +38,13 @@
                   <a
                     href="#"
                     class="btn btn-sm btn-info mr-4 common"
-                    v-if="!isSelfVisit"
+                    v-if="!isManager"
                     >Connect</a
                   >
                   <a
                     href="#"
                     class="btn btn-sm btn-default float-right common"
-                    v-if="!isSelfVisit"
+                    v-if="!isManager"
                     >Rate</a
                   >
                 </div>
@@ -86,7 +86,12 @@
                   <!-- <p>
                     {{ sportCenterInfo.description }}
                   </p> -->
-                  <a href="#" v-if="isSelfVisit">Edit Sport Center</a>
+                  <div class="flex-links">
+                    <a href="#" v-if="isManager">Edit Sport Center</a>
+                    <a href="#" id="rmv" v-if="isManager"
+                      >Remove Sport Center</a
+                    >
+                  </div>
                 </div>
               </div>
             </div>
@@ -325,6 +330,28 @@
                     </div>
                   </div>
                   <hr class="my-4" />
+                  <h6 class="heading-small text-muted mb-4">
+                    Managers Available
+                  </h6>
+                  <div class="pl-lg-4">
+                    <div class="field-group">
+                      <table>
+                        <tr>
+                          <th>Name</th>
+                          <th>Phone Number</th>
+                          <th>Email</th>
+                        </tr>
+                        <tr
+                          v-for="(manager, index) in this.managers"
+                          :key="index"
+                        >
+                          <td>{{ manager.name }}</td>
+                          <td>{{ manager.mobileNumber }}</td>
+                          <td>{{ manager.email }}</td>
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
                 </form>
               </div>
             </div>
@@ -347,56 +374,72 @@ export default {
     return {
       sportCenterInfo: null,
       done: false,
-      isSelfVisit: this.$route.params.isSelfVisit === "true" ? true : false,
+      isManager: this.$route.params.isManager === "true" ? true : false,
+      managerEmail: null,
       src: "",
       fields: [],
+      managers: [],
+      validManagerVisit: false,
     };
   },
-  mounted() {
-    if (this.isSelfVisit) {
-      if (sessionStorage.getItem("user") === null) {
-        this.$router.push("/login");
-      }
+  async mounted() {
+    await this.getManagers();
+
+    if (this.isManager) {
+      await this.getManagerData();
+      await this.isManagerForThisCenter();
     }
-    this.$store.dispatch("setLoading");
-    axios
-      .get(
-        "http://localhost:5000/api/getSportCenter/" + this.$route.params.name
-      )
-      .then((res) => {
-        this.sportCenterInfo = res.data;
-        axios
-          .get("http://localhost:5000/api/getFields/" + this.$route.params.name)
-          .then(
-            (ress) => {
-              this.fields = ress.data;
 
-              axios
-                .get(
-                  "http://localhost:5000/api/getSportCenterProfilePictureByName/" +
-                    res.data.name
-                )
-                .then((res2) => {
-                  if (res2.data) {
-                    //no image
-                    this.src = `data:${
-                      res2.data.img.contentType
-                    };base64,${Buffer.from(
-                      res2.data.img.data,
-                      "utf-8"
-                    ).toString("base64")}`;
-                  }
-                  this.done = true;
+    if (
+      this.isManager &&
+      (sessionStorage.getItem("user") === null ||
+        !this.managerEmail ||
+        !this.validManagerVisit)
+    ) {
+      this.$router.push("/login");
+    } else {
+      this.$store.dispatch("setLoading");
+      axios
+        .get(
+          "http://localhost:5000/api/getSportCenter/" + this.$route.params.name
+        )
+        .then((res) => {
+          this.sportCenterInfo = res.data;
+          axios
+            .get(
+              "http://localhost:5000/api/getFields/" + this.$route.params.name
+            )
+            .then(
+              (ress) => {
+                this.fields = ress.data;
 
-                  this.$store.dispatch("stopLoading");
-                });
-            },
-            (errr) => {
-              this.error = errr.response.data.message;
-              this.$store.dispatch("stopLoading");
-            }
-          );
-      });
+                axios
+                  .get(
+                    "http://localhost:5000/api/getSportCenterProfilePictureByName/" +
+                      res.data.name
+                  )
+                  .then((res2) => {
+                    if (res2.data) {
+                      //no image
+                      this.src = `data:${
+                        res2.data.img.contentType
+                      };base64,${Buffer.from(
+                        res2.data.img.data,
+                        "utf-8"
+                      ).toString("base64")}`;
+                    }
+                    this.done = true;
+
+                    this.$store.dispatch("stopLoading");
+                  });
+              },
+              (errr) => {
+                this.error = errr.response.data.message;
+                this.$store.dispatch("stopLoading");
+              }
+            );
+        });
+    }
   },
 
   computed: {
@@ -430,6 +473,40 @@ export default {
       );
     },
   },
+  methods: {
+    //confirm not player entering to manager as manager
+    async getManagerData() {
+      const firstRequest = await axios.get(
+        "http://localhost:5000/api/getManager/" + sessionStorage.getItem("user")
+      );
+      let data = firstRequest.data;
+      if (data) {
+        this.managerEmail = data.email;
+      } else {
+        this.managerEmail = null;
+      }
+    },
+    async getManagers() {
+      const firstRequest = await axios.get(
+        "http://localhost:5000/api/getManagersBySportCenterName/" +
+          this.$route.params.name
+      );
+      let data = firstRequest.data;
+      this.managers = data;
+    },
+    async isManagerForThisCenter() {
+      const Request = await axios.post(
+        "http://localhost:5000/api/isManagerForSportCenter",
+        {
+          email: sessionStorage.getItem("user"),
+          sportCenterName: this.$route.params.name,
+        }
+      );
+      let data = Request.data;
+
+      this.validManagerVisit = data.result;
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>
@@ -438,6 +515,9 @@ export default {
 }
 .common {
   color: white !important;
+}
+#rmv {
+  color: red !important;
 }
 :root {
   --blue: #5e72e4;
@@ -481,6 +561,22 @@ export default {
 *::before,
 *::after {
   box-sizing: border-box;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  td,
+  th {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+}
+table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+#table tr:hover {
+  background-color: #ddd;
 }
 .field-group {
   padding: 20px;
@@ -822,6 +918,11 @@ a > code {
   .container {
     max-width: 1140px;
   }
+}
+.flex-links {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .container-fluid {
@@ -1344,7 +1445,7 @@ button.bg-white:focus {
 
 @media (min-width: 768px) {
   .mt-md-5 {
-    margin-top: 3rem !important;
+    margin-top: 6rem !important;
   }
 
   .pt-md-4 {

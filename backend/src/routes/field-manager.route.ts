@@ -7,5 +7,13 @@ router.post("/newManagerProfile", managerController.createProfileInformation);
 router.patch("/updateManager/:id", managerController.updateManagerById);
 router.get("/getAllManagers", managerController.getAllManagers);
 router.get("/getManager/:email", managerController.getManagerByEmail);
+router.get(
+  "/getManagersBySportCenterName/:sportCenterName",
+  managerController.getManagersBySportCenterName
+);
+router.post(
+  "/isManagerForSportCenter",
+  managerController.isManagerForSportCenterName
+);
 
 module.exports = router;

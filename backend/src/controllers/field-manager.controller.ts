@@ -61,6 +61,29 @@ async function getManagerByEmail(req: Request, res: Response) {
     res.status(400).json({ error: error.message });
   }
 }
+async function getManagersBySportCenterName(req: Request, res: Response) {
+  try {
+    const sportCenterName = req.params.sportCenterName;
+    const managerInfo = await ManagerModel.find({ sportCenterName });
+    res.status(200).json(managerInfo);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
+async function isManagerForSportCenterName(req: Request, res: Response) {
+  try {
+    const sportCenterName = req.body.sportCenterName;
+    const email = req.body.email;
+    const managerInfo = await ManagerModel.findOne({ sportCenterName, email });
+    if (managerInfo) {
+      res.status(200).json({ result: true });
+    } else {
+      res.status(200).json({ result: false });
+    }
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
 async function getAllManagers(req: Request, res: Response) {
   try {
     res.status(200).json(await ManagerModel.find());
@@ -74,4 +97,6 @@ module.exports = {
   getManagerByEmail,
   getAllManagers,
   updateManagerById,
+  getManagersBySportCenterName,
+  isManagerForSportCenterName,
 };

@@ -56,7 +56,7 @@ const routes = [
     component: managerHomePage,
   },
   {
-    path: "/sport-center-view/:name/:isSelfVisit",
+    path: "/sport-center-view/:name/:isManager",
     name: "sportCenterView",
     component: sportCenterView,
   },

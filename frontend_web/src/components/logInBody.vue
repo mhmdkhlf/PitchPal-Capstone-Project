@@ -39,6 +39,7 @@ export default {
       email: "",
       password: "",
       error: null,
+      role: null,
     };
   },
   components: {
@@ -79,20 +80,38 @@ export default {
           (res) => {
             if (res.status === 200) {
               sessionStorage.setItem("user", res.data.email);
-              axios
-                .post("http://localhost:5000/api/isFirstTimeLogIn", {
-                  userType: "player",
-                  userEmail: this.email,
-                })
-                .then((res) => {
-                  if (res.data.result) {
-                    this.$store.dispatch("stopLoading");
-                    this.$router.push("/first-player-profile");
-                  } else {
-                    this.$store.dispatch("stopLoading");
-                    this.$router.push("/");
-                  }
-                });
+              this.role = res.data.user.role;
+              if (this.role === "player") {
+                axios
+                  .post("http://localhost:5000/api/isFirstTimeLogIn", {
+                    userType: "player",
+                    userEmail: this.email,
+                  })
+                  .then((res) => {
+                    if (res.data.result) {
+                      this.$store.dispatch("stopLoading");
+                      this.$router.push("/first-player-profile");
+                    } else {
+                      this.$store.dispatch("stopLoading");
+                      this.$router.push("/");
+                    }
+                  });
+              } else {
+                axios
+                  .post("http://localhost:5000/api/isFirstTimeLogIn", {
+                    userType: "manager",
+                    userEmail: this.email,
+                  })
+                  .then((res) => {
+                    if (res.data.result) {
+                      this.$store.dispatch("stopLoading");
+                      this.$router.push("/first-manager-profile");
+                    } else {
+                      this.$store.dispatch("stopLoading");
+                      this.$router.push("/manager-home-page");
+                    }
+                  });
+              }
             }
           },
           (err) => {
