@@ -1,93 +1,200 @@
-import {Request, Response} from 'express';
-const reservationModel = require('../models/reservation.model');
-const fieldModel = require('../models/field.model');
+import { Request, Response } from "express";
+const reservationModel = require("../models/reservation.model");
+const fieldModel = require("../models/field.model");
 
 async function makeReservation(req: Request, res: Response) {
-    const {reserverID, reserverType, fieldID, isPublic, reservationTimeAndDate,
-         comment, teamOneIds, teamTwoIds} = req.body;
-    const reservationDetails = {
-        reserverID,
-        reserverType,
-        fieldID,
-        isPublic,
-        reservationTimeAndDate,
-        comment,
-        teamOneIds,
-        teamTwoIds
-    }
-    try {
-        const reservationInfo = await reservationModel.create(reservationDetails)
-       res.status(200).json(reservationInfo);
-    }
-    catch (error) {
-        res.status(400).json({ message: error.message });
-    }
+  const {
+    reserverID,
+    reserverType,
+    fieldID,
+    isPublic,
+    comment,
+    teamOneIds,
+    teamTwoIds,
+    reservationStatus,
+    reservationDate, //should be today date in this form `"2022-06-17"`; (ie when reservation occurs)
+    reservationTime,
+    sportCenterName,
+  } = req.body;
+  const reservationDetails = {
+    sportCenterName,
+    reserverID,
+    reserverType,
+    fieldID,
+    isPublic,
+    reservationStatus,
+    reservationDate,
+    reservationTime,
+    comment,
+    teamOneIds,
+    teamTwoIds,
+  };
+  try {
+    const reservationInfo = await reservationModel.create(reservationDetails);
+    res.status(200).json(reservationInfo);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 }
+//today notifications for managers
+async function getAllPendingReservationsBySportCenterForToday(
+  req: Request,
+  res: Response
+) {
+  let currentDate = new Date().toJSON().slice(0, 10);
+  try {
+    const sportCenterName = req.params.sportCenterName;
+    const reservationInfo = await reservationModel.find({
+      reservationStatus: "pending",
+      sportCenterName,
+      reservationDate: currentDate,
+    });
+    res.status(200).json(reservationInfo);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
+//all notifications for managers
+async function getAllPendingReservationsBySportCenterForTodayAndAfter(
+  req: Request,
+  res: Response
+) {
+  let currentDate = new Date().toJSON().slice(0, 10);
+  try {
+    const sportCenterName = req.params.sportCenterName;
+    const reservationInfo = await reservationModel.find({
+      reservationStatus: "pending",
+      sportCenterName,
+      reservationDate: { $gte: currentDate },
+    });
+    res.status(200).json(reservationInfo);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
+
+//after the manager responds: (ie change to accepted or rejected)
+async function editReservationStatus(req: Request, res: Response) {
+  try {
+    let id = req.params.reservationId;
+    let status = req.body.status;
+    let updatedData = { reservationStatus: status };
+    let options = { new: true };
+    let result = await reservationModel.findByIdAndUpdate(
+      id,
+      updatedData,
+      options
+    );
+    res.send(result);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
+
 async function addPlayerToTeam(req: Request, res: Response) {
-    const {reservationId, playerId, teamNumber} = req.body
-    const reservationDoc = await reservationModel.findOne({_id:reservationId})
-    if (teamNumber === 1){
-        reservationDoc.teamOneIds.push(playerId);
-    }else{ //team 2
-        reservationDoc.teamTwoIds.push(playerId);
-    }
-    try {
-        const reservationInfo = await reservationDoc.save();
-       res.status(200).json(reservationInfo)
-    }
-    catch (error) {
-        res.status(400).json({ message: error.message });
-    }
+  const { reservationId, playerId, teamNumber } = req.body;
+  const reservationDoc = await reservationModel.findOne({ _id: reservationId });
+  if (teamNumber === 1) {
+    reservationDoc.teamOneIds.push(playerId);
+  } else {
+    //team 2
+    reservationDoc.teamTwoIds.push(playerId);
+  }
+  try {
+    const reservationInfo = await reservationDoc.save();
+    res.status(200).json(reservationInfo);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 }
 async function updateTeamPlayers(req: Request, res: Response) {
-    const {reservationId, teamNumber, playerIds} = req.body;
-    const reservationDoc = await reservationModel.findOne({_id:reservationId});
-    if (teamNumber === 1){
-        reservationDoc.teamOneIds = playerIds;
-    }else {//team 2
-        reservationDoc.teamTwoIds = playerIds;
-    }
-    try {
-        const reservationInfo = await reservationDoc.save();
-       res.status(200).json(reservationInfo)
-    }
-    catch (error) {
-        res.status(400).json({ message: error.message });
-    }
+  const { reservationId, teamNumber, playerIds } = req.body;
+  const reservationDoc = await reservationModel.findOne({ _id: reservationId });
+  if (teamNumber === 1) {
+    reservationDoc.teamOneIds = playerIds;
+  } else {
+    //team 2
+    reservationDoc.teamTwoIds = playerIds;
+  }
+  try {
+    const reservationInfo = await reservationDoc.save();
+    res.status(200).json(reservationInfo);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 }
-
-async function getAllPublicReservations(req: Request, res: Response) {
-    try{
-        const reservationInfo = await reservationModel.find({isPublic:true});
-        res.status(200).json(reservationInfo);
-    }catch(error){
-        res.status(400).json(error.message);
-    }
+//for views so that any player can join
+async function getAllPublicReservationsOfToday(req: Request, res: Response) {
+  try {
+    let currentDate = new Date().toJSON().slice(0, 10);
+    const reservationInfo = await reservationModel.find({
+      isPublic: true,
+      reservationDate: currentDate,
+      reservationStatus: "accepted",
+    });
+    res.status(200).json(reservationInfo);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
 }
-async function helper(field:any){
-    const fieldID = field._id;
-    const reservationsByField = await reservationModel.find({fieldID,isPublic:true})
-    return {fieldId: fieldID, reservations: reservationsByField}
-
+//get all acceptedfor today by sport Center Name
+async function getAllReservationsOfTodayBysportCenterName(
+  req: Request,
+  res: Response
+) {
+  try {
+    let currentDate = new Date().toJSON().slice(0, 10);
+    let sportCenterName = req.params.sportCenterName;
+    const reservationInfo = await reservationModel.find({
+      sportCenterName,
+      reservationDate: currentDate,
+      reservationStatus: "accepted",
+    });
+    res.status(200).json(reservationInfo);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
 }
-async function getReservationsBySportCenterName(req: Request, res: Response) {
-    const sportCenterName = req.params.sportCenterName;
-    try{
-        const fieldInfo = await fieldModel.find({sportCenterName});
-        const reservations = await Promise.all(fieldInfo.map(helper));
-        res.status(200).json(reservations);
-    }catch(error){
-        res.status(400).json(error.message);
-    }
+//all accepted and valid ones
+async function getAccepteddReservationsBySportCenterNameOfTodayAndAfter(
+  req: Request,
+  res: Response
+) {
+  const sportCenterName = req.params.sportCenterName;
+  let currentDate = new Date().toJSON().slice(0, 10);
+  try {
+    const reservations = await reservationModel.find({
+      sportCenterName,
+      reservationStatus: "accepted",
+      reservationDate: { $gte: currentDate },
+    });
+    res.status(200).json(reservations);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
 }
 async function getReservationsByReserverId(req: Request, res: Response) {
-    const reserverID = req.params.reserverId
-    try{
-        const reservationInfo = await reservationModel.find({reserverID, isPublic:true});
-        res.status(200).json(reservationInfo);
-    }catch(error){
-        res.status(400).json(error.message);
-    }
+  const reserverID = req.params.reserverId;
+  try {
+    const reservationInfo = await reservationModel.find({
+      reserverID,
+      isPublic: true,
+    });
+    res.status(200).json(reservationInfo);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
 }
 
-module.exports = {makeReservation, addPlayerToTeam, getAllPublicReservations, getReservationsBySportCenterName, getReservationsByReserverId, updateTeamPlayers};
+module.exports = {
+  makeReservation,
+  addPlayerToTeam,
+  getAllPendingReservationsBySportCenterForToday,
+  getAllPendingReservationsBySportCenterForTodayAndAfter,
+  getReservationsByReserverId,
+  updateTeamPlayers,
+  editReservationStatus,
+  getAllPublicReservationsOfToday,
+  getAccepteddReservationsBySportCenterNameOfTodayAndAfter,
+  getAllReservationsOfTodayBysportCenterName,
+};
