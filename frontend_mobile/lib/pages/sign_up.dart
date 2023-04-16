@@ -22,9 +22,6 @@ class _SignUpPageState extends State<SignUpPage> {
   late Role role = Role.player;
 
   void signUpUser() async {
-    final String apiRoute = Platform.isAndroid
-        ? 'http://10.0.2.2:5000/api'
-        : 'http://localhost:5000/api';
     if (!confirmPassword()) {
       showDialog(
         context: context,
@@ -47,7 +44,7 @@ class _SignUpPageState extends State<SignUpPage> {
       password: passwordController.text,
       role: role,
     );
-    final dio = Dio();
+    final Dio dio = Dio();
     try {
       Response response = await dio.post(
         '$apiRoute/signUp',

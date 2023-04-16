@@ -36,10 +36,6 @@ class _LoginPageState extends State<LogInPage> {
   final passwordController = TextEditingController();
 
   void logUserIn() async {
-    final Dio dio = Dio();
-    final String apiRoute = Platform.isAndroid
-        ? 'http://10.0.2.2:5000/api'
-        : 'http://localhost:5000/api';
     showDialog(
       context: context,
       builder: (context) {
@@ -48,14 +44,14 @@ class _LoginPageState extends State<LogInPage> {
         );
       },
     );
-    final LogInRequest auth = LogInRequest(
-      email: emailController.text,
-      password: passwordController.text,
-    );
+    final Dio dio = Dio();
     try {
       Response logInResponse = await dio.post(
         '$apiRoute/logIn',
-        data: auth.toJsonMap(),
+        data: LogInRequest(
+          email: emailController.text,
+          password: passwordController.text,
+        ).toJsonMap(),
       );
       String email = logInResponse.data['email'];
       String role = logInResponse.data['user']['role'];
@@ -106,6 +102,7 @@ class _LoginPageState extends State<LogInPage> {
   }
 
   void _routePlayerToHomePage(String email) async {
+    final Dio dio = Dio();
     final response = await dio.get(
       '$apiRoute/getPlayerByEmail/$email',
     );
@@ -133,6 +130,7 @@ class _LoginPageState extends State<LogInPage> {
   }
 
   void _routeFieldManagerToHomePage(String email) async {
+    final Dio dio = Dio();
     final response = await dio.get(
       '$apiRoute/getManager/$email',
     );

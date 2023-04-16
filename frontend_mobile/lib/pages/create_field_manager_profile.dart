@@ -31,11 +31,6 @@ class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
   final sportCenterController = TextEditingController();
   bool isSportCenterRegistered = true;
 
-  final dio = Dio();
-  final String apiRoute = Platform.isAndroid
-      ? 'http://10.0.2.2:5000/api'
-      : 'http://localhost:5000/api';
-
   void createProfile() async {
     if (nameController.text.isEmpty || sportCenterController.text.isEmpty) {
       showDialog(
@@ -65,6 +60,7 @@ class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
         );
       },
     );
+    final Dio dio = Dio();
     final String fullName = nameController.text;
     final String email = widget.emailFromLogIn;
     final String phoneNumber = phoneNumberInput.getPhoneNumberString();

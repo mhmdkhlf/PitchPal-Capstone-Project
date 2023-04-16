@@ -13,10 +13,7 @@ class ProfilePicture {
 Future<Uint8List?> uploadImage(
     ProfilePicture profilePicture, String email) async {
   if (profilePicture.path == defaultProfilePath) return null;
-  final dio = Dio();
-  final String apiRoute = Platform.isAndroid
-      ? 'http://10.0.2.2:5000/api'
-      : 'http://localhost:5000/api';
+  final Dio dio = Dio();
   try {
     File image = File(profilePicture.path);
     String filePath = image.path;

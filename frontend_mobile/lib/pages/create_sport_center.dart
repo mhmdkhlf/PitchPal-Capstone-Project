@@ -14,11 +14,6 @@ import '../components/time_input.dart';
 import '../components/location_input.dart';
 import '../constants.dart';
 
-final dio = Dio();
-final String apiRoute = Platform.isAndroid
-    ? 'http://10.0.2.2:5000/api'
-    : 'http://localhost:5000/api';
-
 class CreateSportCenter extends StatefulWidget {
   const CreateSportCenter({super.key});
 
@@ -56,6 +51,7 @@ class _CreateSportCenterState extends State<CreateSportCenter> {
         );
       },
     );
+    final Dio dio = Dio();
     // TODO validate inputs (sport center and child fields)
     final String sportCenterName = sportCenterNameController.text;
     final String phoneNumber = phoneNumberInput.getPhoneNumberString();
@@ -116,7 +112,7 @@ class _CreateSportCenterState extends State<CreateSportCenter> {
 
   Future<LongLat> _getPositionFromLink(String googleMapsLink) async {
     try {
-      final response = await dio.post(
+      final response = await Dio().post(
         '$apiRoute/linkToCoordinates',
         data: {"link": googleMapsLink},
       );
@@ -468,6 +464,7 @@ class FieldInput {
       recommendedTeamSize:
           int.tryParse(recommendedTeamSizeController.text) ?? 0,
     );
+    final Dio dio = Dio();
     try {
       final response = await dio.post(
         '$apiRoute/newField',

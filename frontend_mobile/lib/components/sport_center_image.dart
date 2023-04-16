@@ -12,10 +12,7 @@ class SportCenterPicture {
 Future<void> uploadImage(
     SportCenterPicture sportCenterPicture, String sportCenterName) async {
   if (sportCenterPicture.path == defaultSportCenterImagePath) return;
-  final dio = Dio();
-  final String apiRoute = Platform.isAndroid
-      ? 'http://10.0.2.2:5000/api'
-      : 'http://localhost:5000/api';
+  final Dio dio = Dio();
   try {
     File image = File(sportCenterPicture.path);
     String filePath = image.path;
