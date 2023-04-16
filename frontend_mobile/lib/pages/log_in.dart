@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
@@ -11,7 +10,7 @@ import 'package:frontend_mobile/pages/create_sport_center.dart';
 import 'package:frontend_mobile/pages/create_field_manager_profile.dart';
 import '../components/submit_button.dart';
 import '../components/textfield_input.dart';
-import '../components/failed_request_dialog.dart';
+import '../components/response_dialog_box.dart';
 import '../data/auth.dart';
 import '../data/player.dart';
 import '../data/field_manager.dart';
@@ -84,7 +83,7 @@ class _LoginPageState extends State<LogInPage> {
           showDialog(
             context: context,
             builder: (context) {
-              return FailedRequestDialog(errorText: error);
+              return ResponseDialogBox(text: error);
             },
           );
         }
@@ -95,7 +94,7 @@ class _LoginPageState extends State<LogInPage> {
       showDialog(
         context: context,
         builder: (context) {
-          return FailedRequestDialog(errorText: error);
+          return ResponseDialogBox(text: error);
         },
       );
     }

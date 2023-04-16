@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import '../constants.dart';
 
-class FailedRequestDialog extends StatelessWidget {
-  const FailedRequestDialog({
+class ResponseDialogBox extends StatelessWidget {
+  const ResponseDialogBox({
     super.key,
-    required this.errorText,
+    required this.text,
   });
 
-  final String errorText;
+  final String text;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class FailedRequestDialog extends StatelessWidget {
       ),
       title: Center(
         child: Text(
-          errorText,
+          text,
           style: const TextStyle(
             color: kDarkColor,
             fontSize: 16,

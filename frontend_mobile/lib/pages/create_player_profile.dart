@@ -1,7 +1,6 @@
-import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend_mobile/components/failed_request_dialog.dart';
+import 'package:frontend_mobile/components/response_dialog_box.dart';
 import 'package:intl/intl.dart';
 import 'package:frontend_mobile/pages/player_home.dart';
 import '../components/textfield_input.dart';
@@ -45,20 +44,18 @@ class _PlayerCreateProfileState extends State<PlayerCreateProfile> {
         heightController.text.isEmpty) {
       showDialog(
         context: context,
-        builder: (context) {
-          return const FailedRequestDialog(
-              errorText: 'You didn\'t answer all required fields');
-        },
+        builder: (context) => const ResponseDialogBox(
+          text: 'You didn\'t answer all required fields',
+        ),
       );
       return;
     }
     if (!phoneNumberInput.isPhoneNumberValid()) {
       showDialog(
         context: context,
-        builder: (context) {
-          return const FailedRequestDialog(
-              errorText: 'Phone Number is not filled correctly');
-        },
+        builder: (context) => const ResponseDialogBox(
+          text: 'Phone Number is not filled correctly',
+        ),
       );
       return;
     }
@@ -108,6 +105,12 @@ class _PlayerCreateProfileState extends State<PlayerCreateProfile> {
             builder: (context) => PlayerHomePage(
               player: player,
             ),
+          ),
+        );
+        showDialog(
+          context: context,
+          builder: (context) => const ResponseDialogBox(
+            text: 'You Successfully created your Player account',
           ),
         );
       }

@@ -26,7 +26,7 @@ class _TimeInputState extends State<TimeInput> {
     final minute = widget.timeInput.minute.toString().padLeft(2, '0');
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        elevation: 5,
+        elevation: 3,
         backgroundColor: kPrimaryColor,
         shape: const StadiumBorder(),
         side: const BorderSide(

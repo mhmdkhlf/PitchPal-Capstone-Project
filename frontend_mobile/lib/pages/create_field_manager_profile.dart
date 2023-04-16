@@ -1,9 +1,8 @@
-import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/pages/field_manager_home.dart';
 import 'package:frontend_mobile/pages/create_sport_center.dart';
-import '../components/failed_request_dialog.dart';
+import '../components/response_dialog_box.dart';
 import '../components/phone_number_input.dart';
 import '../components/profile_picture.dart';
 import '../components/submit_button.dart';
@@ -35,20 +34,18 @@ class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
     if (nameController.text.isEmpty || sportCenterController.text.isEmpty) {
       showDialog(
         context: context,
-        builder: (context) {
-          return const FailedRequestDialog(
-              errorText: 'You didn\'t answer all required fields');
-        },
+        builder: (context) => const ResponseDialogBox(
+          text: 'You didn\'t answer all required fields',
+        ),
       );
       return;
     }
     if (!phoneNumberInput.isPhoneNumberValid()) {
       showDialog(
         context: context,
-        builder: (context) {
-          return const FailedRequestDialog(
-              errorText: 'Phone Number is not filled correctly');
-        },
+        builder: (context) => const ResponseDialogBox(
+          text: 'Phone Number is not filled correctly',
+        ),
       );
       return;
     }
@@ -90,6 +87,12 @@ class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
             ),
           ),
         );
+        showDialog(
+          context: context,
+          builder: (context) => const ResponseDialogBox(
+            text: 'You Successfully created your Field-Manager account',
+          ),
+        );
       }
     } on DioError catch (e) {
       String error = e.response?.data['error'];
@@ -98,7 +101,7 @@ class _FieldManagerCreateProfileState extends State<FieldManagerCreateProfile> {
         showDialog(
           context: context,
           builder: (context) {
-            return FailedRequestDialog(errorText: error);
+            return ResponseDialogBox(text: error);
           },
         );
       }

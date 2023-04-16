@@ -1,10 +1,9 @@
-import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/pages/log_in.dart';
 import '../components/textfield_input.dart';
 import '../components/submit_button.dart';
-import '../components/failed_request_dialog.dart';
+import '../components/response_dialog_box.dart';
 import '../data/auth.dart';
 import '../constants.dart';
 
@@ -26,7 +25,7 @@ class _SignUpPageState extends State<SignUpPage> {
       showDialog(
         context: context,
         builder: (context) {
-          return const FailedRequestDialog(errorText: 'Passwords do not match');
+          return const ResponseDialogBox(text: 'Passwords do not match');
         },
       );
       return;
@@ -69,7 +68,7 @@ class _SignUpPageState extends State<SignUpPage> {
       showDialog(
         context: context,
         builder: (context) {
-          return FailedRequestDialog(errorText: error);
+          return ResponseDialogBox(text: error);
         },
       );
     }
