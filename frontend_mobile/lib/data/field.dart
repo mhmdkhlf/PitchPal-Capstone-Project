@@ -27,7 +27,7 @@ class Field {
       fieldLength: json['fieldLength'],
       fieldWidth: json['fieldWidth'],
       reservationPrice: json['reservationPrice'],
-      grassType: Grass.values.firstWhere((e) => e.value == json['sex']),
+      grassType: Grass.values.firstWhere((e) => e.value == json['grassType']),
       recommendedTeamSize: json['recommendedTeamSize'],
     );
   }

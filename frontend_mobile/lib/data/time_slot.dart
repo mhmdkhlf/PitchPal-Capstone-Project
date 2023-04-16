@@ -31,6 +31,6 @@ class TimeSlot {
 
   @override
   String toString() {
-    return 'uuid: $uuid; startTime: $startTime; endTime: $endTime';
+    return '$startTime - $endTime';
   }
 }

@@ -21,7 +21,7 @@ class ViewFieldManagerProfile extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 15),
+                const SizedBox(height: 40),
                 CircleAvatar(
                   radius: 81.0,
                   backgroundColor: kDarkColor,
@@ -48,9 +48,9 @@ class ViewFieldManagerProfile extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 15),
                 const Divider(color: kDarkColor),
-                const SizedBox(height: 7),
+                const SizedBox(height: 15),
                 const Text(
                   'Contact Info',
                   style: TextStyle(
