@@ -34,7 +34,12 @@
                       <h3 id="go-to-sport-center" @click="goToSportCenter()">
                         {{ managerInfo.sportCenterName }}
                       </h3>
-                      <a href="#" v-if="isSelfVisit">Edit Profile</a>
+                      <div class="flex-links">
+                        <a href="#" v-if="isSelfVisit">Edit Your Profile</a>
+                        <a href="#" id="rmv" v-if="isSelfVisit"
+                          >Deactivate Your Account</a
+                        >
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -160,15 +165,39 @@ export default {
       done: false,
       isSelfVisit: this.$route.params.isSelfVisit === "true" ? true : false,
       src: "",
+      managerData: null,
     };
   },
-  mounted() {
+  methods: {
+    async getManagerData() {
+      const firstRequest = await axios.get(
+        "http://localhost:5000/api/getManager/" + sessionStorage.getItem("user")
+      );
+      let data = firstRequest.data;
+      if (data) {
+        this.managerData = data;
+      } else {
+        this.managerData = null;
+      }
+    },
+    goToSportCenter() {
+      this.$router.push("/sport-center-view");
+    },
+  },
+  async mounted() {
+    this.$store.dispatch("setLoading");
     if (this.isSelfVisit) {
-      if (sessionStorage.getItem("user") === null) {
+      await this.getManagerData();
+      if (
+        sessionStorage.getItem("user") === null ||
+        !this.managerData ||
+        this.$route.params.email !== this.managerData.email
+      ) {
+        this.$store.dispatch("stopLoading");
         this.$router.push("/login");
       }
     }
-    this.$store.dispatch("setLoading");
+
     axios
       .get("http://localhost:5000/api/getManager/" + this.$route.params.email)
       .then((res) => {
@@ -199,16 +228,19 @@ export default {
       return this.$store.state.isLoading;
     },
   },
-  methods: {
-    goToSportCenter() {
-      this.$router.push("/sport-center-view");
-    },
-  },
 };
 </script>
 <style lang="scss" scoped>
 * {
   color: #2dce89 !important;
+}
+#rmv {
+  color: red !important;
+}
+.flex-links {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 #go-to-sport-center {
   cursor: pointer;
@@ -501,12 +533,7 @@ h1,
 h3,
 h4,
 h5,
-h6,
-.h1,
-.h3,
-.h4,
-.h5,
-.h6 {
+h6 {
   font-family: inherit;
   font-weight: 600;
   line-height: 1.5;
@@ -514,28 +541,23 @@ h6,
   color: #32325d;
 }
 
-h1,
-.h1 {
+h1 {
   font-size: 1.625rem;
 }
 
-h3,
-.h3 {
+h3 {
   font-size: 1.0625rem;
 }
 
-h4,
-.h4 {
+h4 {
   font-size: 0.9375rem;
 }
 
-h5,
-.h5 {
+h5 {
   font-size: 0.8125rem;
 }
 
-h6,
-.h6 {
+h6 {
   font-size: 0.625rem;
 }
 
@@ -560,38 +582,6 @@ code {
 
 a > code {
   color: inherit;
-}
-
-.container {
-  width: 100%;
-  margin-right: auto;
-  margin-left: auto;
-  padding-right: 15px;
-  padding-left: 15px;
-}
-
-@media (min-width: 576px) {
-  .container {
-    max-width: 540px;
-  }
-}
-
-@media (min-width: 768px) {
-  .container {
-    max-width: 720px;
-  }
-}
-
-@media (min-width: 992px) {
-  .container {
-    max-width: 960px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .container {
-    max-width: 1140px;
-  }
 }
 
 .container-fluid {
@@ -645,11 +635,6 @@ a > code {
 }
 
 @media (min-width: 768px) {
-  .col-md-10 {
-    max-width: 83.33333%;
-    flex: 0 0 83.33333%;
-  }
-
   .col-md-12 {
     max-width: 100%;
     flex: 0 0 100%;
@@ -657,24 +642,9 @@ a > code {
 }
 
 @media (min-width: 992px) {
-  .col-lg-3 {
-    max-width: 25%;
-    flex: 0 0 25%;
-  }
-
-  .col-lg-4 {
-    max-width: 33.33333%;
-    flex: 0 0 33.33333%;
-  }
-
   .col-lg-6 {
     max-width: 50%;
     flex: 0 0 50%;
-  }
-
-  .col-lg-7 {
-    max-width: 58.33333%;
-    flex: 0 0 58.33333%;
   }
 
   .order-lg-2 {
@@ -793,168 +763,6 @@ textarea.form-control {
   }
 }
 
-.btn {
-  font-size: 1rem;
-  font-weight: 600;
-  line-height: 1.5;
-  display: inline-block;
-  padding: 0.625rem 1.25rem;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
-    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  text-align: center;
-  vertical-align: middle;
-  white-space: nowrap;
-  border: 1px solid transparent;
-  border-radius: 0.375rem;
-}
-
-@media screen and (prefers-reduced-motion: reduce) {
-  .btn {
-    transition: none;
-  }
-}
-
-.btn:hover,
-.btn:focus {
-  text-decoration: none;
-}
-
-.btn:focus {
-  outline: 0;
-  box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
-}
-
-.btn:disabled {
-  opacity: 0.65;
-  box-shadow: none;
-}
-
-.btn:not(:disabled):not(.disabled) {
-  cursor: pointer;
-}
-
-.btn:not(:disabled):not(.disabled):active {
-  box-shadow: none;
-}
-
-.btn:not(:disabled):not(.disabled):active:focus {
-  box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08),
-    none;
-}
-
-.btn-primary {
-  color: #fff;
-  border-color: #5e72e4;
-  background-color: #5e72e4;
-  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.btn-primary:hover {
-  color: #fff;
-  border-color: #5e72e4;
-  background-color: #5e72e4;
-}
-
-.btn-primary:focus {
-  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08),
-    0 0 0 0 rgba(94, 114, 228, 0.5);
-}
-
-.btn-primary:disabled {
-  color: #fff;
-  border-color: #5e72e4;
-  background-color: #5e72e4;
-}
-
-.btn-primary:not(:disabled):not(.disabled):active {
-  color: #fff;
-  border-color: #5e72e4;
-  background-color: #324cdd;
-}
-
-.btn-primary:not(:disabled):not(.disabled):active:focus {
-  box-shadow: none, 0 0 0 0 rgba(94, 114, 228, 0.5);
-}
-
-.btn-info {
-  color: #fff;
-  border-color: #11cdef;
-  background-color: #11cdef;
-  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.btn-info:hover {
-  color: #fff;
-  border-color: #11cdef;
-  background-color: #11cdef;
-}
-
-.btn-info:focus {
-  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08),
-    0 0 0 0 rgba(17, 205, 239, 0.5);
-}
-
-.btn-info:disabled {
-  color: #fff;
-  border-color: #11cdef;
-  background-color: #11cdef;
-}
-
-.btn-info:not(:disabled):not(.disabled):active {
-  color: #fff;
-  border-color: #11cdef;
-  background-color: #0da5c0;
-}
-
-.btn-info:not(:disabled):not(.disabled):active:focus {
-  box-shadow: none, 0 0 0 0 rgba(17, 205, 239, 0.5);
-}
-
-.btn-default {
-  color: #fff;
-  border-color: #172b4d;
-  background-color: #172b4d;
-  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.btn-default:hover {
-  color: #fff;
-  border-color: #172b4d;
-  background-color: #172b4d;
-}
-
-.btn-default:focus {
-  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08),
-    0 0 0 0 rgba(23, 43, 77, 0.5);
-}
-
-.btn-default:disabled {
-  color: #fff;
-  border-color: #172b4d;
-  background-color: #172b4d;
-}
-
-.btn-default:not(:disabled):not(.disabled):active {
-  color: #fff;
-  border-color: #172b4d;
-  background-color: #0b1526;
-}
-
-.btn-default:not(:disabled):not(.disabled):active:focus {
-  box-shadow: none, 0 0 0 0 rgba(23, 43, 77, 0.5);
-}
-
-.btn-sm {
-  font-size: 0.875rem;
-  line-height: 1.5;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.375rem;
-}
-
 .card {
   position: relative;
   display: flex;
@@ -1046,12 +854,6 @@ button.bg-white:focus {
 
 .align-items-center {
   align-items: center !important;
-}
-
-@media (min-width: 1200px) {
-  .justify-content-xl-between {
-    justify-content: space-between !important;
-  }
 }
 
 .float-right {

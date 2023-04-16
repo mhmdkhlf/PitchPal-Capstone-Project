@@ -91,7 +91,12 @@
                   <p>
                     {{ playerInfo.description }}
                   </p>
-                  <a href="#" v-if="isSelfVisit">Edit Profile</a>
+                  <div class="flex-links">
+                    <a href="#" v-if="isSelfVisit">Edit Your Profile</a>
+                    <a href="#" id="rmv" v-if="isSelfVisit"
+                      >Deactivate Your Account</a
+                    >
+                  </div>
                 </div>
               </div>
             </div>
@@ -293,15 +298,37 @@ export default {
       done: false,
       isSelfVisit: this.$route.params.isSelfVisit === "true" ? true : false,
       src: "",
+      playerdata: null,
     };
   },
-  mounted() {
+  methods: {
+    async getPlayerData() {
+      const firstRequest = await axios.get(
+        "http://localhost:5000/api/getPlayerByEmail/" +
+          sessionStorage.getItem("user")
+      );
+      let data = firstRequest.data;
+      if (data) {
+        this.playerdata = data;
+      } else {
+        this.playerdata = null;
+      }
+    },
+  },
+  async mounted() {
+    this.$store.dispatch("setLoading");
     if (this.isSelfVisit) {
-      if (sessionStorage.getItem("user") === null) {
+      await this.getPlayerData();
+      if (
+        sessionStorage.getItem("user") === null ||
+        !this.playerdata ||
+        this.playerdata.playerID !== this.$route.params.id
+      ) {
+        this.$store.dispatch("stopLoading");
         this.$router.push("/login");
       }
     }
-    this.$store.dispatch("setLoading");
+
     axios
       .get("http://localhost:5000/api/getPlayer/" + this.$route.params.id)
       .then((res) => {
@@ -359,6 +386,14 @@ export default {
 }
 .common {
   color: white !important;
+}
+#rmv {
+  color: red !important;
+}
+.flex-links {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 :root {
   --blue: #5e72e4;

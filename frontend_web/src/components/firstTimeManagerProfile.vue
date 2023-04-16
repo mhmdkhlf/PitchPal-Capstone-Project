@@ -68,7 +68,9 @@ export default {
   data() {
     return {
       name: "",
-      email: "",
+      email: sessionStorage.getItem("user")
+        ? sessionStorage.getItem("user")
+        : "",
       phone: "",
       centerName: "",
       error: null,
