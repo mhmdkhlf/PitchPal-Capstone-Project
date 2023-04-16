@@ -13,7 +13,7 @@ class LongLat {
 
 Future<String> getCurrentAdress(LongLat position) async {
   String address;
-  final dio = Dio();
+  final Dio dio = Dio();
   final response = await dio.get(
     'https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${position.latitude}&longitude=${position.longitude}&localityLanguage=en',
   );

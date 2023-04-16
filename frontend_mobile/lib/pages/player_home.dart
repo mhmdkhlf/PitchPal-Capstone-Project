@@ -37,6 +37,49 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
         ),
       );
     }
+    if (_selectNavBarItemIndex == 1) {
+      // TODO: Connect Search to backend by getAllSportCenters API call
+      // TODO: after connecting to backend fix the look and display of cards
+      // use the code below as a template for displaying sports center
+      //when player decides to search
+      return Padding(
+        padding: const EdgeInsets.all(10),
+        child: Card(
+          elevation: 10,
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20))),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const ListTile(
+                leading: Icon(Icons.album),
+                title: Text('Flutter Card Image Example'),
+                subtitle: Text('An example flutter card with image'),
+              ),
+              Container(
+                alignment: Alignment.center,
+                child: Image.asset(defaultSportCenterImagePath),
+              ),
+              ButtonTheme(
+                child: ButtonBar(
+                  children: [
+                    ElevatedButton(
+                      child: const Text('Google Maps'),
+                      onPressed: () {/* ... */},
+                    ),
+                    ElevatedButton(
+                      child: const Text('Show More'),
+                      onPressed: () {/* ... */},
+                    ),
+                    const SizedBox(width: 5),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     return ViewPlayerProfile(player: widget.player);
   }
 
@@ -62,6 +105,10 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Sport-Centers',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

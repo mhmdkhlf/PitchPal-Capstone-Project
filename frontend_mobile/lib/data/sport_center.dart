@@ -1,14 +1,18 @@
+import 'dart:typed_data';
+import 'field.dart';
 import 'location.dart';
 import 'time_slot.dart';
 
 class SportCenter {
   String? uuid;
+  Uint8List? imageByteArray;
   final String name;
   final String locationLink;
   final Location location;
   final String phoneNumber;
   final int nbOfFields;
   final TimeSlot workingHours;
+  List<Field> fields = [];
   String? linkToFB;
   String? linkToInsta;
   List<Facility>? facilitiesAvailable;
@@ -40,10 +44,12 @@ class SportCenter {
       locationLink: json['locationLink'],
       phoneNumber: json['phoneNumber'],
       nbOfFields: json['nbOfFields'],
-      workingHours: json['workingHours'],
+      workingHours: TimeSlot.fromJson(json['workingHours']),
       linkToFB: json['linkToFB'],
       linkToInsta: json['linkToInsta'],
-      facilitiesAvailable: json['facilitiesAvailable'],
+      facilitiesAvailable: (json['facilitiesAvailable'] as List<dynamic>)
+          .map((e) => Facility.fromJson(e))
+          .toList(),
       staffServiceAverageRating: json['staffServiceAverageRating'],
       facilityQualityAverageRating: json['facilityQualityAverageRating'],
       nbOfRatings: json['nbOfRatings'],

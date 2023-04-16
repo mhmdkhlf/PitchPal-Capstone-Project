@@ -1,10 +1,5 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'pages/log_in.dart';
-
-final String apiRoute = Platform.isAndroid
-    ? 'http://10.0.2.2:5000/api'
-    : 'http://localhost:5000/api';
 
 void main() async => runApp(const MyApp());
 
@@ -31,7 +26,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Pitch-Pal',
       theme: ThemeData(primarySwatch: materialColor),
-      home: LogInPage(apiRoute: apiRoute),
+      home: const LogInPage(),
       builder: (context, child) => MediaQuery(
         data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
         child: child!,

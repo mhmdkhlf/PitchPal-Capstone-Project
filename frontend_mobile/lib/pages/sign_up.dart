@@ -1,16 +1,14 @@
-import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:frontend_mobile/pages/log_in.dart';
 import '../components/textfield_input.dart';
 import '../components/submit_button.dart';
-import '../components/failed_request_dialog.dart';
+import '../components/response_dialog_box.dart';
 import '../data/auth.dart';
 import '../constants.dart';
 
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key, required this.apiRoute});
-
-  final String apiRoute;
+  const SignUpPage({super.key});
 
   @override
   State<SignUpPage> createState() => _SignUpPageState();
@@ -21,14 +19,13 @@ class _SignUpPageState extends State<SignUpPage> {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   late Role role = Role.player;
-  late String apiRoute = widget.apiRoute;
 
   void signUpUser() async {
     if (!confirmPassword()) {
       showDialog(
         context: context,
         builder: (context) {
-          return const FailedRequestDialog(errorText: 'Passwords do not match');
+          return const ResponseDialogBox(text: 'Passwords do not match');
         },
       );
       return;
@@ -46,7 +43,7 @@ class _SignUpPageState extends State<SignUpPage> {
       password: passwordController.text,
       role: role,
     );
-    final dio = Dio();
+    final Dio dio = Dio();
     try {
       Response response = await dio.post(
         '$apiRoute/signUp',
@@ -59,7 +56,6 @@ class _SignUpPageState extends State<SignUpPage> {
           context,
           MaterialPageRoute(
             builder: (context) => LogInPage(
-              apiRoute: apiRoute,
               emailFromSignUp: email,
               comingFromSignUp: true,
             ),
@@ -72,7 +68,7 @@ class _SignUpPageState extends State<SignUpPage> {
       showDialog(
         context: context,
         builder: (context) {
-          return FailedRequestDialog(errorText: error);
+          return ResponseDialogBox(text: error);
         },
       );
     }
@@ -169,9 +165,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => LogInPage(
-                              apiRoute: apiRoute,
-                            ),
+                            builder: (context) => const LogInPage(),
                           ),
                         )
                       },

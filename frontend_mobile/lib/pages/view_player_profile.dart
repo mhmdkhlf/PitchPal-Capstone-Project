@@ -26,6 +26,9 @@ class ViewPlayerProfile extends StatelessWidget {
     }
   }
 
+  String _capitalizeFirstLetter(String str) =>
+      str.replaceFirst(str[0], str[0].toUpperCase());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -137,7 +140,7 @@ class ViewPlayerProfile extends StatelessWidget {
                       style: const TextStyle(fontSize: 18),
                     ),
                     Text(
-                      'Position: ${player.position.value}',
+                      'Position: ${_capitalizeFirstLetter(player.position.value)}',
                       style: const TextStyle(fontSize: 18),
                     ),
                   ],

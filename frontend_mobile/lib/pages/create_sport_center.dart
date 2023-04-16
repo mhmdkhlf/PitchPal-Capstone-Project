@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/components/submit_button.dart';
@@ -6,35 +5,30 @@ import 'package:frontend_mobile/data/location.dart';
 import 'package:frontend_mobile/data/sport_center.dart';
 import 'package:frontend_mobile/data/field.dart';
 import 'package:frontend_mobile/data/time_slot.dart';
-import 'package:intl_phone_field/phone_number.dart';
-import 'package:intl_phone_field/intl_phone_field.dart';
-import '../components/textfield_input.dart';
-import '../components/number_input_field.dart';
-import '../components/sport_center_image.dart';
-import '../components/time_input.dart';
+import '../components/response_dialog_box.dart';
 import '../components/location_input.dart';
+import '../components/number_input_field.dart';
+import '../components/phone_number_input.dart';
+import '../components/sport_center_image.dart';
+import '../components/textfield_input.dart';
+import '../components/time_input.dart';
 import '../constants.dart';
 
-final dio = Dio();
-final String apiRoute = Platform.isAndroid
-    ? 'http://10.0.2.2:5000/api'
-    : 'http://localhost:5000/api';
-
-class NewSportCenterForm extends StatefulWidget {
-  const NewSportCenterForm({super.key});
+class CreateSportCenter extends StatefulWidget {
+  const CreateSportCenter({super.key});
 
   @override
-  State<NewSportCenterForm> createState() => _NewSportCenterFormState();
+  State<CreateSportCenter> createState() => _CreateSportCenterState();
 }
 
-class _NewSportCenterFormState extends State<NewSportCenterForm> {
+class _CreateSportCenterState extends State<CreateSportCenter> {
   SportCenterPicture sportCenterPicture =
       SportCenterPicture(path: defaultSportCenterImagePath);
   final TextEditingController sportCenterNameController =
       TextEditingController();
   final TextEditingController googleMapsLinkController =
       TextEditingController();
-  late PhoneNumber phoneNumberInput;
+  UserPhoneNumber phoneNumberInput = UserPhoneNumber();
   TimeInput openingTimeInput = TimeInput(
     timeInput: const TimeOfDay(hour: 10, minute: 0),
   );
@@ -49,6 +43,66 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
   int numberOfFields = 0;
 
   Future<void> createSportCenter() async {
+    if (sportCenterNameController.text.isEmpty ||
+        googleMapsLinkController.text.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) => const ResponseDialogBox(
+          text: 'You didn\'t answer all required fields',
+        ),
+      );
+      return;
+    }
+    if (numberOfFields < 1) {
+      showDialog(
+        context: context,
+        builder: (context) => const ResponseDialogBox(
+          text: 'You have to add at least one Field',
+        ),
+      );
+      return;
+    }
+    if (!phoneNumberInput.isPhoneNumberValid()) {
+      showDialog(
+        context: context,
+        builder: (context) => const ResponseDialogBox(
+          text: 'Phone Number is not filled correctly',
+        ),
+      );
+      return;
+    }
+    List<bool> areFieldsInfoFilled = [];
+    for (FieldInput fieldInput in fieldInputs) {
+      areFieldsInfoFilled.add(fieldInput.isFieldInfoFilled());
+    }
+    final bool isAllFieldsInfoFilled = areFieldsInfoFilled.every(
+      (element) => element,
+    );
+    if (!isAllFieldsInfoFilled) {
+      showDialog(
+        context: context,
+        builder: (context) => const ResponseDialogBox(
+          text: 'Some of the Fields you added have missing values',
+        ),
+      );
+      return;
+    }
+    List<bool> areFacilitiesInfoFilled = [];
+    for (FacilityInput facilityInput in facilitiesInput) {
+      areFacilitiesInfoFilled.add(facilityInput.isFacilityInfoFilled());
+    }
+    final bool isAllFacilitiesInfoFilled = areFacilitiesInfoFilled.every(
+      (element) => element,
+    );
+    if (!isAllFacilitiesInfoFilled) {
+      showDialog(
+        context: context,
+        builder: (context) => const ResponseDialogBox(
+          text: "Some of the Facilities you added don't have a name",
+        ),
+      );
+      return;
+    }
     showDialog(
       context: context,
       builder: (context) {
@@ -57,11 +111,26 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
         );
       },
     );
-    final String sportCenterName = sportCenterNameController.text;
-    final String phoneNumber = _getPhoneNumberString(phoneNumberInput);
     final String googleMapsLink = googleMapsLinkController.text;
-    final LongLat position = await _getPositionFromLink(googleMapsLink);
-    String address = await getCurrentAdress(position);
+    Map<String, dynamic> locationResponse =
+        await _getPositionFromLinkResponse(googleMapsLink);
+    if (_isGoogleMapsLinkNotValid(locationResponse)) {
+      if (context.mounted) {
+        Navigator.pop(context);
+        showDialog(
+          context: context,
+          builder: (context) => ResponseDialogBox(
+            text: locationResponse['error'],
+          ),
+        );
+      }
+      return;
+    }
+    final Dio dio = Dio();
+    final String sportCenterName = sportCenterNameController.text;
+    final String phoneNumber = phoneNumberInput.getPhoneNumberString();
+    final LongLat position = _getPositionFromResponse(locationResponse);
+    final String address = await getCurrentAdress(position);
     final List<Facility> facilities = [];
     for (FacilityInput facilityInput in facilitiesInput) {
       Facility facility = Facility(
@@ -101,7 +170,7 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
     }
     List<bool> uploadResults = [];
     for (FieldInput field in fieldInputs) {
-      uploadResults.add(await field.uploadField());
+      uploadResults.add(await field.uploadField(sportCenterName));
     }
     final bool isUploadSuccessfull = uploadResults.every((element) => element);
     if (!isUploadSuccessfull) {
@@ -111,28 +180,38 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
     if (context.mounted) {
       Navigator.pop(context);
       Navigator.pop(context);
+      showDialog(
+        context: context,
+        builder: (context) => const ResponseDialogBox(
+          text: 'You Successfully registered a Sport Center',
+        ),
+      );
     }
   }
 
-  Future<LongLat> _getPositionFromLink(String googleMapsLink) async {
+  Future<Map<String, dynamic>> _getPositionFromLinkResponse(
+      String googleMapsLink) async {
+    final Dio dio = Dio();
     try {
       final response = await dio.post(
         '$apiRoute/linkToCoordinates',
         data: {"link": googleMapsLink},
       );
-      return LongLat(
-        longitude: response.data['longitude'],
-        latitude: response.data['latitude'],
-      );
+      return response.data;
     } on DioError catch (e) {
-      throw Exception(e.response);
+      return e.response!.data;
     }
   }
 
-  String _getPhoneNumberString(PhoneNumber phoneNumber) {
-    final String countryCode = phoneNumber.countryCode;
-    final String number = phoneNumber.number;
-    return '$countryCode $number';
+  bool _isGoogleMapsLinkNotValid(Map<String, dynamic> response) {
+    return response.containsKey('error');
+  }
+
+  LongLat _getPositionFromResponse(Map<String, dynamic> response) {
+    return LongLat(
+      longitude: response['longitude'],
+      latitude: response['latitude'],
+    );
   }
 
   @override
@@ -171,16 +250,8 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
                 const SizedBox(height: 15),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
-                  child: IntlPhoneField(
-                    decoration: const InputDecoration(
-                      fillColor: kDarkGreen,
-                      labelText: 'Phone Number',
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(width: 3),
-                      ),
-                    ),
-                    initialCountryCode: 'LB',
-                    onChanged: (phone) => phoneNumberInput = phone,
+                  child: PhoneNumberInput(
+                    userPhoneNumber: phoneNumberInput,
                   ),
                 ),
                 const Divider(color: kDarkGreen, thickness: 1),
@@ -193,13 +264,13 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
-                      'Opening Time: ',
+                      'Opening Time ',
                       style: TextStyle(fontSize: 16),
                     ),
                     openingTimeInput,
                     const SizedBox(width: 10),
                     const Text(
-                      'Closing Time: ',
+                      'Closing Time ',
                       style: TextStyle(fontSize: 16),
                     ),
                     closingTimeInput,
@@ -226,12 +297,8 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
                       const SizedBox(width: 10),
                       ElevatedButton(
                         onPressed: () => setState(() {
-                          try {
-                            numberOfFields =
-                                int.parse(nbOfFieldsController.text);
-                          } on FormatException {
-                            numberOfFields = 0;
-                          }
+                          numberOfFields =
+                              int.tryParse(nbOfFieldsController.text) ?? 0;
                         }),
                         child: const Icon(Icons.refresh),
                       ),
@@ -249,7 +316,6 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
                       for (int i = 0; i < numberOfFields; i++) {
                         fieldInputs.add(
                           FieldInput(
-                            sportCenterName: sportCenterNameController.text,
                             fieldNumber: i + 1,
                           ),
                         );
@@ -265,7 +331,6 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
                         for (int i = old; i < numberOfFields; i++) {
                           fieldInputs.add(
                             FieldInput(
-                              sportCenterName: sportCenterNameController.text,
                               fieldNumber: i + 1,
                             ),
                           );
@@ -372,12 +437,12 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
                 const SizedBox(height: 10),
                 TextFieldInput(
                   controller: fbLinkController,
-                  hintText: 'Facebook link',
+                  hintText: 'Facebook link (Optional)',
                 ),
                 const SizedBox(height: 15),
                 TextFieldInput(
                   controller: instaLinkController,
-                  hintText: 'Instagram link',
+                  hintText: 'Instagram link (Optional)',
                 ),
                 const SizedBox(height: 10),
                 const Divider(color: kDarkGreen, thickness: 1),
@@ -427,7 +492,7 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
                         TextFieldInput(
                           controller:
                               facilitiesInput[index].descriptionController,
-                          hintText: 'Description',
+                          hintText: 'Description (Optional)',
                           isMultiLine: true,
                         ),
                       ],
@@ -453,25 +518,32 @@ class _NewSportCenterFormState extends State<NewSportCenterForm> {
 class FacilityInput {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
+
+  bool isFacilityInfoFilled() => nameController.text.isNotEmpty;
 }
 
 class FieldInput {
   FieldInput({
-    required this.sportCenterName,
     required this.fieldNumber,
   });
 
-  final String sportCenterName;
   final int fieldNumber;
   final TextEditingController fieldLengthController = TextEditingController();
   final TextEditingController fieldWidthController = TextEditingController();
   final TextEditingController reservationPriceController =
       TextEditingController();
-  late Grass grassTypeInput = Grass.turf;
   final TextEditingController recommendedTeamSizeController =
       TextEditingController();
+  Grass grassTypeInput = Grass.turf;
 
-  Future<bool> uploadField() async {
+  bool isFieldInfoFilled() {
+    return int.tryParse(fieldLengthController.text) != null &&
+        int.tryParse(fieldWidthController.text) != null &&
+        int.tryParse(reservationPriceController.text) != null &&
+        int.tryParse(recommendedTeamSizeController.text) != null;
+  }
+
+  Future<bool> uploadField(String sportCenterName) async {
     final Field field = Field.createProfile(
       sportCenterName: sportCenterName,
       fieldNumber: fieldNumber,
@@ -482,6 +554,7 @@ class FieldInput {
       recommendedTeamSize:
           int.tryParse(recommendedTeamSizeController.text) ?? 0,
     );
+    final Dio dio = Dio();
     try {
       final response = await dio.post(
         '$apiRoute/newField',
