@@ -6,6 +6,7 @@ import '../constants.dart';
 import '../components/average_rating_display.dart';
 import '../components/contact_info_field.dart';
 
+//TODO restyle this view, make it prettier :=)
 class ViewSportCenterProfile extends StatelessWidget {
   const ViewSportCenterProfile({
     super.key,
