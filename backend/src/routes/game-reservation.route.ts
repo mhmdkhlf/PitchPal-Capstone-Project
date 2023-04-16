@@ -40,8 +40,8 @@ router.post("/addPlayerToMatch", reservationController.addPlayerToTeam);
 router.post("/updateTeamPlayers", reservationController.updateTeamPlayers);
 //tested
 router.get(
-  "/getAccepteddReservationsBySportCenterNameOfTodayAndAfter/:sportCenterName",
-  reservationController.getAccepteddReservationsBySportCenterNameOfTodayAndAfter
+  "/getAcceptedReservationsBySportCenterNameOfTodayAndAfter/:sportCenterName",
+  reservationController.getAcceptedReservationsBySportCenterNameOfTodayAndAfter
 );
 
 module.exports = router;

@@ -156,7 +156,7 @@ async function getAllReservationsOfTodayBysportCenterName(
   }
 }
 //all accepted and valid ones
-async function getAccepteddReservationsBySportCenterNameOfTodayAndAfter(
+async function getAcceptedReservationsBySportCenterNameOfTodayAndAfter(
   req: Request,
   res: Response
 ) {
@@ -201,6 +201,6 @@ module.exports = {
   updateTeamPlayers,
   editReservationStatus,
   getAllPublicReservationsOfToday,
-  getAccepteddReservationsBySportCenterNameOfTodayAndAfter,
+  getAcceptedReservationsBySportCenterNameOfTodayAndAfter,
   getAllReservationsOfTodayBysportCenterName,
 };
