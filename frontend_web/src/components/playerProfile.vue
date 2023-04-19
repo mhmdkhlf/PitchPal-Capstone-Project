@@ -92,8 +92,10 @@
                     {{ playerInfo.description }}
                   </p>
                   <div class="flex-links">
-                    <a href="#" v-if="isSelfVisit">Edit Your Profile</a>
-                    <a href="#" id="rmv" v-if="isSelfVisit"
+                    <a @click="editProfile()" v-if="isSelfVisit"
+                      >Edit Your Profile</a
+                    >
+                    <a @click="rmvPlayer()" id="rmv" v-if="isSelfVisit"
                       >Deactivate Your Account</a
                     >
                   </div>
@@ -303,17 +305,34 @@ export default {
   },
   methods: {
     async getPlayerData() {
-      const firstRequest = await axios.get(
+      const Request = await axios.get(
         "http://localhost:5000/api/getPlayerByEmail/" +
           sessionStorage.getItem("user")
       );
-      let data = firstRequest.data;
+      let data = Request.data;
       if (data) {
         this.playerdata = data;
       } else {
         this.playerdata = null;
       }
     },
+    editProfile() {
+      // this.$router.push({
+      //   name: "FirstPlayerProfile",
+      //   params: {
+      //     test: JSON.stringify({ x: "y", z: "x" }),
+      //   },
+      // });
+      this.$router.push({
+        path: "/first-player-profile",
+        query: {
+          info: JSON.stringify({
+            playerInfo: this.playerInfo,
+          }),
+        },
+      });
+    },
+    rmvPlayer() {},
   },
   async mounted() {
     this.$store.dispatch("setLoading");

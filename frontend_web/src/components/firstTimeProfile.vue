@@ -260,6 +260,7 @@ import loader from "./loader.vue";
 import axios from "axios";
 export default {
   name: "FirstprofileComponent",
+  //props: ["test"],
   components: {
     profilePicture,
     textLoader,
@@ -268,20 +269,34 @@ export default {
   },
   data() {
     return {
-      name: "",
+      name: "" || JSON.parse(this.$route.query.info).playerInfo.name,
       email: sessionStorage.getItem("user")
         ? sessionStorage.getItem("user")
         : "",
-      phoneNumber: "",
-      location: null,
-      dateOfBirth: "",
-      height: 0,
-      weight: 0,
-      sex: "M",
-      position: "",
-      description: "",
+      phoneNumber:
+        "" || JSON.parse(this.$route.query.info).playerInfo.phoneNumber,
+      location: null || JSON.parse(this.$route.query.info).playerInfo.location,
+      dateOfBirth:
+        "" ||
+        JSON.parse(this.$route.query.info).playerInfo.dateOfBirth.substring(
+          0,
+          10
+        ),
+      height: JSON.parse(this.$route.query.info).playerInfo.height
+        ? JSON.parse(this.$route.query.info).playerInfo.height
+        : 0,
+      weight: JSON.parse(this.$route.query.info).playerInfo.weight
+        ? JSON.parse(this.$route.query.info).playerInfo.weight
+        : 0,
+      sex: JSON.parse(this.$route.query.info).playerInfo.sex
+        ? JSON.parse(this.$route.query.info).playerInfo.sex
+        : "M",
+      position: "" || JSON.parse(this.$route.query.info).playerInfo.position,
+      description:
+        "" || JSON.parse(this.$route.query.info).playerInfo.description,
       locationLoader: false,
-      address: "",
+      address:
+        "" || JSON.parse(this.$route.query.info).playerInfo.location.place,
       error: null,
       image: null,
     };
@@ -291,6 +306,9 @@ export default {
       return this.$store.state.isLoading;
     },
   },
+  // mounted() {
+  //   JSON.parse(this.$route.query.info). = ;
+  // },
   //should take email as prop or access it from session
   methods: {
     getImage(value) {
