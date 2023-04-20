@@ -521,7 +521,7 @@ export default {
                   bodyFormData.append("image", this.image);
                   bodyFormData.append("email", email);
                   axios({
-                    url: "http://localhost:5000/api/uploadPicture",
+                    url: "http://localhost:5000/api/updateProfilePicture",
                     method: "POST",
                     data: bodyFormData,
                   });
