@@ -80,6 +80,7 @@ export default {
           (res) => {
             if (res.status === 200) {
               sessionStorage.setItem("user", res.data.email);
+              this.$store.dispatch("setUser", res.data.email);
               this.role = res.data.user.role;
               if (this.role === "player") {
                 axios

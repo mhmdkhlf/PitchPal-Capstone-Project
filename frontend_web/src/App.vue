@@ -60,6 +60,7 @@ export default {
 
 <style lang="scss">
 button,
+a,
 input[type="submit"] {
   cursor: pointer;
 }

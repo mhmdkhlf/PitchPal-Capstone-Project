@@ -5,7 +5,12 @@
   />
   <!-- <logo /> -->
   <loader v-if="isLoading && !done" />
-  <div class="body" v-if="done && !isLoading">
+  <confirmPopup :Message="confirmationMessage" v-if="confirmationMessage" />
+  <div
+    class="body"
+    v-if="done && !isLoading"
+    :class="{ hidden: confirmationMessage }"
+  >
     <div class="main-content">
       <div class="container-fluid mt--7">
         <div class="row">
@@ -92,8 +97,10 @@
                     {{ playerInfo.description }}
                   </p>
                   <div class="flex-links">
-                    <a href="#" v-if="isSelfVisit">Edit Your Profile</a>
-                    <a href="#" id="rmv" v-if="isSelfVisit"
+                    <a @click="editProfile()" v-if="isSelfVisit"
+                      >Edit Your Profile</a
+                    >
+                    <a @click="rmvPlayer()" id="rmv" v-if="isSelfVisit"
                       >Deactivate Your Account</a
                     >
                   </div>
@@ -285,11 +292,13 @@
 <script>
 import axios from "axios";
 import loader from "./loader.vue";
+import confirmPopup from "../components/confirmationPopup.vue";
 import { Buffer } from "buffer";
 export default {
   name: "playerProfileComponent",
   components: {
     loader,
+    confirmPopup,
   },
   data() {
     return {
@@ -299,19 +308,57 @@ export default {
       isSelfVisit: this.$route.params.isSelfVisit === "true" ? true : false,
       src: "",
       playerdata: null,
+      isConfirmed: false,
+      confirmationMessage: null,
     };
+  },
+  watch: {
+    // whenever question changes, this function will run
+    isConfirmed(newA) {
+      if (newA) {
+        this.remover();
+      }
+    },
   },
   methods: {
     async getPlayerData() {
-      const firstRequest = await axios.get(
+      const Request = await axios.get(
         "http://localhost:5000/api/getPlayerByEmail/" +
           sessionStorage.getItem("user")
       );
-      let data = firstRequest.data;
+      let data = Request.data;
       if (data) {
         this.playerdata = data;
       } else {
         this.playerdata = null;
+      }
+    },
+    editProfile() {
+      this.$router.push({
+        path: "/first-player-profile",
+        query: {
+          info: JSON.stringify({
+            playerInfo: this.playerInfo,
+          }),
+        },
+      });
+    },
+    rmvPlayer() {
+      this.confirmationMessage = "Are you sure to de activate your Account?";
+    },
+    async remover() {
+      this.$store.dispatch("setLoading");
+      if (this.isConfirmed) {
+        await axios.delete(
+          "http://localhost:5000/api/deleteUser/" +
+            sessionStorage.getItem("user")
+        );
+        await axios.delete(
+          "http://localhost:5000/api/deletePlayer/" +
+            sessionStorage.getItem("user")
+        );
+        this.$router.push("/login");
+        this.$store.dispatch("stopLoading");
       }
     },
   },
@@ -1461,7 +1508,9 @@ button.bg-white:focus {
 [class*="btn-outline-"] {
   border-width: 1px;
 }
-
+.hidden {
+  opacity: 0.07;
+}
 .card-profile-image {
   position: relative;
 }

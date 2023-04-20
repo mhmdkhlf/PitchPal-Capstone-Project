@@ -30,15 +30,12 @@ const routes = [
     name: "Profile",
     component: profilePage,
     params: true,
-    // props: (route) => ({
-    //   playerInfo: route.query.playerInfo,
-    //   isSelfVisit: route.query.isSelfVisit,
-    // }),
   },
   {
     path: "/first-player-profile",
     name: "FirstPlayerProfile",
     component: firstPlayerProfilePage,
+    query: { info: null },
   },
   {
     path: "/first-manager-profile",

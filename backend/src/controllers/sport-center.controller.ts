@@ -50,10 +50,11 @@ async function getSportCenter(req: Request, res: Response) {
 async function updateSportCenterById(req: Request, res: Response) {
   try {
     const id = req.params.id;
+    const current = await SportCenterModel.findOne({ _id: id });
     const updatedData = req.body;
     const options = { new: true };
     const isExist = await SportCenterModel.findOne({ name: req.body.name });
-    if (isExist) {
+    if (isExist && isExist.name !== current.name) {
       throw Error("The name is already taken by another sport center");
     }
     const result = await SportCenterModel.findByIdAndUpdate(

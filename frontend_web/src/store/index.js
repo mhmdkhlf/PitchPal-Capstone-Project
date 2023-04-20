@@ -3,6 +3,7 @@ import { createStore } from "vuex";
 export default createStore({
   state: {
     isLoading: false,
+    userEmail: "",
   },
   getters: {},
   mutations: {
@@ -12,6 +13,9 @@ export default createStore({
     stopLoading: (state) => {
       state.isLoading = false;
     },
+    setUser: (state, email) => {
+      state.userEmail = email;
+    },
   },
   actions: {
     setLoading: (context) => {
@@ -19,6 +23,9 @@ export default createStore({
     },
     stopLoading: (context) => {
       context.commit("stopLoading");
+    },
+    setUser: (context, email) => {
+      context.commit("setUser", email);
     },
   },
   modules: {},
