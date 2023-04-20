@@ -91,6 +91,15 @@ async function getAllPlayers(req: Request, res: Response) {
     res.status(400).json(error.message);
   }
 }
+async function deletePlayer(req: Request, res: Response) {
+  let email = req.params.email;
+  try {
+    await playerModel.deleteOne({ email });
+    res.status(200).json({ res: "done" });
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
 
 module.exports = {
   createProfileInformation,
@@ -98,4 +107,5 @@ module.exports = {
   getAllPlayers,
   updatePlayerById,
   getPlayerInformationByEmail,
+  deletePlayer,
 };

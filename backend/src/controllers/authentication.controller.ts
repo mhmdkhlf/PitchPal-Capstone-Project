@@ -58,5 +58,14 @@ async function trySignUp(req: Request, res: Response) {
     res.status(400).json({ error: error.message });
   }
 }
+async function deleteUser(req: Request, res: Response) {
+  let email = req.params.email;
+  try {
+    await AuthenticationModel.deleteOne({ email });
+    res.status(200).json({ done: "done" });
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
 
-module.exports = { tryLogIn, trySignUp };
+module.exports = { tryLogIn, trySignUp, deleteUser };
