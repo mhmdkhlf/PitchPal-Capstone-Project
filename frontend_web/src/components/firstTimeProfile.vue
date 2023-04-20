@@ -10,13 +10,6 @@
     <div class="main-content">
       <div class="container-fluid">
         <div class="row">
-          <!-- <div class="col-8">
-
-              </div> -->
-          <!-- <div class="col-4 text-right">
-                      <h4>Your ID: {{ player.playerId }}</h4>
-                    </div> -->
-
           <div class="card-body">
             <form>
               <h6 class="heading-small text-muted header-nav">
@@ -287,34 +280,43 @@ export default {
   },
   data() {
     return {
-      name: "" || JSON.parse(this.$route.query.info).playerInfo.name,
+      name: this.$route.query.info
+        ? JSON.parse(this.$route.query.info).playerInfo.name
+        : "",
       email: sessionStorage.getItem("user")
         ? sessionStorage.getItem("user")
         : "",
-      phoneNumber:
-        "" || JSON.parse(this.$route.query.info).playerInfo.phoneNumber,
-      location: null || JSON.parse(this.$route.query.info).playerInfo.location,
-      dateOfBirth:
-        "" ||
-        JSON.parse(this.$route.query.info).playerInfo.dateOfBirth.substring(
-          0,
-          10
-        ),
-      height: JSON.parse(this.$route.query.info).playerInfo.height
+      phoneNumber: this.$route.query.info
+        ? JSON.parse(this.$route.query.info).playerInfo.phoneNumber
+        : "",
+      location: this.$route.query.info
+        ? JSON.parse(this.$route.query.info).playerInfo.location
+        : null,
+      dateOfBirth: this.$route.query.info
+        ? JSON.parse(this.$route.query.info).playerInfo.dateOfBirth.substring(
+            0,
+            10
+          )
+        : "",
+      height: this.$route.query.info
         ? JSON.parse(this.$route.query.info).playerInfo.height
         : 0,
-      weight: JSON.parse(this.$route.query.info).playerInfo.weight
+      weight: this.$route.query.info
         ? JSON.parse(this.$route.query.info).playerInfo.weight
         : 0,
-      sex: JSON.parse(this.$route.query.info).playerInfo.sex
+      sex: this.$route.query.info
         ? JSON.parse(this.$route.query.info).playerInfo.sex
         : "M",
-      position: "" || JSON.parse(this.$route.query.info).playerInfo.position,
-      description:
-        "" || JSON.parse(this.$route.query.info).playerInfo.description,
+      position: this.$route.query.info
+        ? JSON.parse(this.$route.query.info).playerInfo.position
+        : "",
+      description: this.$route.query.info
+        ? JSON.parse(this.$route.query.info).playerInfo.description
+        : "",
       locationLoader: false,
-      address:
-        "" || JSON.parse(this.$route.query.info).playerInfo.location.place,
+      address: this.$route.query.info
+        ? JSON.parse(this.$route.query.info).playerInfo.location.place
+        : "",
       error: null,
       image: null,
       done: false,
@@ -327,7 +329,6 @@ export default {
     },
   },
   mounted() {
-    console.log(JSON.parse(this.$route.query.info).playerInfo._id);
     this.$store.dispatch("setLoading");
     if (this.$route.query.info) {
       axios
