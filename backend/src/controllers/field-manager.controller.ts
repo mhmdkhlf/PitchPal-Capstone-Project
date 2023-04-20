@@ -32,13 +32,15 @@ async function createProfileInformation(req: Request, res: Response) {
 async function updateManagerById(req: Request, res: Response) {
   try {
     const id = req.params.id;
+    let manager = await ManagerModel.findOne({ _id: id });
+    let managerEmail = manager.email;
     const updatedData = req.body;
     const options = { new: true };
     const emailExist = await ManagerModel.findOne({
       email: req.body.email,
     });
     const emailExist2 = await playerModel.findOne({ email: req.body.email });
-    if (emailExist || emailExist2) {
+    if (req.body.email !== managerEmail && (emailExist || emailExist2)) {
       throw Error("The email is already taken by another user");
     }
     const result = await ManagerModel.findByIdAndUpdate(

@@ -6,7 +6,7 @@
   <!-- <logo /> -->
   <errorPopUp v-if="error" :errorMessage="error" />
   <loader v-if="isLoading && !error" />
-  <div class="body" v-if="!isLoading" :class="{ hidden: error }">
+  <div class="body" v-if="!isLoading && done" :class="{ hidden: error }">
     <div class="main-content">
       <div class="container-fluid">
         <div class="row">
@@ -27,7 +27,15 @@
                   <div class="col-lg-6">
                     <div class="form-group focused">
                       <label class="form-control-label">Profile Picture</label>
-                      <profilePicture @pictureUploaded="getImage" />
+                      <profilePicture
+                        @pictureUploaded="getImage"
+                        v-if="!name"
+                      />
+                      <profilePicture
+                        :editvalue="imgEditValue"
+                        @pictureUploaded="getImage"
+                        v-else
+                      />
                     </div>
                   </div>
                 </div>
@@ -239,11 +247,20 @@
                 </div>
               </div>
               <button
+                v-if="!this.$route.query.info"
                 class="continue-button"
                 type="submit"
                 @click="createPlayer($event)"
               >
                 Contniue
+              </button>
+              <button
+                v-if="this.$route.query.info"
+                class="continue-button"
+                type="submit"
+                @click="updatePlayer($event)"
+              >
+                Update
               </button>
             </form>
           </div>
@@ -256,6 +273,7 @@
 import profilePicture from "./profilePicture.vue";
 import textLoader from "./loaderText.vue";
 import errorPopUp from "./errorPopup.vue";
+import { Buffer } from "buffer";
 import loader from "./loader.vue";
 import axios from "axios";
 export default {
@@ -299,6 +317,8 @@ export default {
         "" || JSON.parse(this.$route.query.info).playerInfo.location.place,
       error: null,
       image: null,
+      done: false,
+      imgEditValue: "",
     };
   },
   computed: {
@@ -306,9 +326,28 @@ export default {
       return this.$store.state.isLoading;
     },
   },
-  // mounted() {
-  //   JSON.parse(this.$route.query.info). = ;
-  // },
+  mounted() {
+    console.log(JSON.parse(this.$route.query.info).playerInfo._id);
+    this.$store.dispatch("setLoading");
+    if (this.$route.query.info) {
+      axios
+        .get("http://localhost:5000/api/getProfilePictureByEmail/" + this.email)
+        .then((res2) => {
+          if (res2.data) {
+            this.imgEditValue = `data:${
+              res2.data.img.contentType
+            };base64,${Buffer.from(res2.data.img.data, "utf-8").toString(
+              "base64"
+            )}`;
+            this.done = true;
+            this.$store.dispatch("stopLoading");
+          }
+        });
+    } else {
+      this.done = true;
+      this.$store.dispatch("stopLoading");
+    }
+  },
   //should take email as prop or access it from session
   methods: {
     getImage(value) {
@@ -365,7 +404,6 @@ export default {
     },
 
     createPlayer(e) {
-      console.log("in");
       e.preventDefault();
       this.$store.dispatch("setLoading");
       let {
@@ -425,7 +463,76 @@ export default {
             },
             (err) => {
               this.$store.dispatch("stopLoading");
-              this.error = err.response.data.error;
+              this.error = err.response.data.message;
+            }
+          );
+      }
+    },
+    updatePlayer(e) {
+      e.preventDefault();
+      this.$store.dispatch("setLoading");
+      let {
+        name,
+        email,
+        phoneNumber,
+        location,
+        dateOfBirth,
+        height,
+        weight,
+        sex,
+        position,
+        description,
+      } = this;
+      if (
+        !name ||
+        !email ||
+        !phoneNumber ||
+        !location ||
+        !dateOfBirth ||
+        !sex ||
+        !position
+      ) {
+        this.error = "All Required fields must be filled";
+        this.$store.dispatch("stopLoading");
+      } else {
+        axios
+          .patch(
+            "http://localhost:5000/api/updatePlayerInformation/" +
+              JSON.parse(this.$route.query.info).playerInfo._id,
+            {
+              name,
+              email,
+              phoneNumber,
+              location,
+              dateOfBirth,
+              height,
+              weight,
+              sex,
+              position,
+              description,
+            }
+          )
+          .then(
+            (res) => {
+              if (res.status === 200) {
+                var bodyFormData = new FormData();
+                if (this.image) {
+                  bodyFormData.append("image", this.image);
+                  bodyFormData.append("email", email);
+                  axios({
+                    url: "http://localhost:5000/api/uploadPicture",
+                    method: "POST",
+                    data: bodyFormData,
+                  });
+                }
+
+                this.$store.dispatch("stopLoading");
+                this.$router.push("/");
+              }
+            },
+            (err) => {
+              this.$store.dispatch("stopLoading");
+              this.error = err.response.data.message;
             }
           );
       }

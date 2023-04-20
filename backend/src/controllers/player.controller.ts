@@ -15,11 +15,13 @@ async function randomNumberGenerator(): Promise<Number> {
 async function updatePlayerById(req: Request, res: Response) {
   try {
     let id = req.params.id;
+    let player = await playerModel.findOne({ _id: id });
+    let playerEmail = player.email;
     let updatedData = req.body;
     let options = { new: true };
     const isExist = await playerModel.findOne({ email: req.body.email });
     const isExist2 = await managerModel.findOne({ email: req.body.email });
-    if (isExist || isExist2) {
+    if (req.body.email !== playerEmail && (isExist || isExist2)) {
       throw Error("Email already taken. Please use Another Email");
     }
     let result = await playerModel.findByIdAndUpdate(id, updatedData, options);

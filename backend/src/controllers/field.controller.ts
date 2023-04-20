@@ -40,13 +40,18 @@ async function getFieldsBySportCenterName(req: Request, res: Response) {
 async function updateFieldById(req: Request, res: Response) {
   try {
     const id = req.params.id;
+    let field = await FieldModel.findOne({ _id: id });
     const updatedData = req.body;
     const options = { new: true };
     const isExist = await FieldModel.findOne({
       sportCenterName: req.body.sportCenterName,
       fieldNumber: req.body.fieldNumber,
     });
-    if (isExist) {
+    if (
+      isExist &&
+      isExist.sportCenterName !== field.sportCenterName &&
+      isExist.fieldNumber !== field.fieldNumber
+    ) {
       throw Error(
         "You cant have two fields with the same number at the same sport center"
       );

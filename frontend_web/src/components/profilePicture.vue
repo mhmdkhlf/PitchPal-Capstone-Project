@@ -5,18 +5,15 @@
       @mouseenter="showButton()"
       @mouseleave="rmvButton()"
     >
+      <img :src="editvalue" id="photo" ref="img" v-if="editvalue" />
       <img
         src="../assets/images/image.jpg"
         id="photo"
         ref="img"
-        v-if="!fromSportCenter"
+        v-else-if="!fromSportCenter"
       />
-      <img
-        src="../assets/images/background.jpg"
-        id="photo"
-        ref="img"
-        v-if="fromSportCenter"
-      />
+      <img src="../assets/images/background.jpg" id="photo" ref="img" v-else />
+
       <input type="file" ref="image" @change="imageSelect()" id="file" />
       <label for="file" id="uploadBtn" ref="button">Choose Photo</label>
     </div>
@@ -25,7 +22,7 @@
 <script>
 export default {
   name: "profilePicture",
-  props: ["fromSportCenter"],
+  props: ["fromSportCenter", "editvalue"],
   methods: {
     showButton() {
       this.$refs.button.style.display = "block";
