@@ -14,5 +14,9 @@ router.post(
   "/updatesportCenterProfilePicture",
   sportCenterProfilePicture.updateSportCenterPicture
 );
+router.delete(
+  "/deleteSportCenterPicture/:sportCenterName",
+  sportCenterProfilePicture.deleteSportCenterPicture
+);
 
 module.exports = router;

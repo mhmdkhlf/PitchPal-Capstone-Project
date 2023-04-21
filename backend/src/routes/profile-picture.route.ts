@@ -8,5 +8,6 @@ router.get(
   pictureController.getProfileByEmail
 );
 router.post("/updateProfilePicture", pictureController.updatePicture);
+router.delete("/deletePicture/:email", pictureController.deletePicture);
 
 module.exports = router;

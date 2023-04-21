@@ -49,7 +49,7 @@
                       />
                     </div>
                   </div>
-                  <div class="col-lg-6">
+                  <div class="col-lg-6" v-if="!this.$route.query.info">
                     <div class="form-group">
                       <label
                         class="form-control-label required"
