@@ -5,7 +5,12 @@
   />
   <!-- <logo /> -->
   <loader v-if="isLoading && !done" />
-  <div class="body" v-if="done && !isLoading">
+  <confirmPopup :Message="confirmationMessage" v-if="confirmationMessage" />
+  <div
+    class="body"
+    v-if="done && !isLoading"
+    :class="{ hidden: confirmationMessage }"
+  >
     <div class="main-content">
       <div class="container-fluid mt--7">
         <div class="row">
@@ -35,8 +40,10 @@
                         {{ managerInfo.sportCenterName }}
                       </h3>
                       <div class="flex-links">
-                        <a href="#" v-if="isSelfVisit">Edit Your Profile</a>
-                        <a href="#" id="rmv" v-if="isSelfVisit"
+                        <a @click="editManager()" v-if="isSelfVisit"
+                          >Edit Your Profile</a
+                        >
+                        <a @click="rmvManager()" id="rmv" v-if="isSelfVisit"
                           >Deactivate Your Account</a
                         >
                       </div>
@@ -153,11 +160,13 @@
 <script>
 import axios from "axios";
 import loader from "./loader.vue";
+import confirmPopup from "./confirmationPopup.vue";
 import { Buffer } from "buffer";
 export default {
   name: "playerProfileComponent",
   components: {
     loader,
+    confirmPopup,
   },
   data() {
     return {
@@ -166,7 +175,17 @@ export default {
       isSelfVisit: this.$route.params.isSelfVisit === "true" ? true : false,
       src: "",
       managerData: null,
+      isConfirmed: false,
+      confirmationMessage: null,
     };
+  },
+  watch: {
+    // whenever question changes, this function will run
+    isConfirmed(newA) {
+      if (newA) {
+        this.remover();
+      }
+    },
   },
   methods: {
     async getManagerData() {
@@ -182,6 +201,38 @@ export default {
     },
     goToSportCenter() {
       this.$router.push("/sport-center-view");
+    },
+    editManager() {
+      this.$router.push({
+        path: "/first-manager-profile",
+        query: {
+          info: JSON.stringify({
+            managerInfo: this.managerInfo,
+          }),
+        },
+      });
+    },
+    rmvManager() {
+      this.confirmationMessage = "Are you sure to de activate your Account?";
+    },
+    async remover() {
+      this.$store.dispatch("setLoading");
+      if (this.isConfirmed) {
+        await axios.delete(
+          "http://localhost:5000/api/deleteUser/" +
+            sessionStorage.getItem("user")
+        );
+        await axios.delete(
+          "http://localhost:5000/api/deletePlayer/" +
+            sessionStorage.getItem("user")
+        );
+        await axios.delete(
+          "http://localhost:5000/api/deletePicture/" +
+            sessionStorage.getItem("user")
+        );
+        this.$router.push("/login");
+        this.$store.dispatch("stopLoading");
+      }
     },
   },
   async mounted() {
@@ -284,6 +335,9 @@ export default {
   --font-family-sans-serif: Open Sans, sans-serif;
   --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas,
     "Liberation Mono", "Courier New", monospace;
+}
+.hidden {
+  opacity: 0.07;
 }
 
 *,

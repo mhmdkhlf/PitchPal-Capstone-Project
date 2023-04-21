@@ -292,7 +292,7 @@
 <script>
 import axios from "axios";
 import loader from "./loader.vue";
-import confirmPopup from "../components/confirmationPopup.vue";
+import confirmPopup from "./confirmationPopup.vue";
 import { Buffer } from "buffer";
 export default {
   name: "playerProfileComponent",

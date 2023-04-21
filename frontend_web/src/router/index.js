@@ -41,6 +41,7 @@ const routes = [
     path: "/first-manager-profile",
     name: "FirstManagerProfile",
     component: firstManagerProfilePage,
+    query: { info: null },
   },
   {
     path: "/sport-center-form",

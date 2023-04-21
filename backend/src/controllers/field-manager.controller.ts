@@ -93,6 +93,15 @@ async function getAllManagers(req: Request, res: Response) {
     res.status(400).json({ error: error.message });
   }
 }
+async function deleteManager(req: Request, res: Response) {
+  let email = req.params.email;
+  try {
+    await ManagerModel.deleteOne({ email });
+    res.status(200).json({ res: "done" });
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
 
 module.exports = {
   createProfileInformation,
@@ -101,4 +110,5 @@ module.exports = {
   updateManagerById,
   getManagersBySportCenterName,
   isManagerForSportCenterName,
+  deleteManager,
 };

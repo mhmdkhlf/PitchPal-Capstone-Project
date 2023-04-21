@@ -49,7 +49,7 @@
                       />
                     </div>
                   </div>
-                  <div class="col-lg-6" v-if="!this.$route.query.info">
+                  <div class="col-lg-6">
                     <div class="form-group">
                       <label
                         class="form-control-label required"
@@ -62,6 +62,7 @@
                         class="form-control form-control-alternative"
                         v-model="email"
                         required
+                        :disabled="!this.$route.query.info"
                       />
                     </div>
                   </div>
@@ -136,20 +137,6 @@
                       />
                     </div>
                   </div>
-                  <!-- <div class="col-lg-6">
-                        <div class="form-group focused">
-                          <label
-                            class="form-control-label"
-                            for="input-last-name"
-                            >Profile Picture</label
-                          >
-                          <input
-                            type="file"
-                            id="input-last-name"
-                            class="form-control form-control-alternative"
-                          />
-                        </div>
-                      </div> -->
                 </div>
                 <div class="row">
                   <div class="col-lg-6">
@@ -502,7 +489,6 @@ export default {
               JSON.parse(this.$route.query.info).playerInfo._id,
             {
               name,
-              email,
               phoneNumber,
               location,
               dateOfBirth,
