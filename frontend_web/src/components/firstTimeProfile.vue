@@ -366,15 +366,11 @@ export default {
           (position) => {
             this.locationLoader = true;
             let { latitude, longitude } = position.coords;
-            //this is free for limited attempts
-            //`https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=YOUR_API_KEY`
-            //the used api is free
             fetch(
               `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
             )
               .then((response) => response.json())
               .then((response) => {
-                console.log(response);
                 let { countryName, city, locality } = response;
                 this.address = `${locality}, ${city}, ${countryName}`;
                 this.location = {
@@ -529,6 +525,13 @@ export default {
                     method: "POST",
                     data: bodyFormData,
                   });
+                } else {
+                  if (this.rmvPicture) {
+                    axios.delete(
+                      "http://localhost:5000/api/deletePicture/" +
+                        sessionStorage.getItem("user")
+                    );
+                  }
                 }
 
                 this.$store.dispatch("stopLoading");
