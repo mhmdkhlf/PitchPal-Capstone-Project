@@ -36,10 +36,6 @@
         <label for="center-name">Link To Instagram</label>
         <input type="text" id="center-name" v-model="linkToInsta" />
       </div>
-      <!-- <div class="form-group">
-        <label for="center-name" class="required">Working Hours</label>
-        <input type="number" id="center-name" v-model="workingHours" />
-      </div> -->
       <div class="form-group">
         <label for="center-name" class="required">Start Time</label>
         <input type="time" id="center-name" v-model="startTime" />

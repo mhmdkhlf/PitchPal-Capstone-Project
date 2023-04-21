@@ -405,6 +405,8 @@ export default {
         )
         .then((res) => {
           this.sportCenterInfo = res.data;
+          this.$store.dispatch("setSportCenterInfo", this.sportCenterInfo);
+
           axios
             .get(
               "http://localhost:5000/api/getFields/" + this.$route.params.name
@@ -412,7 +414,7 @@ export default {
             .then(
               (ress) => {
                 this.fields = ress.data;
-
+                this.$store.dispatch("setSportCenterFields", this.fields);
                 axios
                   .get(
                     "http://localhost:5000/api/getSportCenterProfilePictureByName/" +
