@@ -93,7 +93,7 @@ async function updateSportCenterPicture(req: any, res: any) {
 }
 async function deleteSportCenterPicture(req: any, res: any) {
   try {
-    await photosModel.deleteOne({ name: req.params.name });
+    await photosModel.deleteOne({ name: req.params.sportCenterName });
     res.status(200).json({ result: "done" });
   } catch (Error) {
     res.status(400).json({ result: "Failed" });

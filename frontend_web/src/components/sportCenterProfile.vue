@@ -528,7 +528,7 @@ export default {
       this.validManagerVisit = data.result;
     },
     editSportCenter() {
-      this.$router.push("/spprt-center-form");
+      this.$router.push("/sport-center-form");
     },
     rmvSportCenter() {
       this.confirmationMessage =
@@ -543,13 +543,19 @@ export default {
         await Promise.all(
           managersEmails.map(async (email) => {
             await axios.delete("http://localhost:5000/api/deleteUser/" + email);
+            await axios.delete(
+              "http://localhost:5000/api/deletePicture/" + email
+            );
           })
         );
         await axios.delete(
           "http://localhost:5000/api/deleteSportCenter/" +
             this.$store.state.sportCenterInfo._id
         );
-
+        await axios.delete(
+          "http://localhost:5000/api/deleteSportCenterPicture/" +
+            this.sportCenterInfo.name
+        );
         this.$router.push("/login");
         this.$store.dispatch("stopLoading");
       }

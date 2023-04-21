@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 
 const SportCenterModel = require("../models/sport-center.model.ts");
-const fieldModel = require("../models/field.model");
-const managerModel = require("../models/field-manager.model");
+const fieldModel = require("../models/field.model.ts");
+const managerModel = require("../models/field-manager.model.ts");
 async function newSportCenter(req: Request, res: Response) {
   const sportCenterData = new SportCenterModel({
     name: req.body.name,
@@ -75,10 +75,10 @@ async function deleteSportCenterById(req: Request, res: Response) {
     const dataInJson = await SportCenterModel.findByIdAndDelete(id);
     const dataString = JSON.stringify(dataInJson);
     await fieldModel.deleteMany({
-      sportCenterName: dataInJson.sportCenterName,
+      sportCenterName: dataInJson.name,
     });
     await managerModel.deleteMany({
-      sportCenterName: dataInJson.sportCenterName,
+      sportCenterName: dataInJson.name,
     });
     res.send(`Deleted sport center with the following content:\n${dataString}`);
   } catch (error) {
