@@ -357,6 +357,10 @@ export default {
           "http://localhost:5000/api/deletePlayer/" +
             sessionStorage.getItem("user")
         );
+        await axios.delete(
+          "http://localhost:5000/api/deletePicture/" +
+            sessionStorage.getItem("user")
+        );
         this.$router.push("/login");
         this.$store.dispatch("stopLoading");
       }

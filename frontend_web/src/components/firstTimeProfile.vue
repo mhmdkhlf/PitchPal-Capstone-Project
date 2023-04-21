@@ -340,9 +340,9 @@ export default {
             };base64,${Buffer.from(res2.data.img.data, "utf-8").toString(
               "base64"
             )}`;
-            this.done = true;
-            this.$store.dispatch("stopLoading");
           }
+          this.done = true;
+          this.$store.dispatch("stopLoading");
         });
     } else {
       this.done = true;
