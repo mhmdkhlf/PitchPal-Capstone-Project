@@ -5,7 +5,12 @@
   />
   <!-- <logo /> -->
   <loader v-if="isLoading && !done" />
-  <div class="body" v-if="done && !isLoading">
+  <confirmPopup :Message="confirmationMessage" v-if="confirmationMessage" />
+  <div
+    class="body"
+    v-if="done && !isLoading"
+    :class="{ hidden: confirmationMessage }"
+  >
     <div class="main-content">
       <div class="container-fluid mt--7">
         <div class="row">
@@ -87,8 +92,10 @@
                     {{ sportCenterInfo.description }}
                   </p> -->
                   <div class="flex-links">
-                    <a href="#" v-if="isManager">Edit Sport Center</a>
-                    <a href="#" id="rmv" v-if="isManager"
+                    <a @click="editSportCenter()" v-if="isManager"
+                      >Edit Sport Center</a
+                    >
+                    <a @click="rmvSportCenter()" id="rmv" v-if="isManager"
                       >Remove Sport Center</a
                     >
                   </div>
@@ -364,11 +371,13 @@
 <script>
 import axios from "axios";
 import loader from "./loader.vue";
+import confirmPopup from "./confirmationPopup.vue";
 import { Buffer } from "buffer";
 export default {
   name: "sportCenterProfileComponent",
   components: {
     loader,
+    confirmPopup,
   },
   data() {
     return {
@@ -380,7 +389,17 @@ export default {
       fields: [],
       managers: [],
       validManagerVisit: false,
+      isConfirmed: false,
+      confirmationMessage: null,
     };
+  },
+  watch: {
+    // whenever question changes, this function will run
+    isConfirmed(newA) {
+      if (newA) {
+        this.remover();
+      }
+    },
   },
   async mounted() {
     await this.getManagers();
@@ -508,6 +527,33 @@ export default {
 
       this.validManagerVisit = data.result;
     },
+    editSportCenter() {
+      this.$router.push("/spprt-center-form");
+    },
+    rmvSportCenter() {
+      this.confirmationMessage =
+        "Are you sure to delete this sport center? This will delete all managers and fields related to this sport center";
+    },
+    async remover() {
+      this.$store.dispatch("setLoading");
+      if (this.isConfirmed) {
+        let managersEmails = this.managers.map((manager) => {
+          return manager.email;
+        });
+        await Promise.all(
+          managersEmails.map(async (email) => {
+            await axios.delete("http://localhost:5000/api/deleteUser/" + email);
+          })
+        );
+        await axios.delete(
+          "http://localhost:5000/api/deleteSportCenter/" +
+            this.$store.state.sportCenterInfo._id
+        );
+
+        this.$router.push("/login");
+        this.$store.dispatch("stopLoading");
+      }
+    },
   },
 };
 </script>
@@ -520,6 +566,9 @@ export default {
 }
 #rmv {
   color: red !important;
+}
+.hidden {
+  opacity: 0.07;
 }
 :root {
   --blue: #5e72e4;
