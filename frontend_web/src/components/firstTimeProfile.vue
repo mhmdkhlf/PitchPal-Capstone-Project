@@ -30,7 +30,7 @@
                         v-else
                       />
                       <h4
-                        v-if="this.$route.query.info"
+                        v-if="imgEditValue"
                         class="rmv-image"
                         @click="rmvProfile()"
                       >
@@ -317,6 +317,12 @@ export default {
       imgEditValue: "",
       rmvPicture: false,
     };
+  },
+  watch: {
+    // whenever question changes, this function will run
+    image() {
+      this.imgEditValue = null;
+    },
   },
   computed: {
     isLoading() {

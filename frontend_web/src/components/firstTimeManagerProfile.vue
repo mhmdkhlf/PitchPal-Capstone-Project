@@ -10,17 +10,16 @@
     <form class="field-manager-form">
       <div class="form-group">
         <label for="name">Profile Picture</label>
-        <profilePicture @pictureUploaded="getImage" v-if="!name" />
+        <profilePicture
+          @pictureUploaded="getImage"
+          v-if="!this.$route.query.info"
+        />
         <profilePicture
           :editvalue="imgEditValue"
           @pictureUploaded="getImage"
           v-else
         />
-        <h3
-          v-if="this.$route.query.info"
-          class="rmv-image"
-          @click="rmvProfile()"
-        >
+        <h3 v-if="imgEditValue" class="rmv-image" @click="rmvProfile()">
           Remove Profile Picture
         </h3>
       </div>
@@ -117,6 +116,12 @@ export default {
       done: false,
       rmvPicture: false,
     };
+  },
+  watch: {
+    // whenever question changes, this function will run
+    image() {
+      this.imgEditValue = null;
+    },
   },
   methods: {
     getImage(value) {
