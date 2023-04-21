@@ -304,12 +304,6 @@ export default {
   color: #2dce89;
 }
 
-.field-title {
-  margin-top: 20px;
-  margin-bottom: 10px;
-  color: green;
-}
-
 .form-group {
   display: flex;
   flex-direction: column;

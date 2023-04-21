@@ -42,7 +42,7 @@ async function updateFieldById(req: Request, res: Response) {
     const id = req.params.id;
     let field = await FieldModel.findOne({ _id: id });
     const updatedData = req.body;
-    const options = { new: true };
+    const options = { new: true, upsert: true, setDefaultsOnInsert: true };
     const isExist = await FieldModel.findOne({
       sportCenterName: req.body.sportCenterName,
       fieldNumber: req.body.fieldNumber,

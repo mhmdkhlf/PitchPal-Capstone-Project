@@ -5,12 +5,23 @@
       @mouseenter="showButton()"
       @mouseleave="rmvButton()"
     >
-      <img :src="editvalue" id="photo" ref="img" v-if="editvalue" />
+      <img
+        :src="editvalue"
+        id="photo"
+        ref="img"
+        v-if="editvalue && !fromSportCenter"
+      />
       <img
         src="../assets/images/image.jpg"
         id="photo"
         ref="img"
         v-else-if="!fromSportCenter"
+      />
+      <img
+        :src="editvalue"
+        id="photo"
+        ref="img"
+        v-else-if="fromSportCenter && editvalue"
       />
       <img src="../assets/images/background.jpg" id="photo" ref="img" v-else />
 
