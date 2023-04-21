@@ -29,6 +29,13 @@
                         @pictureUploaded="getImage"
                         v-else
                       />
+                      <h4
+                        v-if="this.$route.query.info"
+                        class="rmv-image"
+                        @click="rmvProfile()"
+                      >
+                        Remove Profile Picture
+                      </h4>
                     </div>
                   </div>
                 </div>
@@ -62,7 +69,7 @@
                         class="form-control form-control-alternative"
                         v-model="email"
                         required
-                        :disabled="!this.$route.query.info"
+                        :disabled="this.$route.query.info"
                       />
                     </div>
                   </div>
@@ -308,6 +315,7 @@ export default {
       image: null,
       done: false,
       imgEditValue: "",
+      rmvPicture: false,
     };
   },
   computed: {
@@ -340,6 +348,10 @@ export default {
   methods: {
     getImage(value) {
       this.image = value;
+    },
+    rmvProfile() {
+      this.imgEditValue = null;
+      this.rmvPicture = true;
     },
     getLocation(e) {
       e.preventDefault();
@@ -615,6 +627,12 @@ export default {
   height: auto;
   margin: 0 auto;
   position: relative;
+}
+.rmv-image {
+  text-align: center;
+  margin: 0 !important;
+  color: red !important;
+  cursor: pointer;
 }
 html {
   font-family: sans-serif;
