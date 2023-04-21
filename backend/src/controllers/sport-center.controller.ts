@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 const SportCenterModel = require("../models/sport-center.model.ts");
-
+const fieldModel = require("../models/field-manager.model");
 async function newSportCenter(req: Request, res: Response) {
   const sportCenterData = new SportCenterModel({
     name: req.body.name,
@@ -73,6 +73,9 @@ async function deleteSportCenterById(req: Request, res: Response) {
     const id = req.params.id;
     const dataInJson = await SportCenterModel.findByIdAndDelete(id);
     const dataString = JSON.stringify(dataInJson);
+    await fieldModel.deleteMany({
+      sportCenterName: dataInJson.sportCenterName,
+    });
     res.send(`Deleted sport center with the following content:\n${dataString}`);
   } catch (error) {
     res.status(400).json({ message: error.message });

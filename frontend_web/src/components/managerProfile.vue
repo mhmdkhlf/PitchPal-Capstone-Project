@@ -223,7 +223,7 @@ export default {
             sessionStorage.getItem("user")
         );
         await axios.delete(
-          "http://localhost:5000/api/deletePlayer/" +
+          "http://localhost:5000/api/deleteManager/" +
             sessionStorage.getItem("user")
         );
         await axios.delete(
