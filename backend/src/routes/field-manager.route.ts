@@ -15,5 +15,6 @@ router.post(
   "/isManagerForSportCenter",
   managerController.isManagerForSportCenterName
 );
+router.delete("/deleteManager/:email", managerController.deleteManager);
 
 module.exports = router;

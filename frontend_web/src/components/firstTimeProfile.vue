@@ -10,13 +10,6 @@
     <div class="main-content">
       <div class="container-fluid">
         <div class="row">
-          <!-- <div class="col-8">
-
-              </div> -->
-          <!-- <div class="col-4 text-right">
-                      <h4>Your ID: {{ player.playerId }}</h4>
-                    </div> -->
-
           <div class="card-body">
             <form>
               <h6 class="heading-small text-muted header-nav">
@@ -36,6 +29,13 @@
                         @pictureUploaded="getImage"
                         v-else
                       />
+                      <h4
+                        v-if="imgEditValue"
+                        class="rmv-image"
+                        @click="rmvProfile()"
+                      >
+                        Remove Profile Picture
+                      </h4>
                     </div>
                   </div>
                 </div>
@@ -69,6 +69,7 @@
                         class="form-control form-control-alternative"
                         v-model="email"
                         required
+                        :disabled="this.$route.query.info"
                       />
                     </div>
                   </div>
@@ -143,20 +144,6 @@
                       />
                     </div>
                   </div>
-                  <!-- <div class="col-lg-6">
-                        <div class="form-group focused">
-                          <label
-                            class="form-control-label"
-                            for="input-last-name"
-                            >Profile Picture</label
-                          >
-                          <input
-                            type="file"
-                            id="input-last-name"
-                            class="form-control form-control-alternative"
-                          />
-                        </div>
-                      </div> -->
                 </div>
                 <div class="row">
                   <div class="col-lg-6">
@@ -287,39 +274,55 @@ export default {
   },
   data() {
     return {
-      name: "" || JSON.parse(this.$route.query.info).playerInfo.name,
+      name: this.$route.query.info
+        ? JSON.parse(this.$route.query.info).playerInfo.name
+        : "",
       email: sessionStorage.getItem("user")
         ? sessionStorage.getItem("user")
         : "",
-      phoneNumber:
-        "" || JSON.parse(this.$route.query.info).playerInfo.phoneNumber,
-      location: null || JSON.parse(this.$route.query.info).playerInfo.location,
-      dateOfBirth:
-        "" ||
-        JSON.parse(this.$route.query.info).playerInfo.dateOfBirth.substring(
-          0,
-          10
-        ),
-      height: JSON.parse(this.$route.query.info).playerInfo.height
+      phoneNumber: this.$route.query.info
+        ? JSON.parse(this.$route.query.info).playerInfo.phoneNumber
+        : "",
+      location: this.$route.query.info
+        ? JSON.parse(this.$route.query.info).playerInfo.location
+        : null,
+      dateOfBirth: this.$route.query.info
+        ? JSON.parse(this.$route.query.info).playerInfo.dateOfBirth.substring(
+            0,
+            10
+          )
+        : "",
+      height: this.$route.query.info
         ? JSON.parse(this.$route.query.info).playerInfo.height
         : 0,
-      weight: JSON.parse(this.$route.query.info).playerInfo.weight
+      weight: this.$route.query.info
         ? JSON.parse(this.$route.query.info).playerInfo.weight
         : 0,
-      sex: JSON.parse(this.$route.query.info).playerInfo.sex
+      sex: this.$route.query.info
         ? JSON.parse(this.$route.query.info).playerInfo.sex
         : "M",
-      position: "" || JSON.parse(this.$route.query.info).playerInfo.position,
-      description:
-        "" || JSON.parse(this.$route.query.info).playerInfo.description,
+      position: this.$route.query.info
+        ? JSON.parse(this.$route.query.info).playerInfo.position
+        : "",
+      description: this.$route.query.info
+        ? JSON.parse(this.$route.query.info).playerInfo.description
+        : "",
       locationLoader: false,
-      address:
-        "" || JSON.parse(this.$route.query.info).playerInfo.location.place,
+      address: this.$route.query.info
+        ? JSON.parse(this.$route.query.info).playerInfo.location.place
+        : "",
       error: null,
       image: null,
       done: false,
       imgEditValue: "",
+      rmvPicture: false,
     };
+  },
+  watch: {
+    // whenever question changes, this function will run
+    image() {
+      this.imgEditValue = null;
+    },
   },
   computed: {
     isLoading() {
@@ -327,7 +330,6 @@ export default {
     },
   },
   mounted() {
-    console.log(JSON.parse(this.$route.query.info).playerInfo._id);
     this.$store.dispatch("setLoading");
     if (this.$route.query.info) {
       axios
@@ -339,9 +341,9 @@ export default {
             };base64,${Buffer.from(res2.data.img.data, "utf-8").toString(
               "base64"
             )}`;
-            this.done = true;
-            this.$store.dispatch("stopLoading");
           }
+          this.done = true;
+          this.$store.dispatch("stopLoading");
         });
     } else {
       this.done = true;
@@ -353,6 +355,10 @@ export default {
     getImage(value) {
       this.image = value;
     },
+    rmvProfile() {
+      this.imgEditValue = null;
+      this.rmvPicture = true;
+    },
     getLocation(e) {
       e.preventDefault();
       if (navigator.geolocation) {
@@ -360,15 +366,11 @@ export default {
           (position) => {
             this.locationLoader = true;
             let { latitude, longitude } = position.coords;
-            //this is free for limited attempts
-            //`https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=YOUR_API_KEY`
-            //the used api is free
             fetch(
               `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
             )
               .then((response) => response.json())
               .then((response) => {
-                console.log(response);
                 let { countryName, city, locality } = response;
                 this.address = `${locality}, ${city}, ${countryName}`;
                 this.location = {
@@ -501,7 +503,6 @@ export default {
               JSON.parse(this.$route.query.info).playerInfo._id,
             {
               name,
-              email,
               phoneNumber,
               location,
               dateOfBirth,
@@ -520,10 +521,17 @@ export default {
                   bodyFormData.append("image", this.image);
                   bodyFormData.append("email", email);
                   axios({
-                    url: "http://localhost:5000/api/uploadPicture",
+                    url: "http://localhost:5000/api/updateProfilePicture",
                     method: "POST",
                     data: bodyFormData,
                   });
+                } else {
+                  if (this.rmvPicture) {
+                    axios.delete(
+                      "http://localhost:5000/api/deletePicture/" +
+                        sessionStorage.getItem("user")
+                    );
+                  }
                 }
 
                 this.$store.dispatch("stopLoading");
@@ -628,6 +636,12 @@ export default {
   height: auto;
   margin: 0 auto;
   position: relative;
+}
+.rmv-image {
+  text-align: center;
+  margin: 0 !important;
+  color: red !important;
+  cursor: pointer;
 }
 html {
   font-family: sans-serif;

@@ -86,5 +86,18 @@ async function updatePicture(req: any, res: any) {
     }
   });
 }
+async function deletePicture(req: any, res: any) {
+  try {
+    await photosModel.deleteOne({ email: req.params.email });
+    res.status(200).json({ result: "done" });
+  } catch (Error) {
+    res.status(400).json({ result: "Failed" });
+  }
+}
 
-module.exports = { uploadPicture, getProfileByEmail, updatePicture };
+module.exports = {
+  uploadPicture,
+  getProfileByEmail,
+  updatePicture,
+  deletePicture,
+};

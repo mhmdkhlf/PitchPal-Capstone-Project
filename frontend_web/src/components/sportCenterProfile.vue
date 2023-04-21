@@ -5,7 +5,12 @@
   />
   <!-- <logo /> -->
   <loader v-if="isLoading && !done" />
-  <div class="body" v-if="done && !isLoading">
+  <confirmPopup :Message="confirmationMessage" v-if="confirmationMessage" />
+  <div
+    class="body"
+    v-if="done && !isLoading"
+    :class="{ hidden: confirmationMessage }"
+  >
     <div class="main-content">
       <div class="container-fluid mt--7">
         <div class="row">
@@ -87,8 +92,10 @@
                     {{ sportCenterInfo.description }}
                   </p> -->
                   <div class="flex-links">
-                    <a href="#" v-if="isManager">Edit Sport Center</a>
-                    <a href="#" id="rmv" v-if="isManager"
+                    <a @click="editSportCenter()" v-if="isManager"
+                      >Edit Sport Center</a
+                    >
+                    <a @click="rmvSportCenter()" id="rmv" v-if="isManager"
                       >Remove Sport Center</a
                     >
                   </div>
@@ -364,11 +371,13 @@
 <script>
 import axios from "axios";
 import loader from "./loader.vue";
+import confirmPopup from "./confirmationPopup.vue";
 import { Buffer } from "buffer";
 export default {
   name: "sportCenterProfileComponent",
   components: {
     loader,
+    confirmPopup,
   },
   data() {
     return {
@@ -380,7 +389,17 @@ export default {
       fields: [],
       managers: [],
       validManagerVisit: false,
+      isConfirmed: false,
+      confirmationMessage: null,
     };
+  },
+  watch: {
+    // whenever question changes, this function will run
+    isConfirmed(newA) {
+      if (newA) {
+        this.remover();
+      }
+    },
   },
   async mounted() {
     await this.getManagers();
@@ -405,6 +424,8 @@ export default {
         )
         .then((res) => {
           this.sportCenterInfo = res.data;
+          this.$store.dispatch("setSportCenterInfo", this.sportCenterInfo);
+
           axios
             .get(
               "http://localhost:5000/api/getFields/" + this.$route.params.name
@@ -412,7 +433,7 @@ export default {
             .then(
               (ress) => {
                 this.fields = ress.data;
-
+                this.$store.dispatch("setSportCenterFields", this.fields);
                 axios
                   .get(
                     "http://localhost:5000/api/getSportCenterProfilePictureByName/" +
@@ -506,6 +527,39 @@ export default {
 
       this.validManagerVisit = data.result;
     },
+    editSportCenter() {
+      this.$router.push("/sport-center-form");
+    },
+    rmvSportCenter() {
+      this.confirmationMessage =
+        "Are you sure to delete this sport center? This will delete all managers and fields related to this sport center";
+    },
+    async remover() {
+      this.$store.dispatch("setLoading");
+      if (this.isConfirmed) {
+        let managersEmails = this.managers.map((manager) => {
+          return manager.email;
+        });
+        await Promise.all(
+          managersEmails.map(async (email) => {
+            await axios.delete("http://localhost:5000/api/deleteUser/" + email);
+            await axios.delete(
+              "http://localhost:5000/api/deletePicture/" + email
+            );
+          })
+        );
+        await axios.delete(
+          "http://localhost:5000/api/deleteSportCenter/" +
+            this.$store.state.sportCenterInfo._id
+        );
+        await axios.delete(
+          "http://localhost:5000/api/deleteSportCenterPicture/" +
+            this.sportCenterInfo.name
+        );
+        this.$router.push("/login");
+        this.$store.dispatch("stopLoading");
+      }
+    },
   },
 };
 </script>
@@ -518,6 +572,9 @@ export default {
 }
 #rmv {
   color: red !important;
+}
+.hidden {
+  opacity: 0.07;
 }
 :root {
   --blue: #5e72e4;
@@ -827,12 +884,7 @@ h1,
 h3,
 h4,
 h5,
-h6,
-.h1,
-.h3,
-.h4,
-.h5,
-.h6 {
+h6 {
   font-family: inherit;
   font-weight: 600;
   line-height: 1.5;
@@ -840,35 +892,24 @@ h6,
   color: #32325d;
 }
 
-h1,
-.h1 {
+h1 {
   font-size: 1.625rem;
 }
 
-h3,
-.h3 {
+h3 {
   font-size: 1.0625rem;
 }
 
-h4,
-.h4 {
+h4 {
   font-size: 0.9375rem;
 }
 
-h5,
-.h5 {
+h5 {
   font-size: 0.8125rem;
 }
 
-h6,
-.h6 {
+h6 {
   font-size: 0.625rem;
-}
-
-.display-2 {
-  font-size: 2.75rem;
-  font-weight: 600;
-  line-height: 1.5;
 }
 
 hr {
@@ -888,37 +929,6 @@ a > code {
   color: inherit;
 }
 
-.container {
-  width: 100%;
-  margin-right: auto;
-  margin-left: auto;
-  padding-right: 15px;
-  padding-left: 15px;
-}
-
-@media (min-width: 576px) {
-  .container {
-    max-width: 540px;
-  }
-}
-
-@media (min-width: 768px) {
-  .container {
-    max-width: 720px;
-  }
-}
-
-@media (min-width: 992px) {
-  .container {
-    max-width: 960px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .container {
-    max-width: 1140px;
-  }
-}
 .flex-links {
   display: flex;
   flex-direction: column;
@@ -965,22 +975,12 @@ a > code {
   flex-grow: 1;
 }
 
-.col-4 {
-  max-width: 33.33333%;
-  flex: 0 0 33.33333%;
-}
-
 .col-8 {
   max-width: 66.66667%;
   flex: 0 0 66.66667%;
 }
 
 @media (min-width: 768px) {
-  .col-md-10 {
-    max-width: 83.33333%;
-    flex: 0 0 83.33333%;
-  }
-
   .col-md-12 {
     max-width: 100%;
     flex: 0 0 100%;
@@ -993,19 +993,9 @@ a > code {
     flex: 0 0 25%;
   }
 
-  .col-lg-4 {
-    max-width: 33.33333%;
-    flex: 0 0 33.33333%;
-  }
-
   .col-lg-6 {
     max-width: 50%;
     flex: 0 0 50%;
-  }
-
-  .col-lg-7 {
-    max-width: 58.33333%;
-    flex: 0 0 58.33333%;
   }
 
   .order-lg-2 {
@@ -1017,11 +1007,6 @@ a > code {
   .col-xl-4 {
     max-width: 33.33333%;
     flex: 0 0 33.33333%;
-  }
-
-  .col-xl-6 {
-    max-width: 50%;
-    flex: 0 0 50%;
   }
 
   .col-xl-8 {
@@ -1100,190 +1085,6 @@ textarea.form-control {
 
 .form-group {
   margin-bottom: 1.5rem;
-}
-
-.form-inline {
-  display: flex;
-  flex-flow: row wrap;
-  align-items: center;
-}
-
-@media (min-width: 576px) {
-  .form-inline .form-group {
-    display: flex;
-    margin-bottom: 0;
-    flex: 0 0 auto;
-    flex-flow: row wrap;
-    align-items: center;
-  }
-
-  .form-inline .form-control {
-    display: inline-block;
-    width: auto;
-    vertical-align: middle;
-  }
-}
-
-.btn {
-  font-size: 1rem;
-  font-weight: 600;
-  line-height: 1.5;
-  display: inline-block;
-  padding: 0.625rem 1.25rem;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
-    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  text-align: center;
-  vertical-align: middle;
-  white-space: nowrap;
-  border: 1px solid transparent;
-  border-radius: 0.375rem;
-}
-
-@media screen and (prefers-reduced-motion: reduce) {
-  .btn {
-    transition: none;
-  }
-}
-
-.btn:hover,
-.btn:focus {
-  text-decoration: none;
-}
-
-.btn:focus {
-  outline: 0;
-  box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
-}
-
-.btn:disabled {
-  opacity: 0.65;
-  box-shadow: none;
-}
-
-.btn:not(:disabled):not(.disabled) {
-  cursor: pointer;
-}
-
-.btn:not(:disabled):not(.disabled):active {
-  box-shadow: none;
-}
-
-.btn:not(:disabled):not(.disabled):active:focus {
-  box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08),
-    none;
-}
-
-.btn-primary {
-  color: #fff;
-  border-color: #5e72e4;
-  background-color: #5e72e4;
-  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.btn-primary:hover {
-  color: #fff;
-  border-color: #5e72e4;
-  background-color: #5e72e4;
-}
-
-.btn-primary:focus {
-  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08),
-    0 0 0 0 rgba(94, 114, 228, 0.5);
-}
-
-.btn-primary:disabled {
-  color: #fff;
-  border-color: #5e72e4;
-  background-color: #5e72e4;
-}
-
-.btn-primary:not(:disabled):not(.disabled):active {
-  color: #fff;
-  border-color: #5e72e4;
-  background-color: #324cdd;
-}
-
-.btn-primary:not(:disabled):not(.disabled):active:focus {
-  box-shadow: none, 0 0 0 0 rgba(94, 114, 228, 0.5);
-}
-
-.btn-info {
-  color: #fff;
-  border-color: #11cdef;
-  background-color: #11cdef;
-  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.btn-info:hover {
-  color: #fff;
-  border-color: #11cdef;
-  background-color: #11cdef;
-}
-
-.btn-info:focus {
-  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08),
-    0 0 0 0 rgba(17, 205, 239, 0.5);
-}
-
-.btn-info:disabled {
-  color: #fff;
-  border-color: #11cdef;
-  background-color: #11cdef;
-}
-
-.btn-info:not(:disabled):not(.disabled):active {
-  color: #fff;
-  border-color: #11cdef;
-  background-color: #0da5c0;
-}
-
-.btn-info:not(:disabled):not(.disabled):active:focus {
-  box-shadow: none, 0 0 0 0 rgba(17, 205, 239, 0.5);
-}
-
-.btn-default {
-  color: #fff;
-  border-color: #172b4d;
-  background-color: #172b4d;
-  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.btn-default:hover {
-  color: #fff;
-  border-color: #172b4d;
-  background-color: #172b4d;
-}
-
-.btn-default:focus {
-  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08),
-    0 0 0 0 rgba(23, 43, 77, 0.5);
-}
-
-.btn-default:disabled {
-  color: #fff;
-  border-color: #172b4d;
-  background-color: #172b4d;
-}
-
-.btn-default:not(:disabled):not(.disabled):active {
-  color: #fff;
-  border-color: #172b4d;
-  background-color: #0b1526;
-}
-
-.btn-default:not(:disabled):not(.disabled):active:focus {
-  box-shadow: none, 0 0 0 0 rgba(23, 43, 77, 0.5);
-}
-
-.btn-sm {
-  font-size: 0.875rem;
-  line-height: 1.5;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.375rem;
 }
 
 .card {
@@ -1371,22 +1172,8 @@ button.bg-white:focus {
   justify-content: center !important;
 }
 
-.justify-content-between {
-  justify-content: space-between !important;
-}
-
 .align-items-center {
   align-items: center !important;
-}
-
-@media (min-width: 1200px) {
-  .justify-content-xl-between {
-    justify-content: space-between !important;
-  }
-}
-
-.float-right {
-  float: right !important;
 }
 
 .shadow,
@@ -1410,10 +1197,6 @@ button.bg-white:focus {
   margin-top: 1.5rem !important;
 }
 
-.mr-4 {
-  margin-right: 1.5rem !important;
-}
-
 .mb-4,
 .my-4 {
   margin-bottom: 1.5rem !important;
@@ -1431,18 +1214,6 @@ button.bg-white:focus {
   padding-top: 0 !important;
 }
 
-.pb-0 {
-  padding-bottom: 0 !important;
-}
-
-.pt-8 {
-  padding-top: 8rem !important;
-}
-
-.m-auto {
-  margin: auto !important;
-}
-
 @media (min-width: 768px) {
   .mt-md-5 {
     margin-top: 6rem !important;
@@ -1450,10 +1221,6 @@ button.bg-white:focus {
 
   .pt-md-4 {
     padding-top: 1.5rem !important;
-  }
-
-  .pb-md-4 {
-    padding-bottom: 1.5rem !important;
   }
 }
 
@@ -1469,16 +1236,8 @@ button.bg-white:focus {
   }
 }
 
-.text-right {
-  text-align: right !important;
-}
-
 .text-center {
   text-align: center !important;
-}
-
-.font-weight-light {
-  font-weight: 300 !important;
 }
 
 .text-muted {
@@ -1586,36 +1345,6 @@ button.bg-white:focus {
   font-weight: 300 !important;
 }
 
-.btn {
-  font-size: 0.875rem;
-  position: relative;
-  transition: all 0.15s ease;
-  letter-spacing: 0.025em;
-  text-transform: none;
-  will-change: transform;
-}
-
-.btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
-}
-
-.btn:not(:last-child) {
-  margin-right: 0.5rem;
-}
-
-.btn i:not(:first-child) {
-  margin-left: 0.5rem;
-}
-
-.btn i:not(:last-child) {
-  margin-right: 0.5rem;
-}
-
-.btn-sm {
-  font-size: 0.75rem;
-}
-
 [class*="btn-outline-"] {
   border-width: 1px;
 }
@@ -1666,35 +1395,11 @@ button.bg-white:focus {
   position: relative;
 }
 
-.main-content .navbar-top {
-  position: absolute;
-  z-index: 1;
-  top: 0;
-  left: 0;
-  width: 100%;
-  padding-right: 0 !important;
-  padding-left: 0 !important;
-  background-color: transparent;
-}
-
 @media (min-width: 768px) {
   .main-content .container-fluid {
     padding-right: 39px !important;
     padding-left: 39px !important;
   }
-}
-
-.footer {
-  padding: 2.5rem 0;
-  background: #f7fafc;
-}
-
-.footer {
-  color: #8898aa !important;
-}
-
-.footer {
-  color: #525f7f !important;
 }
 
 .form-control-label {
@@ -1743,20 +1448,6 @@ textarea[resize="horizontal"] {
 
 .form-control-alternative:focus {
   box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.focused .input-group-alternative {
-  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08) !important;
-}
-
-.focused .input-group {
-  box-shadow: none;
-}
-
-.focused .input-group-text {
-  color: #8898aa;
-  border-color: rgba(50, 151, 211, 0.25);
-  background-color: #fff;
 }
 
 .focused .form-control {
@@ -1816,11 +1507,5 @@ p {
   padding-bottom: 0.25rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-}
-
-@media (max-width: 768px) {
-  .btn {
-    margin-bottom: 10px;
-  }
 }
 </style>

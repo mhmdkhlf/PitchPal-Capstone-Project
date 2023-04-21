@@ -292,7 +292,7 @@
 <script>
 import axios from "axios";
 import loader from "./loader.vue";
-import confirmPopup from "../components/confirmationPopup.vue";
+import confirmPopup from "./confirmationPopup.vue";
 import { Buffer } from "buffer";
 export default {
   name: "playerProfileComponent",
@@ -355,6 +355,10 @@ export default {
         );
         await axios.delete(
           "http://localhost:5000/api/deletePlayer/" +
+            sessionStorage.getItem("user")
+        );
+        await axios.delete(
+          "http://localhost:5000/api/deletePicture/" +
             sessionStorage.getItem("user")
         );
         this.$router.push("/login");
@@ -721,12 +725,7 @@ h1,
 h3,
 h4,
 h5,
-h6,
-.h1,
-.h3,
-.h4,
-.h5,
-.h6 {
+h6 {
   font-family: inherit;
   font-weight: 600;
   line-height: 1.5;
@@ -734,35 +733,24 @@ h6,
   color: #32325d;
 }
 
-h1,
-.h1 {
+h1 {
   font-size: 1.625rem;
 }
 
-h3,
-.h3 {
+h3 {
   font-size: 1.0625rem;
 }
 
-h4,
-.h4 {
+h4 {
   font-size: 0.9375rem;
 }
 
-h5,
-.h5 {
+h5 {
   font-size: 0.8125rem;
 }
 
-h6,
-.h6 {
+h6 {
   font-size: 0.625rem;
-}
-
-.display-2 {
-  font-size: 2.75rem;
-  font-weight: 600;
-  line-height: 1.5;
 }
 
 hr {
@@ -780,38 +768,6 @@ code {
 
 a > code {
   color: inherit;
-}
-
-.container {
-  width: 100%;
-  margin-right: auto;
-  margin-left: auto;
-  padding-right: 15px;
-  padding-left: 15px;
-}
-
-@media (min-width: 576px) {
-  .container {
-    max-width: 540px;
-  }
-}
-
-@media (min-width: 768px) {
-  .container {
-    max-width: 720px;
-  }
-}
-
-@media (min-width: 992px) {
-  .container {
-    max-width: 960px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .container {
-    max-width: 1140px;
-  }
 }
 
 .container-fluid {
@@ -865,11 +821,6 @@ a > code {
 }
 
 @media (min-width: 768px) {
-  .col-md-10 {
-    max-width: 83.33333%;
-    flex: 0 0 83.33333%;
-  }
-
   .col-md-12 {
     max-width: 100%;
     flex: 0 0 100%;
@@ -882,19 +833,9 @@ a > code {
     flex: 0 0 25%;
   }
 
-  .col-lg-4 {
-    max-width: 33.33333%;
-    flex: 0 0 33.33333%;
-  }
-
   .col-lg-6 {
     max-width: 50%;
     flex: 0 0 50%;
-  }
-
-  .col-lg-7 {
-    max-width: 58.33333%;
-    flex: 0 0 58.33333%;
   }
 
   .order-lg-2 {
@@ -906,11 +847,6 @@ a > code {
   .col-xl-4 {
     max-width: 33.33333%;
     flex: 0 0 33.33333%;
-  }
-
-  .col-xl-6 {
-    max-width: 50%;
-    flex: 0 0 50%;
   }
 
   .col-xl-8 {
@@ -991,28 +927,6 @@ textarea.form-control {
   margin-bottom: 1.5rem;
 }
 
-.form-inline {
-  display: flex;
-  flex-flow: row wrap;
-  align-items: center;
-}
-
-@media (min-width: 576px) {
-  .form-inline .form-group {
-    display: flex;
-    margin-bottom: 0;
-    flex: 0 0 auto;
-    flex-flow: row wrap;
-    align-items: center;
-  }
-
-  .form-inline .form-control {
-    display: inline-block;
-    width: auto;
-    vertical-align: middle;
-  }
-}
-
 .btn {
   font-size: 1rem;
   font-weight: 600;
@@ -1064,40 +978,6 @@ textarea.form-control {
 .btn:not(:disabled):not(.disabled):active:focus {
   box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08),
     none;
-}
-
-.btn-primary {
-  color: #fff;
-  border-color: #5e72e4;
-  background-color: #5e72e4;
-  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.btn-primary:hover {
-  color: #fff;
-  border-color: #5e72e4;
-  background-color: #5e72e4;
-}
-
-.btn-primary:focus {
-  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08),
-    0 0 0 0 rgba(94, 114, 228, 0.5);
-}
-
-.btn-primary:disabled {
-  color: #fff;
-  border-color: #5e72e4;
-  background-color: #5e72e4;
-}
-
-.btn-primary:not(:disabled):not(.disabled):active {
-  color: #fff;
-  border-color: #5e72e4;
-  background-color: #324cdd;
-}
-
-.btn-primary:not(:disabled):not(.disabled):active:focus {
-  box-shadow: none, 0 0 0 0 rgba(94, 114, 228, 0.5);
 }
 
 .btn-info {
@@ -1326,10 +1206,6 @@ button.bg-white:focus {
 
 .pt-8 {
   padding-top: 8rem !important;
-}
-
-.m-auto {
-  margin: auto !important;
 }
 
 @media (min-width: 768px) {
@@ -1580,14 +1456,6 @@ button.bg-white:focus {
   background: #f7fafc;
 }
 
-.footer {
-  color: #8898aa !important;
-}
-
-.footer {
-  color: #525f7f !important;
-}
-
 .form-control-label {
   font-size: 0.875rem;
   font-weight: 600;
@@ -1638,16 +1506,6 @@ textarea[resize="horizontal"] {
 
 .focused .input-group-alternative {
   box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08) !important;
-}
-
-.focused .input-group {
-  box-shadow: none;
-}
-
-.focused .input-group-text {
-  color: #8898aa;
-  border-color: rgba(50, 151, 211, 0.25);
-  background-color: #fff;
 }
 
 .focused .form-control {

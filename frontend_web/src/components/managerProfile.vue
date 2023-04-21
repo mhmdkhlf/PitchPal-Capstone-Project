@@ -5,7 +5,12 @@
   />
   <!-- <logo /> -->
   <loader v-if="isLoading && !done" />
-  <div class="body" v-if="done && !isLoading">
+  <confirmPopup :Message="confirmationMessage" v-if="confirmationMessage" />
+  <div
+    class="body"
+    v-if="done && !isLoading"
+    :class="{ hidden: confirmationMessage }"
+  >
     <div class="main-content">
       <div class="container-fluid mt--7">
         <div class="row">
@@ -35,8 +40,10 @@
                         {{ managerInfo.sportCenterName }}
                       </h3>
                       <div class="flex-links">
-                        <a href="#" v-if="isSelfVisit">Edit Your Profile</a>
-                        <a href="#" id="rmv" v-if="isSelfVisit"
+                        <a @click="editManager()" v-if="isSelfVisit"
+                          >Edit Your Profile</a
+                        >
+                        <a @click="rmvManager()" id="rmv" v-if="isSelfVisit"
                           >Deactivate Your Account</a
                         >
                       </div>
@@ -153,11 +160,13 @@
 <script>
 import axios from "axios";
 import loader from "./loader.vue";
+import confirmPopup from "./confirmationPopup.vue";
 import { Buffer } from "buffer";
 export default {
   name: "playerProfileComponent",
   components: {
     loader,
+    confirmPopup,
   },
   data() {
     return {
@@ -166,7 +175,17 @@ export default {
       isSelfVisit: this.$route.params.isSelfVisit === "true" ? true : false,
       src: "",
       managerData: null,
+      isConfirmed: false,
+      confirmationMessage: null,
     };
+  },
+  watch: {
+    // whenever question changes, this function will run
+    isConfirmed(newA) {
+      if (newA) {
+        this.remover();
+      }
+    },
   },
   methods: {
     async getManagerData() {
@@ -182,6 +201,38 @@ export default {
     },
     goToSportCenter() {
       this.$router.push("/sport-center-view");
+    },
+    editManager() {
+      this.$router.push({
+        path: "/first-manager-profile",
+        query: {
+          info: JSON.stringify({
+            managerInfo: this.managerInfo,
+          }),
+        },
+      });
+    },
+    rmvManager() {
+      this.confirmationMessage = "Are you sure to de activate your Account?";
+    },
+    async remover() {
+      this.$store.dispatch("setLoading");
+      if (this.isConfirmed) {
+        await axios.delete(
+          "http://localhost:5000/api/deleteUser/" +
+            sessionStorage.getItem("user")
+        );
+        await axios.delete(
+          "http://localhost:5000/api/deleteManager/" +
+            sessionStorage.getItem("user")
+        );
+        await axios.delete(
+          "http://localhost:5000/api/deletePicture/" +
+            sessionStorage.getItem("user")
+        );
+        this.$router.push("/login");
+        this.$store.dispatch("stopLoading");
+      }
     },
   },
   async mounted() {
@@ -284,6 +335,9 @@ export default {
   --font-family-sans-serif: Open Sans, sans-serif;
   --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas,
     "Liberation Mono", "Courier New", monospace;
+}
+.hidden {
+  opacity: 0.07;
 }
 
 *,
@@ -561,12 +615,6 @@ h6 {
   font-size: 0.625rem;
 }
 
-.display-2 {
-  font-size: 2.75rem;
-  font-weight: 600;
-  line-height: 1.5;
-}
-
 hr {
   margin-top: 2rem;
   margin-bottom: 2rem;
@@ -618,17 +666,6 @@ a > code {
   padding-left: 15px;
 }
 
-.col {
-  max-width: 100%;
-  flex-basis: 0;
-  flex-grow: 1;
-}
-
-.col-4 {
-  max-width: 33.33333%;
-  flex: 0 0 33.33333%;
-}
-
 .col-8 {
   max-width: 66.66667%;
   flex: 0 0 66.66667%;
@@ -656,11 +693,6 @@ a > code {
   .col-xl-4 {
     max-width: 33.33333%;
     flex: 0 0 33.33333%;
-  }
-
-  .col-xl-6 {
-    max-width: 50%;
-    flex: 0 0 50%;
   }
 
   .col-xl-8 {
@@ -739,12 +771,6 @@ textarea.form-control {
 
 .form-group {
   margin-bottom: 1.5rem;
-}
-
-.form-inline {
-  display: flex;
-  flex-flow: row wrap;
-  align-items: center;
 }
 
 @media (min-width: 576px) {
@@ -840,24 +866,12 @@ button.bg-white:focus {
   border-radius: 50% !important;
 }
 
-.d-flex {
-  display: flex !important;
-}
-
 .justify-content-center {
   justify-content: center !important;
 }
 
-.justify-content-between {
-  justify-content: space-between !important;
-}
-
 .align-items-center {
   align-items: center !important;
-}
-
-.float-right {
-  float: right !important;
 }
 
 .shadow,
@@ -870,10 +884,6 @@ button.bg-white:focus {
 
 .mb-0 {
   margin-bottom: 0 !important;
-}
-
-.mr-2 {
-  margin-right: 0.5rem !important;
 }
 
 .mt-4,
@@ -898,36 +908,6 @@ button.bg-white:focus {
   margin-top: 3.5rem !important;
 }
 
-.pt-0 {
-  padding-top: 0 !important;
-}
-
-.pb-0 {
-  padding-bottom: 0 !important;
-}
-
-.pt-8 {
-  padding-top: 8rem !important;
-}
-
-.m-auto {
-  margin: auto !important;
-}
-
-@media (min-width: 768px) {
-  .mt-md-5 {
-    margin-top: 3rem !important;
-  }
-
-  .pt-md-4 {
-    padding-top: 1.5rem !important;
-  }
-
-  .pb-md-4 {
-    padding-bottom: 1.5rem !important;
-  }
-}
-
 @media (min-width: 992px) {
   .pl-lg-4 {
     padding-left: 1.5rem !important;
@@ -946,10 +926,6 @@ button.bg-white:focus {
 
 .text-center {
   text-align: center !important;
-}
-
-.font-weight-light {
-  font-weight: 300 !important;
 }
 
 .text-muted {
@@ -1053,40 +1029,6 @@ button.bg-white:focus {
   transition: all 0.15s ease;
 }
 
-.font-weight-300 {
-  font-weight: 300 !important;
-}
-
-.btn {
-  font-size: 0.875rem;
-  position: relative;
-  transition: all 0.15s ease;
-  letter-spacing: 0.025em;
-  text-transform: none;
-  will-change: transform;
-}
-
-.btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
-}
-
-.btn:not(:last-child) {
-  margin-right: 0.5rem;
-}
-
-.btn i:not(:first-child) {
-  margin-left: 0.5rem;
-}
-
-.btn i:not(:last-child) {
-  margin-right: 0.5rem;
-}
-
-.btn-sm {
-  font-size: 0.75rem;
-}
-
 [class*="btn-outline-"] {
   border-width: 1px;
 }
@@ -1108,44 +1050,8 @@ button.bg-white:focus {
   transform: translate(-50%, -33%);
 }
 
-.card-profile-stats {
-  padding: 1rem 0;
-}
-
-.card-profile-stats > div {
-  margin-right: 1rem;
-  padding: 0.875rem;
-  text-align: center;
-}
-
-.card-profile-stats > div:last-child {
-  margin-right: 0;
-}
-
-.card-profile-stats > div .heading {
-  font-size: 1.1rem;
-  font-weight: bold;
-  display: block;
-}
-
-.card-profile-stats > div .description {
-  font-size: 0.875rem;
-  color: #adb5bd;
-}
-
 .main-content {
   position: relative;
-}
-
-.main-content .navbar-top {
-  position: absolute;
-  z-index: 1;
-  top: 0;
-  left: 0;
-  width: 100%;
-  padding-right: 0 !important;
-  padding-left: 0 !important;
-  background-color: transparent;
 }
 
 @media (min-width: 768px) {
@@ -1153,19 +1059,6 @@ button.bg-white:focus {
     padding-right: 39px !important;
     padding-left: 39px !important;
   }
-}
-
-.footer {
-  padding: 2.5rem 0;
-  background: #f7fafc;
-}
-
-.footer {
-  color: #8898aa !important;
-}
-
-.footer {
-  color: #525f7f !important;
 }
 
 .form-control-label {
@@ -1216,20 +1109,6 @@ textarea[resize="horizontal"] {
   box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
-.focused .input-group-alternative {
-  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08) !important;
-}
-
-.focused .input-group {
-  box-shadow: none;
-}
-
-.focused .input-group-text {
-  color: #8898aa;
-  border-color: rgba(50, 151, 211, 0.25);
-  background-color: #fff;
-}
-
 .focused .form-control {
   border-color: rgba(50, 151, 211, 0.25);
 }
@@ -1270,28 +1149,11 @@ p {
   line-height: 1.7;
 }
 
-.description {
-  font-size: 0.875rem;
-}
-
-.heading {
-  font-size: 0.95rem;
-  font-weight: 600;
-  letter-spacing: 0.025em;
-  text-transform: uppercase;
-}
-
 .heading-small {
   font-size: 0.75rem;
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-}
-
-@media (max-width: 768px) {
-  .btn {
-    margin-bottom: 10px;
-  }
 }
 </style>

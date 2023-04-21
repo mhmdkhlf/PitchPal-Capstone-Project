@@ -10,7 +10,18 @@
     <form class="field-manager-form">
       <div class="form-group">
         <label for="name">Profile Picture</label>
-        <profilePicture @pictureUploaded="getImage" />
+        <profilePicture
+          @pictureUploaded="getImage"
+          v-if="!this.$route.query.info"
+        />
+        <profilePicture
+          :editvalue="imgEditValue"
+          @pictureUploaded="getImage"
+          v-else
+        />
+        <h3 v-if="imgEditValue" class="rmv-image" @click="rmvProfile()">
+          Remove Profile Picture
+        </h3>
       </div>
 
       <div class="form-group">
@@ -20,7 +31,12 @@
 
       <div class="form-group">
         <label for="email" class="required">Email:</label>
-        <input type="email" id="email" v-model="email" />
+        <input
+          type="email"
+          id="email"
+          v-model="email"
+          :disabled="this.$route.query.info"
+        />
       </div>
 
       <div class="form-group">
@@ -30,9 +46,14 @@
 
       <div class="form-group">
         <label for="center-name" class="required">Sport Center Name:</label>
-        <input type="text" id="center-name" v-model="centerName" />
+        <input
+          type="text"
+          id="center-name"
+          v-model="centerName"
+          :disabled="this.$route.query.info"
+        />
       </div>
-      <div class="form-group">
+      <div class="form-group" v-if="!this.$route.query.info">
         <h3>
           If the sport center is not registered before in the system. Please
           Register it
@@ -43,11 +64,20 @@
         </h3>
       </div>
       <button
-        type="button"
+        v-if="!this.$route.query.info"
         class="submit-button"
+        type="button"
         @click="createManager($event)"
       >
-        Submit
+        Contniue
+      </button>
+      <button
+        v-if="this.$route.query.info"
+        class="submit-button"
+        type="button"
+        @click="updateManager($event)"
+      >
+        Update
       </button>
     </form>
   </div>
@@ -57,6 +87,7 @@
 import profilePicture from "./profilePicture.vue";
 import errorPopup from "./errorPopup.vue";
 import loader from "./loader.vue";
+import { Buffer } from "buffer";
 import axios from "axios";
 export default {
   name: "ManagerProfile",
@@ -67,15 +98,30 @@ export default {
   },
   data() {
     return {
-      name: "",
+      name: this.$route.query.info
+        ? JSON.parse(this.$route.query.info).managerInfo.name
+        : "",
       email: sessionStorage.getItem("user")
         ? sessionStorage.getItem("user")
         : "",
-      phone: "",
-      centerName: "",
+      phone: this.$route.query.info
+        ? JSON.parse(this.$route.query.info).managerInfo.mobileNumber
+        : "",
+      centerName: this.$route.query.info
+        ? JSON.parse(this.$route.query.info).managerInfo.sportCenterName
+        : "",
       error: null,
       image: null,
+      imgEditValue: "",
+      done: false,
+      rmvPicture: false,
     };
+  },
+  watch: {
+    // whenever question changes, this function will run
+    image() {
+      this.imgEditValue = null;
+    },
   },
   methods: {
     getImage(value) {
@@ -120,9 +166,82 @@ export default {
           );
       }
     },
+    rmvProfile() {
+      this.imgEditValue = null;
+      this.rmvPicture = true;
+    },
+    updateManager(e) {
+      e.preventDefault();
+      this.$store.dispatch("setLoading");
+      let { name, email, phone, centerName } = this;
+      if (!name || !email || !phone || !centerName) {
+        this.error = "All fields must be filled";
+        this.$store.dispatch("stopLoading");
+      } else {
+        axios
+          .patch(
+            "http://localhost:5000/api/updateManager/" +
+              JSON.parse(this.$route.query.info).managerInfo._id,
+            {
+              mobileNumber: phone,
+              name,
+            }
+          )
+          .then(
+            (res) => {
+              if (res.status === 200) {
+                if (this.image) {
+                  var bodyFormData = new FormData();
+                  bodyFormData.append("image", this.image);
+                  bodyFormData.append("email", email);
+                  axios({
+                    url: "http://localhost:5000/api/updateProfilePicture",
+                    method: "POST",
+                    data: bodyFormData,
+                  });
+                } else {
+                  if (this.rmvPicture) {
+                    axios.delete(
+                      "http://localhost:5000/api/deletePicture/" +
+                        sessionStorage.getItem("user")
+                    );
+                  }
+                }
+                this.$store.dispatch("stopLoading");
+                this.$router.push("/manager-home-page");
+              }
+            },
+            (err) => {
+              this.$store.dispatch("stopLoading");
+              this.error = err.response.data.error;
+            }
+          );
+      }
+    },
     goToSportCenterCreation() {
       this.$router.push("/sport-center-form");
     },
+  },
+  mounted() {
+    this.$store.dispatch("setLoading");
+    if (this.$route.query.info) {
+      axios
+        .get("http://localhost:5000/api/getProfilePictureByEmail/" + this.email)
+        .then((res2) => {
+          if (res2.data) {
+            this.imgEditValue = `data:${
+              res2.data.img.contentType
+            };base64,${Buffer.from(res2.data.img.data, "utf-8").toString(
+              "base64"
+            )}`;
+          }
+          this.done = true;
+          this.$store.dispatch("stopLoading");
+        });
+    } else {
+      this.done = true;
+      this.$store.dispatch("stopLoading");
+    }
   },
   computed: {
     isLoading() {
@@ -134,6 +253,12 @@ export default {
 <style lang="scss" scoped>
 .hidden {
   opacity: 0.07;
+}
+.rmv-image {
+  text-align: center;
+  margin: 0 !important;
+  color: red;
+  cursor: pointer;
 }
 .required:after {
   content: " *";
@@ -177,12 +302,6 @@ export default {
   margin-top: 0;
   margin-bottom: 20px;
   color: #2dce89;
-}
-
-.field-title {
-  margin-top: 20px;
-  margin-bottom: 10px;
-  color: green;
 }
 
 .form-group {

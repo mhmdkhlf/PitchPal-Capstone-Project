@@ -10,11 +10,29 @@
     <form class="field-manager-form">
       <div class="form-group">
         <label for="name">Sport Center Profile Picture</label>
-        <profilePicture :fromSportCenter="true" @pictureUploaded="getImage" />
+        <profilePicture
+          :fromSportCenter="true"
+          @pictureUploaded="getImage"
+          v-if="!isEdit"
+        />
+        <profilePicture
+          :fromSportCenter="true"
+          @pictureUploaded="getImage"
+          :editvalue="imgEditValue"
+          v-else
+        />
+        <h4 v-if="imgEditValue" class="rmv-image" @click="rmvProfile()">
+          Remove Profile Picture
+        </h4>
       </div>
       <div class="form-group">
         <label for="name" class="required">Name:</label>
-        <input type="text" id="name" v-model="name" />
+        <input
+          type="text"
+          id="name"
+          v-model="name"
+          :disabled="this.$store.state.sportCenterInfo"
+        />
       </div>
       <div class="form-group">
         <label for="email" class="required"
@@ -36,10 +54,6 @@
         <label for="center-name">Link To Instagram</label>
         <input type="text" id="center-name" v-model="linkToInsta" />
       </div>
-      <!-- <div class="form-group">
-        <label for="center-name" class="required">Working Hours</label>
-        <input type="number" id="center-name" v-model="workingHours" />
-      </div> -->
       <div class="form-group">
         <label for="center-name" class="required">Start Time</label>
         <input type="time" id="center-name" v-model="startTime" />
@@ -90,13 +104,13 @@
           <label for="field-number" class="required"
             >Field Length (in km):</label
           >
-          <input type="number" id="field-number" v-model="field.length" />
+          <input type="number" id="field-number" v-model="field.fieldLength" />
         </div>
         <div class="form-group">
           <label for="field-number" class="required"
             >Field Width (in km):</label
           >
-          <input type="number" id="field-number" v-model="field.width" />
+          <input type="number" id="field-number" v-model="field.fieldWidth" />
         </div>
         <div class="form-group">
           <label for="field-number" class="required"
@@ -138,8 +152,21 @@
         Add Field
       </button>
 
-      <button type="button" class="submit-button" @click="submitForm($event)">
+      <button
+        v-if="!isEdit"
+        type="button"
+        class="submit-button"
+        @click="submitForm($event)"
+      >
         Submit
+      </button>
+      <button
+        v-if="isEdit"
+        type="button"
+        class="submit-button"
+        @click="update($event)"
+      >
+        update
       </button>
     </form>
   </div>
@@ -157,21 +184,75 @@ export default {
     errorPopup,
     loader,
   },
+  mounted() {
+    this.$store.dispatch("setLoading");
+    if (this.$store.state.sportCenterInfo) {
+      axios
+        .get(
+          "http://localhost:5000/api/getSportCenterProfilePictureByName/" +
+            this.name
+        )
+        .then((res2) => {
+          if (res2.data) {
+            this.imgEditValue = `data:${
+              res2.data.img.contentType
+            };base64,${Buffer.from(res2.data.img.data, "utf-8").toString(
+              "base64"
+            )}`;
+          }
+          this.done = true;
+          this.$store.dispatch("stopLoading");
+        });
+    } else {
+      this.done = true;
+      this.$store.dispatch("stopLoading");
+    }
+  },
   data() {
     return {
-      name: "",
-      locationLink: "",
-      phoneNumber: "",
-      linkToFB: "",
-      linkToInsta: "",
-      startTime: null,
-      endTime: null,
+      name: this.$store.state.sportCenterInfo
+        ? this.$store.state.sportCenterInfo.name
+        : "",
+      locationLink: this.$store.state.sportCenterInfo
+        ? this.$store.state.sportCenterInfo.locationLink
+        : "",
+      phoneNumber: this.$store.state.sportCenterInfo
+        ? this.$store.state.sportCenterInfo.phoneNumber
+        : "",
+      linkToFB: this.$store.state.sportCenterInfo
+        ? this.$store.state.sportCenterInfo.linkToFB
+        : "",
+      linkToInsta: this.$store.state.sportCenterInfo
+        ? this.$store.state.sportCenterInfo.linkToInsta
+        : "",
+      startTime: this.$store.state.sportCenterInfo
+        ? this.$store.state.sportCenterInfo.workingHours.startTime
+        : null,
+      endTime: this.$store.state.sportCenterInfo
+        ? this.$store.state.sportCenterInfo.workingHours.endTime
+        : null,
       error: null,
       image: null,
-      location: null,
-      fields: [],
-      facilities: [],
+      location: this.$store.state.sportCenterInfo
+        ? this.$store.state.sportCenterInfo.location
+        : null,
+      fields: this.$store.state.sportCenterFields
+        ? this.$store.state.sportCenterFields
+        : [],
+      facilities: this.$store.state.sportCenterInfo
+        ? this.$store.state.sportCenterInfo.facilitiesAvailable
+        : [],
+      isEdit: this.$store.state.sportCenterInfo ? true : false,
+      imgEditValue: "",
+      done: false,
+      rmvPicture: false,
     };
+  },
+  watch: {
+    // whenever question changes, this function will run
+    image() {
+      this.imgEditValue = null;
+    },
   },
   methods: {
     addField() {
@@ -179,8 +260,8 @@ export default {
         sportCenterName: this.name,
         fieldNumber: 0,
         grassType: "",
-        length: 0,
-        width: 0,
+        fieldLength: 0,
+        fieldWidth: 0,
         recommendedTeamSize: 0,
         reservationPrice: 0,
       });
@@ -296,8 +377,8 @@ export default {
                                 .post("http://localhost:5000/api/newField", {
                                   sportCenterName: f.sportCenterName,
                                   fieldNumber: f.fieldNumber,
-                                  fieldLength: f.length,
-                                  fieldWidth: f.width,
+                                  fieldLength: f.fieldLength,
+                                  fieldWidth: f.fieldWidth,
                                   reservationPrice: f.reservationPrice,
                                   grassType: f.grassType,
                                   recommendedTeamSize: f.recommendedTeamSize,
@@ -352,6 +433,155 @@ export default {
           );
       }
     },
+    update(e) {
+      e.preventDefault();
+      this.$store.dispatch("setLoading");
+      if (
+        !this.name ||
+        !this.locationLink ||
+        !this.phoneNumber ||
+        !this.startTime ||
+        !this.endTime ||
+        !this.checkAllRequiredInfoAreFilled()
+      ) {
+        this.error = "All Required fields must be filled";
+        this.$store.dispatch("stopLoading");
+      } else {
+        axios
+          .post("http://localhost:5000/api/linkToCoordinates", {
+            link: this.locationLink,
+          })
+          .then(
+            (res) => {
+              if (res.status === 200) {
+                let temploc = Object.assign({}, res.data);
+                fetch(
+                  `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${temploc.latitude}&longitude=${temploc.longitude}&localityLanguage=en`
+                )
+                  .then((response) => response.json())
+                  .then((response) => {
+                    let { countryName, city, locality } = response;
+                    const address = `${locality}, ${city}, ${countryName}`;
+                    this.location = {
+                      longitude: temploc.longitude,
+                      latitude: temploc.latitude,
+                      place: address,
+                    };
+                    this.locationLoader = false;
+                    axios
+                      .patch(
+                        "http://localhost:5000/api/updateSportCenter/" +
+                          this.$store.state.sportCenterInfo._id,
+                        {
+                          location: this.location,
+                          name: this.name,
+                          locationLink: this.locationLink,
+                          phoneNumber: this.phoneNumber,
+                          linkToFB: this.linkToFB,
+                          linkToInsta: this.linkToInsta,
+                          nbOfFields: this.fields.length,
+                          workingHours: {
+                            startTime: this.startTime,
+                            endTime: this.endTime,
+                          },
+                          facilitiesAvailable: this.facilities,
+                        }
+                      )
+                      .then(
+                        (res2) => {
+                          if (res2.status === 200) {
+                            //image and iterate over fields and add them
+                            for (let i = 0; i < this.fields.length; i++) {
+                              let f = this.fields[i];
+                              if (f._id) {
+                                axios
+                                  .patch(
+                                    "http://localhost:5000/api/updateField/" +
+                                      this.$store.state.sportCenterFields[i]
+                                        ._id,
+                                    {
+                                      sportCenterName: f.sportCenterName,
+                                      fieldNumber: f.fieldNumber,
+                                      fieldLength: f.fieldLength,
+                                      fieldWidth: f.fieldWidth,
+                                      reservationPrice: f.reservationPrice,
+                                      grassType: f.grassType,
+                                      recommendedTeamSize:
+                                        f.recommendedTeamSize,
+                                    }
+                                  )
+                                  .catch((errr) => {
+                                    this.$store.dispatch("stopLoading");
+                                    this.error = errr.response.data.message;
+                                  });
+                              } else {
+                                axios
+                                  .post("http://localhost:5000/api/newField", {
+                                    sportCenterName: f.sportCenterName,
+                                    fieldNumber: f.fieldNumber,
+                                    fieldLength: f.fieldLength,
+                                    fieldWidth: f.fieldWidth,
+                                    reservationPrice: f.reservationPrice,
+                                    grassType: f.grassType,
+                                    recommendedTeamSize: f.recommendedTeamSize,
+                                  })
+                                  .catch((errr) => {
+                                    this.$store.dispatch("stopLoading");
+                                    this.error = errr.response.data.message;
+                                  });
+                              }
+                            }
+
+                            if (this.image) {
+                              var bodyFormData = new FormData();
+                              bodyFormData.append("image", this.image);
+                              bodyFormData.append("sportCenterName", this.name);
+                              axios({
+                                url: "http://localhost:5000/api/updatesportCenterProfilePicture",
+                                method: "POST",
+                                data: bodyFormData,
+                              }).then(
+                                (res) => {
+                                  if (res.status === 200) {
+                                    this.$store.dispatch("stopLoading");
+                                    //this.$router.push("/sport-center-form");
+                                  }
+                                },
+                                (err) => {
+                                  this.$store.dispatch("stopLoading");
+                                  this.error = err.response.data.error;
+                                }
+                              );
+                            } else {
+                              if (this.rmvPicture) {
+                                axios.delete(
+                                  "http://localhost:5000/api/deleteSportCenterPicture/" +
+                                    this.name
+                                );
+                              }
+                            }
+                            this.$store.dispatch("stopLoading");
+                            this.$router.push("/");
+                          }
+                        },
+                        (err2) => {
+                          this.$store.dispatch("stopLoading");
+                          this.error = err2.response.data.message;
+                        }
+                      );
+                  })
+                  .catch(() => {
+                    this.error = "Something went wrong";
+                  });
+              }
+            },
+            (err) => {
+              this.$store.dispatch("stopLoading");
+              this.error = err.response.data.error;
+            }
+          );
+      }
+    },
   },
   computed: {
     isLoading() {
@@ -380,6 +610,12 @@ export default {
 }
 ::v-deep .all {
   padding-bottom: 0 !important;
+}
+.rmv-image {
+  text-align: center;
+  margin: 0 !important;
+  color: red;
+  cursor: pointer;
 }
 .field-manager-form-container {
   /* display: flex;
