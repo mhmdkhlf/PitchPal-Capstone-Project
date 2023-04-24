@@ -1,7 +1,8 @@
 <template>
   <div></div>
   <!-- <loader /> -->
-  <router-view />
+  <!-- <router-view /> -->
+  <uv />
   <!-- <prr /> -->
   <!-- <p>hello</p>
   <img :src="src" alt="failed" ref="test" v-if="done" /> -->
@@ -15,10 +16,11 @@
 // import { Buffer } from "buffer";
 //import pf from "@/components/profilePicture.vue";
 //import prr from "./components/firstTimeManagerProfile.vue";
+import uv from "./components/userRow.vue";
 export default {
-  // components: {
-  //   prr,
-  // },
+  components: {
+    uv,
+  },
   // mounted() {
   //   this.$router.push({
   //     name: "Profile",
