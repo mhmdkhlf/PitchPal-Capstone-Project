@@ -1,6 +1,8 @@
 <template>
   <logo />
-  <div class="form-container">
+  <errorPopup v-if="error" :errorMessage="error" />
+  <loader v-if="isLoading && !error" />
+  <div class="form-container" v-if="!isLoading" :class="{ hidden: error }">
     <h1 class="form-title">Create Your Team</h1>
     <form action="" class="team-form">
       <div class="form-group">
@@ -8,25 +10,102 @@
       </div>
       <div>
         <div>
-          <input type="text" placeholder="Add Player" />
-          <button id="push">Add</button>
+          <input type="text" placeholder="Add Player" v-model="inputId" />
+          <button id="push" @click="addPlayer($event)">Add</button>
         </div>
-        <div id="tasks"></div>
       </div>
+      <userRow
+        v-for="(player, index) in players"
+        :userName="player.name"
+        :userId="player.id"
+        :imageSrc="player.src"
+        :key="index"
+      />
     </form>
   </div>
 </template>
 <script>
+import axios from "axios";
 import logo from "./logo.vue";
+import { Buffer } from "buffer";
+import errorPopup from "./errorPopup.vue";
+import loader from "./loader.vue";
+import userRow from "./userRow.vue";
 export default {
   name: "TeamForm",
   components: {
     logo,
+    errorPopup,
+    loader,
+    userRow,
   },
   data() {
     return {
       teamIds: [],
+      inputId: "",
+      players: [],
+      error: null,
+      pattern: /^\d{3}-\d{3}$/,
     };
+  },
+  methods: {
+    addPlayer(e) {
+      e.preventDefault();
+      if (this.pattern.test(this.inputId)) {
+        let obj = {};
+        this.$store.dispatch("setLoading");
+        axios.get("http://localhost:5000/api/getPlayer/" + this.inputId).then(
+          (res) => {
+            if (res.data) {
+              (obj.id = res.data.playerID), (obj.name = res.data.name);
+              axios
+                .get(
+                  "http://localhost:5000/api/getProfilePictureByEmail/" +
+                    res.data.email
+                )
+                .then(
+                  (res2) => {
+                    if (res2.data) {
+                      obj.src = `data:${
+                        res2.data.img.contentType
+                      };base64,${Buffer.from(
+                        res2.data.img.data,
+                        "utf-8"
+                      ).toString("base64")}`;
+                    } else {
+                      obj.src = "";
+                    }
+
+                    this.$store.dispatch("stopLoading");
+                    this.players.push(obj);
+                  },
+                  (err2) => {
+                    this.error = err2.response.data.error;
+                    obj.src = "";
+
+                    this.$store.dispatch("stopLoading");
+                  }
+                );
+            } else {
+              this.error = "no player found with this id";
+              this.$store.dispatch("stopLoading");
+            }
+          },
+          (err) => {
+            this.$store.dispatch("stopLoading");
+            this.error = err.response.data.error;
+          }
+        );
+      } else {
+        this.error =
+          "The Id should consists of six number seperated by -. Example 123-456";
+      }
+    },
+  },
+  computed: {
+    isLoading() {
+      return this.$store.state.isLoading;
+    },
   },
 };
 </script>
@@ -60,6 +139,9 @@ body {
   margin-bottom: 20px;
   color: #0a870ac7;
   text-align: center;
+}
+.hidden {
+  opacity: 0.07;
 }
 
 .team-form {
@@ -105,41 +187,5 @@ button {
   height: 45px;
   border-radius: 5px;
   font-family: "Poppins", sans-serif;
-}
-#tasks {
-  border-radius: 10px;
-  width: 100%;
-  position: relative;
-  background-color: #ffffff;
-  padding: 30px 20px;
-  margin-top: 10px;
-}
-
-.task {
-  border-radius: 5px;
-  align-items: center;
-  justify-content: space-between;
-  border: 1px solid #939697;
-  cursor: pointer;
-  background-color: #c5e1e6;
-  height: 50px;
-  margin-bottom: 8px;
-  padding: 5px 10px;
-  display: flex;
-}
-.task span {
-  font-family: "Poppins", sans-serif;
-  font-size: 15px;
-  font-weight: 400;
-}
-.task button {
-  background-color: #0a870ac7;
-  color: #ffffff;
-  border: none;
-  cursor: pointer;
-  outline: none;
-  height: 100%;
-  width: 40px;
-  border-radius: 5px;
 }
 </style>
