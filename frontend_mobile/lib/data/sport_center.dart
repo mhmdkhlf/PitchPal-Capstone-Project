@@ -19,6 +19,7 @@ class SportCenter {
   num? facilityQualityAverageRating;
   num? staffServiceAverageRating;
   int? nbOfRatings;
+  double? distanceFromPlayer;
 
   SportCenter({
     required this.uuid,
@@ -38,7 +39,7 @@ class SportCenter {
 
   factory SportCenter.fromJson(Map<String, dynamic> json) {
     return SportCenter(
-      uuid: json['uuid'],
+      uuid: json['_id'],
       name: json['name'],
       location: Location.fromJson(json['location']),
       locationLink: json['locationLink'],

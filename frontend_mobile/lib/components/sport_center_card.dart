@@ -23,6 +23,7 @@ class SportCenterCard extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            const SizedBox(height: 5),
             ListTile(
               leading: const Icon(CustomIcon.soccerBall),
               title: Text(
@@ -33,7 +34,12 @@ class SportCenterCard extends StatelessWidget {
                 ),
               ),
               subtitle: Text(
-                'Location: ${sportCenter.location.place} + (distance from player)',
+                """Location: ${sportCenter.location.place}
+Distance: ${sportCenter.distanceFromPlayer == null ? 'N/A' : '${sportCenter.distanceFromPlayer} km'}""",
+                style: const TextStyle(
+                  fontSize: 14.0,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
             const SizedBox(height: 2),

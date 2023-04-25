@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'view_player_profile.dart';
@@ -22,8 +21,11 @@ class PlayerHomePage extends StatefulWidget {
 }
 
 class _PlayerHomePageState extends State<PlayerHomePage> {
+  bool isAscending = false;
   int _selectNavBarItemIndex = 0;
+  List<SportCenter>? allSportCenters;
   List<SportCenter>? sportCenters;
+  final TextEditingController searchController = TextEditingController();
 
   void _onItemTapped(int index) =>
       setState(() => _selectNavBarItemIndex = index);
@@ -53,8 +55,114 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
       List<Field> fields = fieldsData.map((e) => Field.fromJson(e)).toList();
       fields.sort((a, b) => a.fieldNumber.compareTo(b.fieldNumber));
       sportCenter.fields = fields;
+      final distanceResponse = await dio.post(
+        '$apiRoute/calculate_distance',
+        data: {
+          "player_lat": widget.player.location.latitude,
+          "player_lon": widget.player.location.longitude,
+          "facility_lat": sportCenter.location.latitude,
+          "facility_lon": sportCenter.location.longitude
+        },
+      );
+      sportCenter.distanceFromPlayer = double.parse(distanceResponse.data['d']);
     }
+    allSportCenters = sportCenters;
     return sportCenters!;
+  }
+
+  AppBar getAppBar() {
+    if (_selectNavBarItemIndex == 0) {
+      return AppBar(
+        automaticallyImplyLeading: false,
+        title: const Center(
+          child: Text(
+            'Home Page',
+            style: TextStyle(
+              color: kLightColor,
+              fontSize: 24,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+      );
+    } else if (_selectNavBarItemIndex == 1) {
+      return AppBar(
+        automaticallyImplyLeading: false,
+        title: TextField(
+          style: const TextStyle(
+            color: kLightColor,
+            fontSize: 18,
+          ),
+          controller: searchController,
+          cursorColor: kPrimaryColor,
+          decoration: const InputDecoration(
+            fillColor: kDarkGreen,
+            hintText: 'Search for sports centers',
+            hintStyle: TextStyle(color: kLighterDark),
+          ),
+        ),
+        actions: [
+          IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {
+                setState(
+                  () => sportCenters = allSportCenters!
+                      .where((sportCenter) => sportCenter.name
+                          .toLowerCase()
+                          .contains(searchController.text.toLowerCase()))
+                      .toList(),
+                );
+              }),
+          IconButton(
+            icon: const Icon(Icons.sort),
+            onPressed: () {
+              setState(
+                () {
+                  isAscending = !isAscending;
+                  if (isAscending) {
+                    sportCenters!.sort(
+                      (a, b) => a.distanceFromPlayer!
+                          .compareTo(b.distanceFromPlayer as num),
+                    );
+                    allSportCenters!.sort(
+                      (a, b) => a.distanceFromPlayer!
+                          .compareTo(b.distanceFromPlayer as num),
+                    );
+                  } else {
+                    sportCenters!.sort(
+                      (a, b) =>
+                          a.distanceFromPlayer!
+                              .compareTo(b.distanceFromPlayer as num) *
+                          -1,
+                    );
+                    allSportCenters!.sort(
+                      (a, b) =>
+                          a.distanceFromPlayer!
+                              .compareTo(b.distanceFromPlayer as num) *
+                          -1,
+                    );
+                  }
+                },
+              );
+            },
+          ),
+        ],
+      );
+    } else {
+      return AppBar(
+        automaticallyImplyLeading: false,
+        title: const Center(
+          child: Text(
+            'Player Profile',
+            style: TextStyle(
+              color: kLightColor,
+              fontSize: 24,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+      );
+    }
   }
 
   Widget getBody() {
@@ -69,8 +177,7 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
           ),
         ),
       );
-    }
-    if (_selectNavBarItemIndex == 1) {
+    } else if (_selectNavBarItemIndex == 1) {
       if (sportCenters != null) {
         return ListView.builder(
           shrinkWrap: true,
@@ -98,26 +205,15 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
           return const Center(child: CircularProgressIndicator());
         },
       );
+    } else {
+      return ViewPlayerProfile(player: widget.player);
     }
-    return ViewPlayerProfile(player: widget.player);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Center(
-          child: Text(
-            'Player Home Page',
-            style: TextStyle(
-              color: kLightColor,
-              fontSize: 24,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-      ),
+      appBar: getAppBar(),
       body: getBody(),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
