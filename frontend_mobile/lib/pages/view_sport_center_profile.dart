@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
-import '../data/field.dart';
 import '../data/sport_center.dart';
 import '../constants.dart';
 import '../components/average_rating_display.dart';
-import '../components/contact_info_field.dart';
+import '../components/copyable_link.dart';
+import '../components/facility_info.dart';
+import '../components/field_info.dart';
+import '../components/sport_center_attribute.dart';
 
-//TODO restyle this view, make it prettier :=)
 class ViewSportCenterProfile extends StatelessWidget {
   const ViewSportCenterProfile({
     super.key,
@@ -15,12 +15,20 @@ class ViewSportCenterProfile extends StatelessWidget {
 
   final SportCenter sportCenter;
 
-  String _displayLink(String? link) {
-    return link != null && link.isNotEmpty ? link : '_';
-  }
-
   @override
   Widget build(BuildContext context) {
+    List<Widget> fieldWidgets = sportCenter.fields
+        .map(
+          (field) => FieldInfo(field: field),
+        )
+        .toList();
+    List<Widget> facilityWidgets = sportCenter.facilitiesAvailable!
+        .map(
+          (facility) => FacilityInfo(
+            facility: facility,
+          ),
+        )
+        .toList();
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -49,108 +57,22 @@ class ViewSportCenterProfile extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
+                const SizedBox(height: 10),
+                SportCenterAttribute(
+                  text: 'Location: ${sportCenter.location.place}',
+                  icon: Icons.location_on,
+                ),
                 const SizedBox(height: 5),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.timelapse),
-                    Text(
-                      ' ${sportCenter.workingHours}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
+                SportCenterAttribute(
+                  text: 'Phone Number: ${sportCenter.phoneNumber}',
+                  icon: Icons.phone,
                 ),
-                const Divider(color: kDarkColor),
-                const SizedBox(height: 7),
-                const Text(
-                  'Contact Info',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 15),
-                ContactInfoField(
-                  field: 'Phone Number',
-                  value: sportCenter.phoneNumber,
+                const SizedBox(height: 5),
+                SportCenterAttribute(
+                  text: 'Working hours: ${sportCenter.workingHours}',
+                  icon: Icons.timelapse,
                 ),
                 const SizedBox(height: 10),
-                ContactInfoField(
-                  field: 'Address',
-                  value: sportCenter.location.place,
-                ),
-                ElevatedButton(
-                  style: const ButtonStyle(
-                    backgroundColor: MaterialStatePropertyAll(Colors.blue),
-                  ),
-                  child: const Text(
-                    'Open in\nGoogle Maps',
-                    textAlign: TextAlign.center,
-                  ),
-                  onPressed: () => launchUrl(
-                    Uri.parse(sportCenter.locationLink),
-                  ),
-                ),
-                const Divider(color: kDarkColor),
-                const Text(
-                  'Fields',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 15),
-                ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: sportCenter.fields.length,
-                  itemBuilder: (context, index) {
-                    Field field = sportCenter.fields[index];
-                    return Column(
-                      children: [
-                        Text(
-                          'Field #${field.fieldNumber}',
-                          style: const TextStyle(fontSize: 20),
-                        ),
-                        const SizedBox(height: 10),
-                        ContactInfoField(
-                          field: 'Field Length',
-                          value: field.fieldLength.toString(),
-                        ),
-                        const SizedBox(height: 10),
-                        ContactInfoField(
-                          field: 'Field Width',
-                          value: field.fieldWidth.toString(),
-                        ),
-                        const SizedBox(height: 10),
-                        ContactInfoField(
-                          field: 'Grass type',
-                          value: field.grassType.value,
-                        ),
-                        const SizedBox(height: 10),
-                        ContactInfoField(
-                          field: 'Recommended Team size',
-                          value: field.recommendedTeamSize.toString(),
-                        ),
-                        const SizedBox(height: 10),
-                        ContactInfoField(
-                          field: 'Reservation Price',
-                          value: '${field.reservationPrice} \$',
-                        ),
-                        if (index != sportCenter.fields.length - 1)
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 40),
-                            child: Divider(
-                              thickness: 2,
-                            ),
-                          ),
-                      ],
-                    );
-                  },
-                ),
-                const SizedBox(height: 7),
                 const Divider(color: kDarkColor),
                 const SizedBox(height: 7),
                 Text.rich(
@@ -171,7 +93,7 @@ class ViewSportCenterProfile extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 10),
                 AverageRatingDisplay(
                   attribute: '  Staff Service ',
                   rating: sportCenter.staffServiceAverageRating ?? 0,
@@ -180,6 +102,32 @@ class ViewSportCenterProfile extends StatelessWidget {
                 AverageRatingDisplay(
                   attribute: 'Facility Quality',
                   rating: sportCenter.facilityQualityAverageRating ?? 0,
+                ),
+                const Divider(color: kDarkColor),
+                const Text(
+                  'Fields',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Wrap(
+                  children: List.generate(fieldWidgets.length, (index) {
+                    if (index % 2 == 0) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          fieldWidgets[index],
+                          if (index + 1 < fieldWidgets.length)
+                            const SizedBox(width: 10),
+                          if (index + 1 < fieldWidgets.length)
+                            fieldWidgets[index + 1],
+                        ],
+                      );
+                    }
+                    return Container();
+                  }),
                 ),
                 const SizedBox(height: 10),
                 if (sportCenter.facilitiesAvailable != null &&
@@ -194,31 +142,24 @@ class ViewSportCenterProfile extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: sportCenter.facilitiesAvailable!.length,
-                        itemBuilder: (context, index) {
-                          return Column(
-                            children: [
-                              const SizedBox(height: 15),
-                              Text(
-                                'Facility #${index + 1}',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              const SizedBox(height: 10),
-                              Text(
-                                sportCenter.facilitiesAvailable![index].name,
-                              ),
-                              const SizedBox(height: 10),
-                              Text(
-                                sportCenter
-                                    .facilitiesAvailable![index].description,
-                                maxLines: 3,
-                              ),
-                            ],
-                          );
-                        },
+                      const SizedBox(height: 7),
+                      Wrap(
+                        children:
+                            List.generate(facilityWidgets.length, (index) {
+                          if (index % 2 == 0) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                facilityWidgets[index],
+                                if (index + 1 < facilityWidgets.length)
+                                  const SizedBox(width: 10),
+                                if (index + 1 < facilityWidgets.length)
+                                  facilityWidgets[index + 1],
+                              ],
+                            );
+                          }
+                          return Container();
+                        }),
                       ),
                     ],
                   )
@@ -227,8 +168,11 @@ class ViewSportCenterProfile extends StatelessWidget {
                     children: const [
                       Divider(color: kDarkColor),
                       Text(
-                        'No Facilities Added.',
-                        style: TextStyle(fontSize: 18),
+                        'No Facilities Added',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                       SizedBox(height: 10)
                     ],
@@ -236,23 +180,21 @@ class ViewSportCenterProfile extends StatelessWidget {
                 const Divider(color: kDarkColor),
                 const SizedBox(height: 7),
                 const Text(
-                  'Social Medias',
+                  'Usefull Links',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
+                const SizedBox(height: 10),
+                CopyableLink(
+                    link: sportCenter.locationLink, linkApp: 'Google Maps'),
+                const SizedBox(height: 8),
+                CopyableLink(link: sportCenter.linkToFB, linkApp: 'Facebook'),
+                const SizedBox(height: 8),
+                CopyableLink(
+                    link: sportCenter.linkToInsta, linkApp: 'Instagram'),
                 const SizedBox(height: 15),
-                ContactInfoField(
-                  field: 'Facebook link',
-                  value: _displayLink(sportCenter.linkToInsta),
-                ),
-                const SizedBox(height: 10),
-                ContactInfoField(
-                  field: 'Instagram link',
-                  value: _displayLink(sportCenter.linkToInsta),
-                ),
-                const SizedBox(height: 10),
               ],
             ),
           ),
