@@ -2,10 +2,12 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'view_player_profile.dart';
+import 'view_team_profile.dart';
 import '../components/sport_center_card.dart';
 import '../data/field.dart';
 import '../data/player.dart';
 import '../data/sport_center.dart';
+import '../data/team.dart';
 import '../constants.dart';
 
 class PlayerHomePage extends StatefulWidget {
@@ -25,6 +27,7 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
   int _selectNavBarItemIndex = 0;
   List<SportCenter>? allSportCenters;
   List<SportCenter>? sportCenters;
+  List<Team>? allTeams;
   final TextEditingController searchController = TextEditingController();
 
   void _onItemTapped(int index) =>
@@ -70,6 +73,16 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
     return sportCenters!;
   }
 
+  Future<List<Team>> getTeams() async {
+    final Dio dio = Dio();
+    final response = await dio.get(
+      '$apiRoute/getAllTeams',
+    );
+    allTeams =
+        (response.data as List).map((data) => Team.fromJson(data)).toList();
+    return allTeams!;
+  }
+
   AppBar getAppBar() {
     if (_selectNavBarItemIndex == 0) {
       return AppBar(
@@ -103,19 +116,22 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
         ),
         actions: [
           IconButton(
-              icon: const Icon(Icons.search),
-              onPressed: () {
-                setState(
-                  () => sportCenters = allSportCenters!
-                      .where((sportCenter) => sportCenter.name
-                          .toLowerCase()
-                          .contains(searchController.text.toLowerCase()))
-                      .toList(),
-                );
-              }),
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              if (sportCenters == null) return;
+              setState(
+                () => sportCenters = allSportCenters!
+                    .where((sportCenter) => sportCenter.name
+                        .toLowerCase()
+                        .contains(searchController.text.toLowerCase()))
+                    .toList(),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.sort),
             onPressed: () {
+              if (sportCenters == null) return;
               setState(
                 () {
                   isAscending = !isAscending;
@@ -129,24 +145,34 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
                           .compareTo(b.distanceFromPlayer as num),
                     );
                   } else {
-                    sportCenters!.sort(
-                      (a, b) =>
-                          a.distanceFromPlayer!
-                              .compareTo(b.distanceFromPlayer as num) *
-                          -1,
-                    );
-                    allSportCenters!.sort(
-                      (a, b) =>
-                          a.distanceFromPlayer!
-                              .compareTo(b.distanceFromPlayer as num) *
-                          -1,
-                    );
+                    sportCenters!.sort((a, b) =>
+                        a.distanceFromPlayer!
+                            .compareTo(b.distanceFromPlayer as num) *
+                        -1);
+                    allSportCenters!.sort((a, b) =>
+                        a.distanceFromPlayer!
+                            .compareTo(b.distanceFromPlayer as num) *
+                        -1);
                   }
                 },
               );
             },
           ),
         ],
+      );
+    } else if (_selectNavBarItemIndex == 2) {
+      return AppBar(
+        automaticallyImplyLeading: false,
+        title: const Center(
+          child: Text(
+            'Teams',
+            style: TextStyle(
+              color: kLightColor,
+              fontSize: 24,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
       );
     } else {
       return AppBar(
@@ -205,6 +231,22 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
           return const Center(child: CircularProgressIndicator());
         },
       );
+    } else if (_selectNavBarItemIndex == 2) {
+      if (allTeams != null) {
+        return ViewTeamProfile(team: allTeams![0]);
+      }
+      return FutureBuilder(
+        future: getTeams(),
+        builder: (context, teams) {
+          if (teams.hasData) {
+            return ViewTeamProfile(team: teams.data![0]);
+          }
+          if (teams.hasError) {
+            return Center(child: Text(teams.error.toString()));
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
+      );
     } else {
       return ViewPlayerProfile(player: widget.player);
     }
@@ -216,6 +258,9 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
       appBar: getAppBar(),
       body: getBody(),
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        showUnselectedLabels: false,
+        selectedFontSize: 14,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -224,6 +269,10 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
             label: 'Sport-Centers',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.group_add),
+            label: 'Teams',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
