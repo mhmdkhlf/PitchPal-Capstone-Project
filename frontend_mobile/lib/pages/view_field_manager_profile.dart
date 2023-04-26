@@ -45,7 +45,6 @@ class ViewFieldManagerProfile extends StatelessWidget {
                   fieldManager.sportCenterName,
                   style: const TextStyle(
                     fontSize: 20,
-                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 15),
