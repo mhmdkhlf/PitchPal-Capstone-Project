@@ -13,7 +13,7 @@
       <p class="user-id">ID: {{ userId }}</p>
     </div>
     <div class="delete-button">
-      <button class="btn-delete" @click="$emit('delete')">Delete</button>
+      <button class="btn-delete" @click="deletePlayer($event)">Delete</button>
     </div>
   </div>
 </template>
@@ -33,6 +33,13 @@ export default {
     imageSrc: {
       type: String,
       required: true,
+    },
+  },
+  methods: {
+    deletePlayer(e) {
+      e.preventDefault();
+      this.$emit("delete");
+      console.log("in");
     },
   },
 };
@@ -68,6 +75,8 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  text-align: center;
+  align-items: center;
 }
 
 .user-name {

@@ -14,13 +14,20 @@
           <button id="push" @click="addPlayer($event)">Add</button>
         </div>
       </div>
-      <userRow
-        v-for="(player, index) in players"
+      <!-- <userRow
         :userName="player.name"
         :userId="player.id"
         :imageSrc="player.src"
+      /> -->
+      <userRow
+        v-for="(player, index) in players"
+        :userName="captainInfo.name"
+        :userId="captainInfo.id"
+        :imageSrc="player.src"
         :key="index"
+        @delete="deletePlayer(index)"
       />
+      <button id="create-btn" @click="createTeam($event)">Create</button>
     </form>
   </div>
 </template>
@@ -46,9 +53,23 @@ export default {
       players: [],
       error: null,
       pattern: /^\d{3}-\d{3}$/,
+      captainInfo: this.$store.state.playerInfo,
     };
   },
   methods: {
+    createTeam(e) {
+      e.preventDefault();
+      if (!this.name || this.players.length == 0) {
+        this.error =
+          "all fields must be filled and at least two players should be in the team";
+      } else {
+        axios.post("http://localhost:5000/api/newTeam", {
+          name: this.name,
+          captainId: this.$store.state.playerInfo.playerID,
+          playerIds: this.playerIds,
+        });
+      }
+    },
     addPlayer(e) {
       e.preventDefault();
       if (this.pattern.test(this.inputId)) {
@@ -77,7 +98,19 @@ export default {
                     }
 
                     this.$store.dispatch("stopLoading");
-                    this.players.push(obj);
+                    if (
+                      this.players.find(
+                        (obj_added) =>
+                          obj_added.id === obj.id &&
+                          obj_added.name === obj.name &&
+                          obj_added.src === obj.src
+                      )
+                    ) {
+                      this.error = "The player already exists in the team";
+                    } else {
+                      this.players.push(obj);
+                      this.playerIds.push(obj.id);
+                    }
                   },
                   (err2) => {
                     this.error = err2.response.data.error;
@@ -100,6 +133,11 @@ export default {
         this.error =
           "The Id should consists of six number seperated by -. Example 123-456";
       }
+    },
+    deletePlayer(i) {
+      console.log("index " + i);
+      this.players.splice(i, 1);
+      console.log("in2");
     },
   },
   computed: {
@@ -133,6 +171,23 @@ body {
   /* Add this line */
   overflow-x: hidden !important;
   /* Fix scrolling issue */
+}
+#create-btn {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #2dce89;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: all 0.2s ease-in-out;
+}
+
+#create-btn:hover {
+  background-color: #fff;
+  color: #2dce89;
+  border: 1px solid #2dce89;
 }
 .form-title {
   margin-top: 0;
