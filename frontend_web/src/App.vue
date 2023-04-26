@@ -15,6 +15,7 @@
 // import { Buffer } from "buffer";
 //import pf from "@/components/profilePicture.vue";
 //import prr from "./components/firstTimeManagerProfile.vue";
+// import uv from "./components/userRow.vue";
 export default {
   // components: {
   //   prr,
