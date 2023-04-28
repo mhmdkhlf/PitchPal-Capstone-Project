@@ -1,9 +1,10 @@
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'create_team.dart';
 import 'view_player_profile.dart';
-import 'view_team_profile.dart';
 import '../components/sport_center_card.dart';
+import '../components/team_card.dart';
 import '../data/field.dart';
 import '../data/player.dart';
 import '../data/sport_center.dart';
@@ -28,6 +29,7 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
   List<SportCenter>? allSportCenters;
   List<SportCenter>? sportCenters;
   List<Team>? allTeams;
+  List<Team>? teamsPlayerInvolvedIn;
   final TextEditingController searchController = TextEditingController();
 
   void _onItemTapped(int index) =>
@@ -165,7 +167,7 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
         automaticallyImplyLeading: false,
         title: const Center(
           child: Text(
-            'Teams',
+            'Your Teams',
             style: TextStyle(
               color: kLightColor,
               fontSize: 24,
@@ -195,11 +197,11 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
     if (_selectNavBarItemIndex == 0) {
       return Center(
         child: Text(
-          'Welcome ${widget.player.name}',
+          'Hello ${widget.player.name}!',
           textAlign: TextAlign.center,
           style: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
+            fontSize: 20,
+            fontWeight: FontWeight.w500,
           ),
         ),
       );
@@ -232,14 +234,32 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
         },
       );
     } else if (_selectNavBarItemIndex == 2) {
-      if (allTeams != null) {
-        return ViewTeamProfile(team: allTeams![0]);
+      if (teamsPlayerInvolvedIn != null) {
+        return ListView.builder(
+          shrinkWrap: true,
+          itemCount: teamsPlayerInvolvedIn!.length,
+          itemBuilder: (context, index) => TeamCard(
+            team: teamsPlayerInvolvedIn![index],
+            playerId: widget.player.playerID!,
+          ),
+        );
       }
       return FutureBuilder(
         future: getTeams(),
         builder: (context, teams) {
           if (teams.hasData) {
-            return ViewTeamProfile(team: teams.data![0]);
+            teamsPlayerInvolvedIn = teams.data!.where((team) {
+              return team.captainId == widget.player.playerID ||
+                  team.playerIds.contains(widget.player.playerID);
+            }).toList();
+            return ListView.builder(
+              shrinkWrap: true,
+              itemCount: teamsPlayerInvolvedIn!.length,
+              itemBuilder: (context, index) => TeamCard(
+                team: teamsPlayerInvolvedIn![index],
+                playerId: widget.player.playerID!,
+              ),
+            );
           }
           if (teams.hasError) {
             return Center(child: Text(teams.error.toString()));
@@ -252,11 +272,28 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
     }
   }
 
+  void routeToCreateTeamForm() {
+    teamsPlayerInvolvedIn = null;
+    _onItemTapped(0);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CreateTeam(captain: widget.player),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: getAppBar(),
       body: getBody(),
+      floatingActionButton: _selectNavBarItemIndex == 2
+          ? FloatingActionButton(
+              onPressed: routeToCreateTeamForm,
+              child: const Icon(Icons.group_add),
+            )
+          : null,
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         showUnselectedLabels: false,
@@ -271,7 +308,7 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
             label: 'Sport-Centers',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.group_add),
+            icon: Icon(Icons.groups_2),
             label: 'Teams',
           ),
           BottomNavigationBarItem(

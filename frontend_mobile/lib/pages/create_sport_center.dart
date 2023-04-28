@@ -302,7 +302,6 @@ class _CreateSportCenterState extends State<CreateSportCenter> {
                         }),
                         child: const Icon(Icons.refresh),
                       ),
-                      // const SizedBox(width: 20),
                     ],
                   ),
                 ),

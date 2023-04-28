@@ -21,7 +21,7 @@ class AverageRatingDisplay extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(attribute, style: const TextStyle(fontSize: 18)),
+        Text(attribute, style: const TextStyle(fontSize: 16)),
         const SizedBox(width: 20),
         RatingBar.builder(
           initialRating: roundToNearestHalf(rating),

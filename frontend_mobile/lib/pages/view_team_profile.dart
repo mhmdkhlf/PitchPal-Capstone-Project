@@ -56,7 +56,7 @@ class ViewTeamProfile extends StatelessWidget {
                           children: [
                             const TextSpan(
                               text: 'Captain: ',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(fontWeight: FontWeight.w500),
                             ),
                             TextSpan(
                               text: players.data![team.captainId]!.name,
@@ -72,11 +72,11 @@ class ViewTeamProfile extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 15),
-                      const Text(
-                        'Players',
-                        style: TextStyle(
+                      Text(
+                        'Squad has ${team.playerIds.length} players:',
+                        style: const TextStyle(
                           fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                       const SizedBox(height: 5),
