@@ -30,6 +30,16 @@ async function getTeamsByCaptain(req: Request, res: Response) {
   }
 }
 
+async function getAPlayersTeams(req: Request, res: Response) {
+  const playerId = req.params.playerId;
+  const teamsData = await teamModel.find({$or:[{ captainId : playerId }, { playerIds : playerId }]});
+  try {
+    res.status(200).json(teamsData);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
+
 async function getTeamByName(req: Request, res: Response) {
   const name = req.params.name;
   const teamData = await teamModel.findOne({ name });
@@ -66,4 +76,5 @@ module.exports = {
   getTeamsByCaptain,
   getAllTeams,
   addPlayerToTeam,
+  getAPlayersTeams,
 };

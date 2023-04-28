@@ -28,7 +28,6 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
   int _selectNavBarItemIndex = 0;
   List<SportCenter>? allSportCenters;
   List<SportCenter>? sportCenters;
-  List<Team>? allTeams;
   List<Team>? teamsPlayerInvolvedIn;
   final TextEditingController searchController = TextEditingController();
 
@@ -78,11 +77,11 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
   Future<List<Team>> getTeams() async {
     final Dio dio = Dio();
     final response = await dio.get(
-      '$apiRoute/getAllTeams',
+      '$apiRoute/getAPlayersTeams/${widget.player.playerID}',
     );
-    allTeams =
+    teamsPlayerInvolvedIn =
         (response.data as List).map((data) => Team.fromJson(data)).toList();
-    return allTeams!;
+    return teamsPlayerInvolvedIn!;
   }
 
   AppBar getAppBar() {
@@ -248,15 +247,11 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
         future: getTeams(),
         builder: (context, teams) {
           if (teams.hasData) {
-            teamsPlayerInvolvedIn = teams.data!.where((team) {
-              return team.captainId == widget.player.playerID ||
-                  team.playerIds.contains(widget.player.playerID);
-            }).toList();
             return ListView.builder(
               shrinkWrap: true,
-              itemCount: teamsPlayerInvolvedIn!.length,
+              itemCount: teams.data!.length,
               itemBuilder: (context, index) => TeamCard(
-                team: teamsPlayerInvolvedIn![index],
+                team: teams.data![index],
                 playerId: widget.player.playerID!,
               ),
             );
