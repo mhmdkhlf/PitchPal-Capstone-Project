@@ -3,6 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'create_team.dart';
 import 'view_player_profile.dart';
+import '../components/response_dialog_box.dart';
+import '../components/friend_card.dart';
 import '../components/sport_center_card.dart';
 import '../components/team_card.dart';
 import '../data/field.dart';
@@ -29,6 +31,8 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
   List<SportCenter>? allSportCenters;
   List<SportCenter>? sportCenters;
   List<Team>? teamsPlayerInvolvedIn;
+  List<String>? friendsIDs;
+  final TextEditingController friendIdController = TextEditingController();
   final TextEditingController searchController = TextEditingController();
 
   void _onItemTapped(int index) =>
@@ -72,6 +76,16 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
     }
     allSportCenters = sportCenters;
     return sportCenters!;
+  }
+
+  Future<List<String>> getFriendsIds() async {
+    final Dio dio = Dio();
+    final friendsResponse = await dio.get(
+      '$apiRoute/getFriends/${widget.player.playerID}',
+    );
+    List<dynamic> friendsIdsData = friendsResponse.data;
+    friendsIDs = friendsIdsData.map((e) => e as String).toList();
+    return friendsIDs!;
   }
 
   Future<List<Team>> getTeams() async {
@@ -159,9 +173,93 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
               );
             },
           ),
+          const SizedBox(width: 20)
         ],
       );
     } else if (_selectNavBarItemIndex == 2) {
+      return AppBar(
+        automaticallyImplyLeading: false,
+        title: TextField(
+          style: const TextStyle(
+            color: kLightColor,
+            fontSize: 18,
+          ),
+          controller: friendIdController,
+          cursorColor: kPrimaryColor,
+          decoration: const InputDecoration(
+            fillColor: kDarkGreen,
+            hintText: 'Add Friend by their ID',
+            hintStyle: TextStyle(color: kLighterDark),
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person_add),
+            onPressed: () async {
+              final String idInput = friendIdController.text;
+              if (idInput.length == 7 &&
+                  int.tryParse(idInput.substring(0, 3)) != null &&
+                  int.tryParse(idInput.substring(4, 7)) != null &&
+                  idInput[3] == '-') {
+                final Dio dio = Dio();
+                try {
+                  final response = await dio.get(
+                    '$apiRoute/getPlayer/$idInput',
+                  );
+                  if (response.data != null) {
+                    final Player player = Player.fromJson(response.data);
+                    try {
+                      final response = await dio.post(
+                        '$apiRoute/addFriend',
+                        data: {
+                          'playerID1': widget.player.playerID,
+                          'playerID2': idInput
+                        },
+                      );
+                      if (response.statusCode == 200) {
+                        friendsIDs = null;
+                        _onItemTapped(0);
+                        if (context.mounted) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => ResponseDialogBox(
+                              text:
+                                  'Congrats you added ${player.name} as a friend',
+                            ),
+                          );
+                        }
+                      }
+                    } on DioError catch (e) {
+                      throw Exception(e.stackTrace);
+                    }
+                  } else {
+                    if (context.mounted) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => const ResponseDialogBox(
+                          text: 'No player has the ID you specified',
+                        ),
+                      );
+                    }
+                  }
+                } on DioError catch (e) {
+                  throw Exception(e.stackTrace);
+                }
+              } else {
+                showDialog(
+                  context: context,
+                  builder: (context) => const ResponseDialogBox(
+                    text:
+                        'Invalid player IDs format\n(should be like -> 000-000)',
+                  ),
+                );
+              }
+            },
+          ),
+          const SizedBox(width: 20),
+        ],
+      );
+    } else if (_selectNavBarItemIndex == 3) {
       return AppBar(
         automaticallyImplyLeading: false,
         title: const Center(
@@ -233,6 +331,66 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
         },
       );
     } else if (_selectNavBarItemIndex == 2) {
+      if (friendsIDs != null) {
+        return Center(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                const Text(
+                  'Your Friends',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: friendsIDs!.length,
+                  itemBuilder: (context, index) => FriendCard(
+                    friendId: friendsIDs![index],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+      return FutureBuilder(
+        future: getFriendsIds(),
+        builder: (context, friendsIDs) {
+          if (friendsIDs.hasData) {
+            return Center(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const Text(
+                      'Your Friends',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: friendsIDs.data!.length,
+                      itemBuilder: (context, index) => FriendCard(
+                        friendId: friendsIDs.data![index],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+          if (friendsIDs.hasError) {
+            return Center(child: Text(friendsIDs.error.toString()));
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
+      );
+    } else if (_selectNavBarItemIndex == 3) {
       if (teamsPlayerInvolvedIn != null) {
         return ListView.builder(
           shrinkWrap: true,
@@ -267,6 +425,16 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
     }
   }
 
+  FloatingActionButton? getFloatingActionButton() {
+    if (_selectNavBarItemIndex == 3) {
+      return FloatingActionButton(
+        onPressed: routeToCreateTeamForm,
+        child: const Icon(Icons.group_add),
+      );
+    }
+    return null;
+  }
+
   void routeToCreateTeamForm() {
     teamsPlayerInvolvedIn = null;
     _onItemTapped(0);
@@ -283,16 +451,11 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
     return Scaffold(
       appBar: getAppBar(),
       body: getBody(),
-      floatingActionButton: _selectNavBarItemIndex == 2
-          ? FloatingActionButton(
-              onPressed: routeToCreateTeamForm,
-              child: const Icon(Icons.group_add),
-            )
-          : null,
+      floatingActionButton: getFloatingActionButton(),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         showUnselectedLabels: false,
-        selectedFontSize: 14,
+        selectedFontSize: 11,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -301,6 +464,10 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
             label: 'Sport-Centers',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.people_outline),
+            label: 'Friends',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.groups_2),
