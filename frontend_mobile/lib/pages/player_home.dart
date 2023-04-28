@@ -1,9 +1,12 @@
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'create_team.dart';
 import 'view_player_profile.dart';
-import 'view_team_profile.dart';
+import '../components/response_dialog_box.dart';
+import '../components/friend_card.dart';
 import '../components/sport_center_card.dart';
+import '../components/team_card.dart';
 import '../data/field.dart';
 import '../data/player.dart';
 import '../data/sport_center.dart';
@@ -27,7 +30,9 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
   int _selectNavBarItemIndex = 0;
   List<SportCenter>? allSportCenters;
   List<SportCenter>? sportCenters;
-  List<Team>? allTeams;
+  List<Team>? teamsPlayerInvolvedIn;
+  List<String>? friendsIDs;
+  final TextEditingController friendIdController = TextEditingController();
   final TextEditingController searchController = TextEditingController();
 
   void _onItemTapped(int index) =>
@@ -73,14 +78,24 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
     return sportCenters!;
   }
 
+  Future<List<String>> getFriendsIds() async {
+    final Dio dio = Dio();
+    final friendsResponse = await dio.get(
+      '$apiRoute/getFriends/${widget.player.playerID}',
+    );
+    List<dynamic> friendsIdsData = friendsResponse.data;
+    friendsIDs = friendsIdsData.map((e) => e as String).toList();
+    return friendsIDs!;
+  }
+
   Future<List<Team>> getTeams() async {
     final Dio dio = Dio();
     final response = await dio.get(
-      '$apiRoute/getAllTeams',
+      '$apiRoute/getAPlayersTeams/${widget.player.playerID}',
     );
-    allTeams =
+    teamsPlayerInvolvedIn =
         (response.data as List).map((data) => Team.fromJson(data)).toList();
-    return allTeams!;
+    return teamsPlayerInvolvedIn!;
   }
 
   AppBar getAppBar() {
@@ -158,14 +173,98 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
               );
             },
           ),
+          const SizedBox(width: 20)
         ],
       );
     } else if (_selectNavBarItemIndex == 2) {
       return AppBar(
         automaticallyImplyLeading: false,
+        title: TextField(
+          style: const TextStyle(
+            color: kLightColor,
+            fontSize: 18,
+          ),
+          controller: friendIdController,
+          cursorColor: kPrimaryColor,
+          decoration: const InputDecoration(
+            fillColor: kDarkGreen,
+            hintText: 'Add Friend by their ID',
+            hintStyle: TextStyle(color: kLighterDark),
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person_add),
+            onPressed: () async {
+              final String idInput = friendIdController.text;
+              if (idInput.length == 7 &&
+                  int.tryParse(idInput.substring(0, 3)) != null &&
+                  int.tryParse(idInput.substring(4, 7)) != null &&
+                  idInput[3] == '-') {
+                final Dio dio = Dio();
+                try {
+                  final response = await dio.get(
+                    '$apiRoute/getPlayer/$idInput',
+                  );
+                  if (response.data != null) {
+                    final Player player = Player.fromJson(response.data);
+                    try {
+                      final response = await dio.post(
+                        '$apiRoute/addFriend',
+                        data: {
+                          'playerID1': widget.player.playerID,
+                          'playerID2': idInput
+                        },
+                      );
+                      if (response.statusCode == 200) {
+                        friendsIDs = null;
+                        _onItemTapped(0);
+                        if (context.mounted) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => ResponseDialogBox(
+                              text:
+                                  'Congrats you added ${player.name} as a friend',
+                            ),
+                          );
+                        }
+                      }
+                    } on DioError catch (e) {
+                      throw Exception(e.stackTrace);
+                    }
+                  } else {
+                    if (context.mounted) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => const ResponseDialogBox(
+                          text: 'No player has the ID you specified',
+                        ),
+                      );
+                    }
+                  }
+                } on DioError catch (e) {
+                  throw Exception(e.stackTrace);
+                }
+              } else {
+                showDialog(
+                  context: context,
+                  builder: (context) => const ResponseDialogBox(
+                    text:
+                        'Invalid player IDs format\n(should be like -> 000-000)',
+                  ),
+                );
+              }
+            },
+          ),
+          const SizedBox(width: 20),
+        ],
+      );
+    } else if (_selectNavBarItemIndex == 3) {
+      return AppBar(
+        automaticallyImplyLeading: false,
         title: const Center(
           child: Text(
-            'Teams',
+            'Your Teams',
             style: TextStyle(
               color: kLightColor,
               fontSize: 24,
@@ -195,11 +294,11 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
     if (_selectNavBarItemIndex == 0) {
       return Center(
         child: Text(
-          'Welcome ${widget.player.name}',
+          'Hello ${widget.player.name}!',
           textAlign: TextAlign.center,
           style: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
+            fontSize: 20,
+            fontWeight: FontWeight.w500,
           ),
         ),
       );
@@ -232,14 +331,88 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
         },
       );
     } else if (_selectNavBarItemIndex == 2) {
-      if (allTeams != null) {
-        return ViewTeamProfile(team: allTeams![0]);
+      if (friendsIDs != null) {
+        return Center(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                const Text(
+                  'Your Friends',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: friendsIDs!.length,
+                  itemBuilder: (context, index) => FriendCard(
+                    friendId: friendsIDs![index],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+      return FutureBuilder(
+        future: getFriendsIds(),
+        builder: (context, friendsIDs) {
+          if (friendsIDs.hasData) {
+            return Center(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const Text(
+                      'Your Friends',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: friendsIDs.data!.length,
+                      itemBuilder: (context, index) => FriendCard(
+                        friendId: friendsIDs.data![index],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+          if (friendsIDs.hasError) {
+            return Center(child: Text(friendsIDs.error.toString()));
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
+      );
+    } else if (_selectNavBarItemIndex == 3) {
+      if (teamsPlayerInvolvedIn != null) {
+        return ListView.builder(
+          shrinkWrap: true,
+          itemCount: teamsPlayerInvolvedIn!.length,
+          itemBuilder: (context, index) => TeamCard(
+            team: teamsPlayerInvolvedIn![index],
+            playerId: widget.player.playerID!,
+          ),
+        );
       }
       return FutureBuilder(
         future: getTeams(),
         builder: (context, teams) {
           if (teams.hasData) {
-            return ViewTeamProfile(team: teams.data![0]);
+            return ListView.builder(
+              shrinkWrap: true,
+              itemCount: teams.data!.length,
+              itemBuilder: (context, index) => TeamCard(
+                team: teams.data![index],
+                playerId: widget.player.playerID!,
+              ),
+            );
           }
           if (teams.hasError) {
             return Center(child: Text(teams.error.toString()));
@@ -252,15 +425,37 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
     }
   }
 
+  FloatingActionButton? getFloatingActionButton() {
+    if (_selectNavBarItemIndex == 3) {
+      return FloatingActionButton(
+        onPressed: routeToCreateTeamForm,
+        child: const Icon(Icons.group_add),
+      );
+    }
+    return null;
+  }
+
+  void routeToCreateTeamForm() {
+    teamsPlayerInvolvedIn = null;
+    _onItemTapped(0);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CreateTeam(captain: widget.player),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: getAppBar(),
       body: getBody(),
+      floatingActionButton: getFloatingActionButton(),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         showUnselectedLabels: false,
-        selectedFontSize: 14,
+        selectedFontSize: 11,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -271,7 +466,11 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
             label: 'Sport-Centers',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.group_add),
+            icon: Icon(Icons.people_outline),
+            label: 'Friends',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.groups_2),
             label: 'Teams',
           ),
           BottomNavigationBarItem(

@@ -15,7 +15,6 @@ async function addFriend(req: Request, res: Response) {
       friendsIDs: [playerID2],
     });
   }
-
   try {
     const friendDoc1ToSave = await playerDoc1.save();
     res.status(200).json([friendDoc1ToSave]);
@@ -41,8 +40,8 @@ async function FriendshipStatus(req: Request, res: Response) {
 async function getNumberOfFriends(req: Request, res: Response) {
   const playerID = req.params.playerID;
   const fList = await FriendsModel.findOne({ playerID });
-  let fFriends = fList.friendsIDs;
-  let numberOfFriends = fFriends.length;
+  let friends = fList.friendsIDs;
+  let numberOfFriends = friends.length;
   try {
     res.status(200).json({ numberOfFriends });
   } catch (error) {
@@ -50,4 +49,15 @@ async function getNumberOfFriends(req: Request, res: Response) {
   }
 }
 
-module.exports = { addFriend, FriendshipStatus, getNumberOfFriends };
+async function getFriends(req: Request, res: Response) {
+  const playerID = req.params.playerID;
+  const fList = await FriendsModel.findOne({ playerID });
+  let friendsData = fList.friendsIDs;
+  try {
+    res.status(200).json(friendsData);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
+
+module.exports = { addFriend, FriendshipStatus, getNumberOfFriends, getFriends };

@@ -8,6 +8,10 @@ router.get(
   "/getNumberOfFriends/:playerID",
   friendController.getNumberOfFriends
 );
+router.get(
+  "/getFriends/:playerID",
+  friendController.getFriends
+);
 router.post("/areFriends", friendController.FriendshipStatus);
 
 module.exports = router;
