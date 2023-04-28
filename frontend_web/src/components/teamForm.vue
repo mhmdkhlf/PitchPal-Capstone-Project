@@ -6,7 +6,7 @@
     <h1 class="form-title">Create Your Team</h1>
     <form action="" class="team-form">
       <div class="form-group">
-        <input type="text" placeholder="Team Name" />
+        <input type="text" placeholder="Team Name" v-model="name" />
       </div>
       <div>
         <div>
@@ -14,18 +14,20 @@
           <button id="push" @click="addPlayer($event)">Add</button>
         </div>
       </div>
-      <!-- <userRow
+      <userRow
+        :userName="captainInfo.name"
+        :userId="captainInfo.playerID"
+        :imageSrc="captainImgSrc"
+        :isCaptain="true"
+      />
+      <userRow
+        v-for="(player, index) in players"
         :userName="player.name"
         :userId="player.id"
         :imageSrc="player.src"
-      /> -->
-      <userRow
-        v-for="(player, index) in players"
-        :userName="captainInfo.name"
-        :userId="captainInfo.id"
-        :imageSrc="player.src"
         :key="index"
         @delete="deletePlayer(index)"
+        :isCaptain="false"
       />
       <button id="create-btn" @click="createTeam($event)">Create</button>
     </form>
@@ -46,28 +48,55 @@ export default {
     loader,
     userRow,
   },
+  beforeMount() {
+    this.teamIds.push(this.captainInfo.playerID);
+    this.$store.dispatch("setLoading");
+    axios
+      .get(
+        "http://localhost:5000/api/getProfilePictureByEmail/" +
+          sessionStorage.getItem("user")
+      )
+      .then((res) => {
+        if (res.data) {
+          this.captainImgSrc = `data:${
+            res.data.img.contentType
+          };base64,${Buffer.from(res.data.img.data, "utf-8").toString(
+            "base64"
+          )}`;
+          this.$store.dispatch("stopLoading");
+        }
+      });
+  },
   data() {
     return {
+      name: "",
       teamIds: [],
       inputId: "",
       players: [],
       error: null,
       pattern: /^\d{3}-\d{3}$/,
       captainInfo: this.$store.state.playerInfo,
+      captainImgSrc: "",
     };
   },
   methods: {
     createTeam(e) {
       e.preventDefault();
+      this.$store.dispatch("setLoading");
       if (!this.name || this.players.length == 0) {
         this.error =
-          "all fields must be filled and at least two players should be in the team";
+          "all fields must be filled and at least three players should be in the team";
+        this.$store.dispatch("stopLoading");
       } else {
-        axios.post("http://localhost:5000/api/newTeam", {
-          name: this.name,
-          captainId: this.$store.state.playerInfo.playerID,
-          playerIds: this.playerIds,
-        });
+        axios
+          .post("http://localhost:5000/api/newTeam", {
+            name: this.name,
+            captainId: this.$store.state.playerInfo.playerID,
+            playerIds: this.teamIds,
+          })
+          .then((res) => {
+            if (res.status === 200) this.$store.dispatch("stopLoading");
+          });
       }
     },
     addPlayer(e) {
@@ -109,7 +138,7 @@ export default {
                       this.error = "The player already exists in the team";
                     } else {
                       this.players.push(obj);
-                      this.playerIds.push(obj.id);
+                      this.teamIds.push(obj.id);
                     }
                   },
                   (err2) => {
@@ -135,9 +164,8 @@ export default {
       }
     },
     deletePlayer(i) {
-      console.log("index " + i);
       this.players.splice(i, 1);
-      console.log("in2");
+      this.teamIds.splice(i, 1);
     },
   },
   computed: {

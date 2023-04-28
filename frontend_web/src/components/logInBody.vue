@@ -94,6 +94,14 @@ export default {
                       this.$router.push("/first-player-profile");
                     } else {
                       this.$store.dispatch("stopLoading");
+                      axios
+                        .get(
+                          "http://localhost:5000/api/getPlayerByEmail/" +
+                            sessionStorage.getItem("user")
+                        )
+                        .then((res) => {
+                          this.$store.dispatch("setPlayerInfo", res.data);
+                        });
                       this.$router.push("/");
                     }
                   });
@@ -109,6 +117,14 @@ export default {
                       this.$router.push("/first-manager-profile");
                     } else {
                       this.$store.dispatch("stopLoading");
+                      axios
+                        .get(
+                          "http://localhost:5000/api/getManager/" +
+                            sessionStorage.getItem("user")
+                        )
+                        .then((res) => {
+                          this.$store.dispatch("setManagerInfo", res.data);
+                        });
                       this.$router.push("/manager-home-page");
                     }
                   });

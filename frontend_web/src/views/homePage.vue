@@ -1,5 +1,6 @@
 <template>
   <div class="home">Welcome Ali Solh</div>
+  <button @click="go()">team</button>
 </template>
 
 <script>
@@ -11,6 +12,11 @@ export default {
     if (sessionStorage.getItem("user") === null) {
       this.$router.push("/login");
     }
+  },
+  methods: {
+    go() {
+      this.$router.push("/team-form");
+    },
   },
 };
 </script>
