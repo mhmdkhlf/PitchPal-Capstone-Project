@@ -294,6 +294,7 @@ import axios from "axios";
 import loader from "./loader.vue";
 import confirmPopup from "./confirmationPopup.vue";
 import { Buffer } from "buffer";
+const helpers = require("../../helpers/authentication.js");
 export default {
   name: "playerProfileComponent",
   components: {
@@ -321,18 +322,6 @@ export default {
     },
   },
   methods: {
-    async getPlayerData() {
-      const Request = await axios.get(
-        "http://localhost:5000/api/getPlayerByEmail/" +
-          sessionStorage.getItem("user")
-      );
-      let data = Request.data;
-      if (data) {
-        this.playerdata = data;
-      } else {
-        this.playerdata = null;
-      }
-    },
     editProfile() {
       this.$router.push({
         path: "/first-player-profile",
@@ -369,11 +358,9 @@ export default {
   async mounted() {
     this.$store.dispatch("setLoading");
     if (this.isSelfVisit) {
-      await this.getPlayerData();
       if (
-        sessionStorage.getItem("user") === null ||
-        !this.playerdata ||
-        this.playerdata.playerID !== this.$route.params.id
+        !helpers.isLoggedIn &&
+        !helpers.isPlayerAuthenticated(this.$route.params.id)
       ) {
         this.$store.dispatch("stopLoading");
         this.$router.push("/login");

@@ -85,7 +85,7 @@ export default {
       this.$store.dispatch("setLoading");
       if (!this.name || this.players.length == 0) {
         this.error =
-          "all fields must be filled and at least three players should be in the team";
+          "all fields must be filled and at least two players should be in the team";
         this.$store.dispatch("stopLoading");
       } else {
         axios

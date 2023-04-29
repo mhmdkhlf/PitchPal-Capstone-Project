@@ -162,6 +162,7 @@ import axios from "axios";
 import loader from "./loader.vue";
 import confirmPopup from "./confirmationPopup.vue";
 import { Buffer } from "buffer";
+const helpers = require("../../helpers/authentication.js");
 export default {
   name: "playerProfileComponent",
   components: {
@@ -188,17 +189,6 @@ export default {
     },
   },
   methods: {
-    async getManagerData() {
-      const firstRequest = await axios.get(
-        "http://localhost:5000/api/getManager/" + sessionStorage.getItem("user")
-      );
-      let data = firstRequest.data;
-      if (data) {
-        this.managerData = data;
-      } else {
-        this.managerData = null;
-      }
-    },
     goToSportCenter() {
       this.$router.push("/sport-center-view");
     },
@@ -238,11 +228,9 @@ export default {
   async mounted() {
     this.$store.dispatch("setLoading");
     if (this.isSelfVisit) {
-      await this.getManagerData();
       if (
-        sessionStorage.getItem("user") === null ||
-        !this.managerData ||
-        this.$route.params.email !== this.managerData.email
+        !helpers.isLoggedIn &&
+        !helpers.isManagerAuthenticated(this.$route.params.email)
       ) {
         this.$store.dispatch("stopLoading");
         this.$router.push("/login");
