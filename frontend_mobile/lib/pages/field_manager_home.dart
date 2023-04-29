@@ -3,8 +3,10 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/pages/view_field_manager_profile.dart';
 import 'package:frontend_mobile/pages/view_sport_center_profile.dart';
+import 'package:frontend_mobile/pages/field_bookings.dart';
 import '../data/field.dart';
 import '../data/field_manager.dart';
+import '../data/reservation.dart';
 import '../data/sport_center.dart';
 import '../constants.dart';
 
@@ -23,6 +25,7 @@ class FieldManagerHomePage extends StatefulWidget {
 class _FieldManagerHomePageState extends State<FieldManagerHomePage> {
   int _selectNavBarItemIndex = 0;
   SportCenter? sportCenter;
+  List<Reservation>? sportCenterReservations;
 
   Future<SportCenter> getSportCenter() async {
     final Dio dio = Dio();
@@ -49,44 +52,107 @@ class _FieldManagerHomePageState extends State<FieldManagerHomePage> {
     return sportCenter!;
   }
 
+  Future<Map<String, dynamic>> getSportCenterAndReservations() async {
+    Map<String, dynamic> output = {};
+    sportCenter ??= await getSportCenter();
+    output['sportCenter'] = sportCenter;
+    Dio dio = Dio();
+    final response = await dio.get(
+      '$apiRoute/getAllReservationsBySportCenter/${sportCenter!.name}',
+    );
+    List<dynamic> reservationsData = response.data;
+    List<Reservation> reservations =
+        reservationsData.map((e) => Reservation.fromJson(e)).toList();
+    output['reservations'] = reservations;
+    return output;
+  }
+
+  AppBar? getAppBar() {
+    if (_selectNavBarItemIndex == 0) {
+      return AppBar(
+        automaticallyImplyLeading: false,
+        title: const Center(
+            child: Text(
+          'Reservation Management',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+        )),
+      );
+    }
+
+    return null;
+  }
+
   Widget getBody() {
     if (_selectNavBarItemIndex == 0) {
-      return Center(
-        child: Text(
-          'Welcome ${widget.fieldManager.name}',
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+      if (sportCenter != null && sportCenterReservations != null) {
+        return FieldBookings(
+          sportCenter: sportCenter!,
+          reservations: sportCenterReservations!,
+        );
+      }
+      return FutureBuilder(
+        future: getSportCenterAndReservations(),
+        builder: (context, future) {
+          if (future.hasData) {
+            return FieldBookings(
+              sportCenter: future.data!['sportCenter'],
+              reservations: future.data!['reservations'],
+            );
+          }
+          if (future.hasError) {
+            return Center(child: Text(future.error.toString()));
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
       );
     }
     if (_selectNavBarItemIndex == 1) {
-      return const Center(
-        child: Text(
-          'Reservations management (to be developped)',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
-          ),
+      return SafeArea(
+        child: Column(
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(15),
+              child: Text(
+                "Viewing the sport center's reviews (to be developped)",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Column(
+              children: List.generate(
+                5,
+                (index) => Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Card(
+                    elevation: 4,
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 3),
+                        Text(
+                          'Review #$index',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        const Divider(),
+                        const Text(
+                          'Review description',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        const SizedBox(height: 10),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       );
     }
     if (_selectNavBarItemIndex == 2) {
-      return const Center(
-        child: Text(
-          "Viewing the sport center's reviews (to be developped)",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      );
-    }
-    if (_selectNavBarItemIndex == 3) {
       if (sportCenter != null) {
         return ViewSportCenterProfile(sportCenter: sportCenter!);
       }
@@ -109,19 +175,13 @@ class _FieldManagerHomePageState extends State<FieldManagerHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: getAppBar(),
       body: getBody(),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         showUnselectedLabels: false,
         selectedFontSize: 11,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home,
-              color: kDarkColor,
-            ),
-            label: 'Home',
-          ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.edit_calendar,
