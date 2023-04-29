@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/pages/view_sport_center_profile.dart';
+import 'package:frontend_mobile/pages/make_reservation.dart';
+import 'package:frontend_mobile/pages/review_sport_center.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../data/sport_center.dart';
 import '../constants.dart';
@@ -61,13 +63,39 @@ Distance: ${sportCenter.distanceFromPlayer == null ? 'N/A' : '${sportCenter.dist
               child: ButtonBar(
                 children: [
                   ElevatedButton(
-                    child: const Text('Google Maps'),
-                    onPressed: () => launchUrl(
-                      Uri.parse(sportCenter.locationLink),
+                    child: const Text(
+                      'Book Field',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MakeReservation(
+                          sportCenter: sportCenter,
+                        ),
+                      ),
                     ),
                   ),
                   ElevatedButton(
-                    child: const Text('Show More'),
+                    child: const Text(
+                      'Review',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ReviewSportCenter(
+                          reviewTextInput: TextEditingController(),
+                          sportCenterName: sportCenter.name,
+                        ),
+                      ),
+                    ),
+                  ),
+                  ElevatedButton(
+                    child: const Text(
+                      'Show More',
+                      style: TextStyle(fontSize: 12),
+                    ),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -79,7 +107,13 @@ Distance: ${sportCenter.distanceFromPlayer == null ? 'N/A' : '${sportCenter.dist
                       );
                     },
                   ),
-                  const SizedBox(width: 5),
+                  IconButton(
+                    color: kDarkGreen,
+                    icon: const Icon(Icons.location_pin),
+                    onPressed: () => launchUrl(
+                      Uri.parse(sportCenter.locationLink),
+                    ),
+                  ),
                 ],
               ),
             ),
