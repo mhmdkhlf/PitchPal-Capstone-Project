@@ -9,6 +9,10 @@ router.get(
   "/getAllPublicReservationsOfToday",
   reservationController.getAllPublicReservationsOfToday
 );
+router.get(
+  "/getAllReservationsBySportCenter/:sportCenterName",
+  reservationController.getAllReservationsBySportCenter
+)
 //done
 router.get(
   "/getAllReservationsOfTodayBysportCenterName/:sportCenterName",

@@ -35,6 +35,16 @@ async function makeReservation(req: Request, res: Response) {
     res.status(400).json({ message: error.message });
   }
 }
+
+async function getAllReservationsBySportCenter(req: Request, res: Response) {
+  try {
+    const sportCenterName = req.params.sportCenterName;
+    const reservationInfo = await reservationModel.find({sportCenterName});
+    res.status(200).json(reservationInfo);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
 //today notifications for managers
 async function getAllPendingReservationsBySportCenterForToday(
   req: Request,
@@ -195,6 +205,7 @@ async function getReservationsByReserverEmail(req: Request, res: Response) {
 module.exports = {
   makeReservation,
   addPlayerToTeam,
+  getAllReservationsBySportCenter,
   getAllPendingReservationsBySportCenterForToday,
   getAllPendingReservationsBySportCenterForTodayAndAfter,
   getReservationsByReserverEmail,
