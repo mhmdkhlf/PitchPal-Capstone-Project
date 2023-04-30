@@ -63,8 +63,8 @@ export default {
           };base64,${Buffer.from(res.data.img.data, "utf-8").toString(
             "base64"
           )}`;
-          this.$store.dispatch("stopLoading");
         }
+        this.$store.dispatch("stopLoading");
       });
   },
   data() {

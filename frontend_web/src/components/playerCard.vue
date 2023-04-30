@@ -2,13 +2,23 @@
   <div class="all">
     <div class="column">
       <div class="card">
-        <img :src="src" alt="John" style="width: 100%" v-if="src" />
-        <img
-          src="../assets/images/image.jpg"
-          alt="John"
-          style="width: 100%"
-          v-else
-        />
+        <div class="image">
+          <img
+            class="player-image"
+            :src="playerInfo.src"
+            alt="John"
+            style="width: 100%"
+            v-if="playerInfo.src"
+          />
+          <img
+            class="player-image"
+            src="../assets/images/image.jpg"
+            alt="John"
+            style="width: 100%"
+            v-else
+          />
+        </div>
+
         <div class="container">
           <h2>{{ playerInfo.name }}</h2>
           <p class="title">{{ playerInfo.position }}</p>
@@ -23,33 +33,9 @@
   </div>
 </template>
 <script>
-import axios from "axios";
-import { Buffer } from "buffer";
 export default {
   name: "playerCardComponent",
   props: ["playerInfo"],
-  data() {
-    return {
-      src: "",
-    };
-  },
-  beforeMount() {
-    this.$store.dispatch("setLoading");
-    axios
-      .get(
-        "http://localhost:5000/api/getProfilePictureByEmail/" +
-          this.playerInfo.email
-      )
-      .then((res) => {
-        if (res.data) {
-          this.src = `data:${res.data.img.contentType};base64,${Buffer.from(
-            res.data.img.data,
-            "utf-8"
-          ).toString("base64")}`;
-        }
-        this.$store.dispatch("stopLoading");
-      });
-  },
   methods: {
     goToProfile() {
       if (!this.$store.playerInfo) {
@@ -84,8 +70,7 @@ export default {
 }
 
 .column {
-  float: left;
-  width: 33.3%;
+  // width: 33.3%;
   margin-bottom: 16px;
   padding: 0 8px;
 }
@@ -126,5 +111,13 @@ export default {
   cursor: pointer;
   width: 100%;
   background-color: green;
+}
+.image {
+  width: 400px;
+  height: 400px;
+  img {
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>

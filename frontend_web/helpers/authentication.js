@@ -1,4 +1,5 @@
 import axios from "axios";
+export const api = "http://localhost:5000/api/";
 export function isLoggedIn() {
   if (sessionStorage.getItem("user")) {
     return true;

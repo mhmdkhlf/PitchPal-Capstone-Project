@@ -10,6 +10,7 @@ import managerHomePage from "../views/managerHomePage.vue";
 import sportCenterView from "../views/sportCenterPage.vue";
 import managerProfile from "../views/managerProfileView.vue";
 import teamForm from "../views/teamFormPage.vue";
+import teamProfile from "../views/teamProfilePage.vue";
 const routes = [
   {
     path: "/",
@@ -69,6 +70,12 @@ const routes = [
     path: "/team-form",
     name: "teamForm",
     component: teamForm,
+  },
+  {
+    path: "/team-profile/:name/:captainVisit",
+    name: "teamProfile",
+    component: teamProfile,
+    params: true,
   },
 ];
 
