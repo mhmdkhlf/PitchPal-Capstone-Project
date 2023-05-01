@@ -9,10 +9,12 @@
       />
     </div>
     <div class="user-info">
-      <h2 class="user-name">{{ userName }}</h2>
+      <h2 class="user-name" v-if="!isCaptain">{{ userName }}</h2>
+      <h2 class="user-name" v-if="isCaptain">{{ userName }} (C)</h2>
+
       <p class="user-id">ID: {{ userId }}</p>
     </div>
-    <div class="delete-button">
+    <div class="delete-button" :class="{ btndiv: isCaptain }">
       <button class="btn-delete" @click="deletePlayer($event)">Delete</button>
     </div>
   </div>
@@ -34,12 +36,15 @@ export default {
       type: String,
       required: true,
     },
+    isCaptain: {
+      type: Boolean,
+      required: true,
+    },
   },
   methods: {
     deletePlayer(e) {
       e.preventDefault();
       this.$emit("delete");
-      console.log("in");
     },
   },
 };
@@ -56,7 +61,9 @@ export default {
   padding: 10px;
   margin-bottom: 10px;
 }
-
+.btndiv {
+  visibility: hidden !important;
+}
 .profile-picture {
   width: 30px;
   height: 30px;

@@ -1,7 +1,7 @@
 <template>
-  <div></div>
   <!-- <loader /> -->
   <router-view />
+  <!-- <playercard :player-info="info" /> -->
   <!-- <prr /> -->
   <!-- <p>hello</p>
   <img :src="src" alt="failed" ref="test" v-if="done" /> -->
@@ -16,10 +16,21 @@
 //import pf from "@/components/profilePicture.vue";
 //import prr from "./components/firstTimeManagerProfile.vue";
 // import uv from "./components/userRow.vue";
+// import playercard from "./components/playerCard.vue";
 export default {
   // components: {
-  //   prr,
+  //   playercard,
   // },
+  // data() {
+  //   return {
+  //     info: {
+  //       name: "ali",
+  //       playerID: "262-887",
+  //       position: "attacker",
+  //       email: "majdsolh@gmail.com",
+  //       description: "mmm",
+  //     },
+  //   };
   // mounted() {
   //   this.$router.push({
   //     name: "Profile",

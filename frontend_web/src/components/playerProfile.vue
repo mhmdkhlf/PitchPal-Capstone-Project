@@ -41,9 +41,10 @@
               >
                 <div class="d-flex justify-content-between">
                   <a
-                    href="#"
+                    @click="followPlayer()"
                     class="btn btn-sm btn-info mr-4 common"
                     v-if="!isSelfVisit"
+                    ref="connectBtn"
                     >Connect</a
                   >
                   <a
@@ -294,6 +295,7 @@ import axios from "axios";
 import loader from "./loader.vue";
 import confirmPopup from "./confirmationPopup.vue";
 import { Buffer } from "buffer";
+const helpers = require("../../helpers/authentication.js");
 export default {
   name: "playerProfileComponent",
   components: {
@@ -321,17 +323,15 @@ export default {
     },
   },
   methods: {
-    async getPlayerData() {
-      const Request = await axios.get(
-        "http://localhost:5000/api/getPlayerByEmail/" +
-          sessionStorage.getItem("user")
-      );
-      let data = Request.data;
-      if (data) {
-        this.playerdata = data;
-      } else {
-        this.playerdata = null;
-      }
+    async followPlayer() {
+      this.$store.dispatch("setLoading");
+      await axios.post(helpers.api + "addFriend", {
+        playerID1: this.$store.state.playerInfo.playerID,
+        playerID2: this.playerInfo.playerID,
+      });
+      this.$refs.connectBtn.innerText = "connected";
+      this.$refs.connectBtn.disabled = true;
+      this.$store.dispatch("stopLoading");
     },
     editProfile() {
       this.$router.push({
@@ -368,13 +368,19 @@ export default {
   },
   async mounted() {
     this.$store.dispatch("setLoading");
+    if (!this.isSelfVisit) {
+      let arefriends = await axios.post(helpers.api + "areFriends", {
+        playerID1: this.$store.state.playerInfo.playerID,
+        playerID2: this.$route.params.id,
+      });
+      if (arefriends.data.status) {
+        this.$refs.connectBtn.innerText = "Connected";
+        this.$refs.connectBtn.disabled = true;
+      }
+    }
+    let res = await helpers.isPlayerAuthenticated(this.$route.params.id);
     if (this.isSelfVisit) {
-      await this.getPlayerData();
-      if (
-        sessionStorage.getItem("user") === null ||
-        !this.playerdata ||
-        this.playerdata.playerID !== this.$route.params.id
-      ) {
+      if (!helpers.isLoggedIn && !res) {
         this.$store.dispatch("stopLoading");
         this.$router.push("/login");
       }
