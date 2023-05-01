@@ -38,12 +38,14 @@ export default {
   props: ["playerInfo"],
   methods: {
     goToProfile() {
-      if (!this.$store.playerInfo) {
+      if (!this.$store.state.playerInfo) {
         this.$router.push(
           "/player-profile/" + this.playerInfo.playerID + "/false"
         );
       } else {
-        if (this.$store.playerInfo.playerID === this.playerInfo.playerID) {
+        if (
+          this.$store.state.playerInfo.playerID === this.playerInfo.playerID
+        ) {
           this.$router.push(
             "/player-profile/" + this.playerInfo.playerID + "/true"
           );
