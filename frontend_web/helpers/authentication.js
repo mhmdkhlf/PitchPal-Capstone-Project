@@ -31,3 +31,21 @@ export async function isManagerAuthenticated(requestedManagerEmail) {
   }
   return true;
 }
+export async function isTeamAuthenticated(requestedName) {
+  let playerEmail = sessionStorage.getItem("user");
+  let isPlayer = await axios.get(
+    "http://localhost:5000/api/getPlayerByEmail/" + playerEmail
+  );
+  if (!isPlayer.data) {
+    return false;
+  }
+  let teams = await axios.get(
+    "http://localhost:5000/api/getTeamsByCaptain/" + isPlayer.data.playerID
+  );
+  for (let i = 0; i < teams.data.length; i++) {
+    if (teams.data[i].name === requestedName) {
+      return true;
+    }
+  }
+  return false;
+}

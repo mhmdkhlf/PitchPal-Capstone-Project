@@ -69,7 +69,9 @@ export default {
   },
   data() {
     return {
-      name: "",
+      name: this.$route.query.info
+        ? JSON.parse(this.$route.query.info).teamInfo.name
+        : "",
       teamIds: [],
       inputId: "",
       players: [],

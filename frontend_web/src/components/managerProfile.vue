@@ -227,11 +227,9 @@ export default {
   },
   async mounted() {
     this.$store.dispatch("setLoading");
+    let res = await helpers.isManagerAuthenticated(this.$route.params.email);
     if (this.isSelfVisit) {
-      if (
-        !helpers.isLoggedIn &&
-        !helpers.isManagerAuthenticated(this.$route.params.email)
-      ) {
+      if (!helpers.isLoggedIn && !res) {
         this.$store.dispatch("stopLoading");
         this.$router.push("/login");
       }

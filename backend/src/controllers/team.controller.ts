@@ -32,7 +32,9 @@ async function getTeamsByCaptain(req: Request, res: Response) {
 
 async function getAPlayersTeams(req: Request, res: Response) {
   const playerId = req.params.playerId;
-  const teamsData = await teamModel.find({$or:[{ captainId : playerId }, { playerIds : playerId }]});
+  const teamsData = await teamModel.find({
+    $or: [{ captainId: playerId }, { playerIds: playerId }],
+  });
   try {
     res.status(200).json(teamsData);
   } catch (error) {
@@ -69,6 +71,15 @@ async function addPlayerToTeam(req: Request, res: Response) {
     res.status(400).json({ message: error.message });
   }
 }
+async function deleteTeam(req: Request, res: Response) {
+  let name = req.params.name;
+  try {
+    await teamModel.deleteOne({ name });
+    res.status(200).json({ res: true });
+  } catch (error) {
+    res.status(400).json({ res: false });
+  }
+}
 
 module.exports = {
   newTeam,
@@ -77,4 +88,5 @@ module.exports = {
   getAllTeams,
   addPlayerToTeam,
   getAPlayersTeams,
+  deleteTeam,
 };

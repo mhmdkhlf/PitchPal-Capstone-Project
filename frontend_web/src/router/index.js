@@ -70,6 +70,7 @@ const routes = [
     path: "/team-form",
     name: "teamForm",
     component: teamForm,
+    query: { info: null },
   },
   {
     path: "/team-profile/:name/:captainVisit",

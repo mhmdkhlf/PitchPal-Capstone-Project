@@ -59,7 +59,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .all {
-  box-sizing: border-box;
+  //box-sizing: border-box;
   color: green !important;
 }
 
@@ -113,8 +113,8 @@ export default {
   background-color: green;
 }
 .image {
-  width: 400px;
-  height: 400px;
+  width: 380px;
+  height: 340px;
   img {
     width: 100%;
     height: 100%;

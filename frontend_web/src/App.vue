@@ -1,5 +1,4 @@
 <template>
-  <div></div>
   <!-- <loader /> -->
   <router-view />
   <!-- <playercard :player-info="info" /> -->
