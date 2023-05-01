@@ -12,6 +12,7 @@ import managerProfile from "../views/managerProfileView.vue";
 import teamForm from "../views/teamFormPage.vue";
 import teamProfile from "../views/teamProfilePage.vue";
 import teamUpdateForm from "../views/teamUpdateFormPage.vue";
+import sportcenters from "../views/sportCentersView.vue";
 const routes = [
   {
     path: "/",
@@ -83,6 +84,11 @@ const routes = [
     name: "teamProfile",
     component: teamProfile,
     params: true,
+  },
+  {
+    path: "/sport-centers/",
+    name: "sportCenters",
+    component: sportcenters,
   },
 ];
 

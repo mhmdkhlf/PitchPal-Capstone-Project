@@ -60,13 +60,9 @@ export default {
     playerCard,
     confirmPopup,
   },
-  mounted() {
-    console.log("in");
-  },
   async created() {
     this.$store.dispatch("setLoading");
     let res = await helpers.isTeamAuthenticated(this.$route.params.name);
-    console.log(res);
 
     if (this.isSelfVisit) {
       if (!res) {
