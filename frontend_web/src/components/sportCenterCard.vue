@@ -5,14 +5,14 @@
         <div class="image">
           <img
             class="player-image"
-            :src="playerInfo.src"
+            :src="sportCenterInfo.src"
             alt="John"
             style="width: 100%"
-            v-if="playerInfo.src"
+            v-if="sportCenterInfo.src"
           />
           <img
             class="player-image"
-            src="../assets/images/image.jpg"
+            src="../assets/images/background.jpg"
             alt="John"
             style="width: 100%"
             v-else
@@ -20,12 +20,12 @@
         </div>
 
         <div class="container">
-          <h2>{{ playerInfo.name }}</h2>
-          <p class="title">{{ playerInfo.position }}</p>
+          <h2>{{ sportCenterInfo.name }}</h2>
+          <p class="title">{{ sportCenterInfo.location.place }}</p>
           <!-- <p>{{ playerInfo.description }}</p> -->
-          <p>{{ playerInfo.email }}</p>
+          <p>{{ sportCenterInfo.phoneNumber }}</p>
           <p>
-            <button class="button" @click="goToProfile()">View Profile</button>
+            <button class="button" @click="goToProfile()">View Details</button>
           </p>
         </div>
       </div>
@@ -34,27 +34,27 @@
 </template>
 <script>
 export default {
-  name: "playerCardComponent",
-  props: ["playerInfo"],
+  name: "sportCenterCardComponent",
+  props: ["sportCenterInfo"],
   methods: {
     goToProfile() {
-      if (!this.$store.state.playerInfo) {
-        this.$router.push(
-          "/player-profile/" + this.playerInfo.playerID + "/false"
-        );
-      } else {
-        if (
-          this.$store.state.playerInfo.playerID === this.playerInfo.playerID
-        ) {
-          this.$router.push(
-            "/player-profile/" + this.playerInfo.playerID + "/true"
-          );
-        } else {
-          this.$router.push(
-            "/player-profile/" + this.playerInfo.playerID + "/false"
-          );
-        }
-      }
+      // if (!this.$store.state.managerInfo) {
+      //   this.$router.push(
+      //     "/player-profile/" + this.managerInfo.email + "/false"
+      //   );
+      // } else {
+      //   if (
+      //     this.$store.state.playerInfo.playerID === this.playerInfo.playerID
+      //   ) {
+      //     this.$router.push(
+      //       "/player-profile/" + this.playerInfo.playerID + "/true"
+      //     );
+      //   } else {
+      //     this.$router.push(
+      //       "/player-profile/" + this.playerInfo.playerID + "/false"
+      //     );
+      //   }
+      // }
     },
   },
 };

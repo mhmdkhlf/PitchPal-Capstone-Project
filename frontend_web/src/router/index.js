@@ -11,6 +11,8 @@ import sportCenterView from "../views/sportCenterPage.vue";
 import managerProfile from "../views/managerProfileView.vue";
 import teamForm from "../views/teamFormPage.vue";
 import teamProfile from "../views/teamProfilePage.vue";
+import teamUpdateForm from "../views/teamUpdateFormPage.vue";
+import sportcenters from "../views/sportCentersView.vue";
 const routes = [
   {
     path: "/",
@@ -70,6 +72,11 @@ const routes = [
     path: "/team-form",
     name: "teamForm",
     component: teamForm,
+  },
+  {
+    path: "/team-update-form",
+    name: "teamUpdateForm",
+    component: teamUpdateForm,
     query: { info: null },
   },
   {
@@ -77,6 +84,11 @@ const routes = [
     name: "teamProfile",
     component: teamProfile,
     params: true,
+  },
+  {
+    path: "/sport-centers/",
+    name: "sportCenters",
+    component: sportcenters,
   },
 ];
 
