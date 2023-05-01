@@ -49,43 +49,29 @@ export default {
     loader,
     userRow,
   },
-  beforeMount() {
+  async beforeMount() {
     this.$store.dispatch("setLoading");
-    this.teamIds.map((id) => {
-      let obj = {};
-      axios.get(helpers.api + "getPlayer/" + id).then(
-        (res) => {
-          (obj.id = res.data.playerID), (obj.name = res.data.name);
-          axios
-            .get(helpers.api + "getProfilePictureByEmail/" + res.data.email)
-            .then(
-              (res2) => {
-                if (res2.data) {
-                  obj.src = `data:${
-                    res2.data.img.contentType
-                  };base64,${Buffer.from(res2.data.img.data, "utf-8").toString(
-                    "base64"
-                  )}`;
-                } else {
-                  obj.src = "";
-                }
-                this.players.push(obj);
-                this.$store.dispatch("stopLoading");
-              },
-              (err2) => {
-                this.error = err2.response.data.error;
-                obj.src = "";
+    await Promise.all(
+      this.teamIds.map(async (id) => {
+        let obj = {};
+        let playerI = await axios.get(helpers.api + "getPlayer/" + id);
+        (obj.id = playerI.data.playerID), (obj.name = playerI.data.name);
+        let img = await axios.get(
+          helpers.api + "getProfilePictureByEmail/" + playerI.data.email
+        );
 
-                this.$store.dispatch("stopLoading");
-              }
-            );
-        },
-        (err) => {
-          this.$store.dispatch("stopLoading");
-          this.error = err.response.data.error;
+        if (img.data) {
+          obj.src = `data:${img.data.img.contentType};base64,${Buffer.from(
+            img.data.img.data,
+            "utf-8"
+          ).toString("base64")}`;
+        } else {
+          obj.src = "";
         }
-      );
-    });
+        this.players.push(obj);
+      })
+    );
+    this.$store.dispatch("stopLoading");
   },
   data() {
     return {
