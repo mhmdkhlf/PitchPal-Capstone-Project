@@ -75,12 +75,12 @@ export default {
   padding: 0 8px;
 }
 
-@media screen and (max-width: 650px) {
-  .column {
-    width: 100%;
-    display: block;
-  }
-}
+// @media screen and (max-width: 650px) {
+//   .column {
+//     width: 100%;
+//     display: block;
+//   }
+// }
 
 .card {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);

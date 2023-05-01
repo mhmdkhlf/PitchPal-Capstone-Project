@@ -193,10 +193,20 @@ button {
   box-sizing: border-box;
 }
 .players-cards {
-  display: flex;
-  flex-wrap: wrap;
-  padding: 4px;
+  // display: flex;
+  // flex-wrap: wrap;
+  // padding: 4px;
+  // margin: 0 auto;
+  // max-width: 1000px;
+  display: grid;
+  gap: 5px;
+  grid-template-columns: repeat(2, 1fr);
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(1, 1fr);
+  }
+  // grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
 }
+
 input {
   color: green;
   width: 100%;
