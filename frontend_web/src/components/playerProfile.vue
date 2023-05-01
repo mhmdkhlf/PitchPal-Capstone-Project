@@ -41,11 +41,12 @@
               >
                 <div class="d-flex justify-content-between">
                   <a
-                    @click="followPlayer()"
+                    @click="followPlayer($event)"
                     class="btn btn-sm btn-info mr-4 common"
                     v-if="!isSelfVisit"
                     ref="connectBtn"
-                    >Connect</a
+                    :disabled="isButtonDisabled"
+                    >{{ buttonState }}</a
                   >
                   <a
                     href="#"
@@ -312,6 +313,8 @@ export default {
       playerdata: null,
       isConfirmed: false,
       confirmationMessage: null,
+      buttonState: "Connect",
+      isButtonDisabled: false,
     };
   },
   watch: {
@@ -323,15 +326,18 @@ export default {
     },
   },
   methods: {
-    async followPlayer() {
-      this.$store.dispatch("setLoading");
-      await axios.post(helpers.api + "addFriend", {
-        playerID1: this.$store.state.playerInfo.playerID,
-        playerID2: this.playerInfo.playerID,
-      });
-      this.$refs.connectBtn.innerText = "connected";
-      this.$refs.connectBtn.disabled = true;
-      this.$store.dispatch("stopLoading");
+    async followPlayer(e) {
+      e.preventDefault();
+      if (!this.isButtonDisabled) {
+        this.$store.dispatch("setLoading");
+        await axios.post(helpers.api + "addFriend", {
+          playerID1: this.$store.state.playerInfo.playerID,
+          playerID2: this.playerInfo.playerID,
+        });
+        this.buttonState = "connected";
+        this.isButtonDisabled = true;
+        this.$store.dispatch("stopLoading");
+      }
     },
     editProfile() {
       this.$router.push({
@@ -374,8 +380,8 @@ export default {
         playerID2: this.$route.params.id,
       });
       if (arefriends.data.status) {
-        this.$refs.connectBtn.innerText = "Connected";
-        this.$refs.connectBtn.disabled = true;
+        this.buttonState = "Connected";
+        this.isButtonDisabled = true;
       }
     }
     let res = await helpers.isPlayerAuthenticated(this.$route.params.id);

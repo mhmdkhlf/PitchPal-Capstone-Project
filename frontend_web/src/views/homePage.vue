@@ -15,7 +15,7 @@ export default {
   },
   methods: {
     go() {
-      this.$router.push("/player-profile/327-954/false");
+      this.$router.push("/player-profile/971-754/false");
     },
   },
 };
