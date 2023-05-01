@@ -130,7 +130,7 @@ export default {
     },
     editTeam() {
       this.$router.push({
-        path: "/team-form",
+        path: "/team-update-form",
         query: {
           info: JSON.stringify({
             teamInfo: this.teamInfo,

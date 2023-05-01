@@ -15,7 +15,7 @@ export default {
   },
   methods: {
     go() {
-      this.$router.push("/player-profile/971-754/false");
+      this.$router.push("/team-profile/majed team/true");
     },
   },
 };
