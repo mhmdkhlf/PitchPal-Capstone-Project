@@ -80,6 +80,17 @@ async function deleteTeam(req: Request, res: Response) {
     res.status(400).json({ res: false });
   }
 }
+async function updateTeam(req: Request, res: Response) {
+  let id = req.params.id;
+  let updatedData = req.body;
+  let options = { new: true };
+  try {
+    let team = await teamModel.findByIdAndUpdate(id, updatedData, options);
+    res.status(200).json({ team });
+  } catch (Error) {
+    res.status(400).json({ error: Error.message });
+  }
+}
 
 module.exports = {
   newTeam,
@@ -89,4 +100,5 @@ module.exports = {
   addPlayerToTeam,
   getAPlayersTeams,
   deleteTeam,
+  updateTeam,
 };

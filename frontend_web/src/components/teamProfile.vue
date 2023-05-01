@@ -60,13 +60,9 @@ export default {
     playerCard,
     confirmPopup,
   },
-  mounted() {
-    console.log("in");
-  },
   async created() {
     this.$store.dispatch("setLoading");
     let res = await helpers.isTeamAuthenticated(this.$route.params.name);
-    console.log(res);
 
     if (this.isSelfVisit) {
       if (!res) {
@@ -74,38 +70,35 @@ export default {
         this.$store.dispatch("stopLoading");
       }
     }
-    axios
-      .get(helpers.api + "getTeamByName/" + this.$route.params.name)
-      .then((res) => {
-        this.teamInfo = res.data;
-        Promise.all(
-          this.teamInfo.playerIds.map((id) => {
-            axios
-              .get("http://localhost:5000/api/getPlayer/" + id)
-              .then((res) => {
-                axios
-                  .get(
-                    "http://localhost:5000/api/getProfilePictureByEmail/" +
-                      res.data.email
-                  )
-                  .then((res2) => {
-                    if (res2.data) {
-                      res.data["src"] = `data:${
-                        res2.data.img.contentType
-                      };base64,${Buffer.from(
-                        res2.data.img.data,
-                        "utf-8"
-                      ).toString("base64")}`;
-                      this.players.push(res.data);
-                    } else {
-                      this.players.push(res.data);
-                    }
-                  });
-              });
-          })
+    let teamI = await axios.get(
+      helpers.api + "getTeamByName/" + this.$route.params.name
+    );
+
+    this.teamInfo = teamI.data;
+    await Promise.all(
+      this.teamInfo.playerIds.map(async (id) => {
+        let playerI = await axios.get(
+          "http://localhost:5000/api/getPlayer/" + id
         );
-        this.$store.dispatch("stopLoading");
-      });
+
+        let img = await axios.get(
+          "http://localhost:5000/api/getProfilePictureByEmail/" +
+            playerI.data.email
+        );
+
+        if (img.data) {
+          playerI.data["src"] = `data:${
+            img.data.img.contentType
+          };base64,${Buffer.from(img.data.img.data, "utf-8").toString(
+            "base64"
+          )}`;
+          this.players.push(playerI.data);
+        } else {
+          this.players.push(playerI.data);
+        }
+      })
+    );
+    this.$store.dispatch("stopLoading");
   },
   data() {
     return {
@@ -130,7 +123,7 @@ export default {
     },
     editTeam() {
       this.$router.push({
-        path: "/team-form",
+        path: "/team-update-form",
         query: {
           info: JSON.stringify({
             teamInfo: this.teamInfo,
@@ -193,10 +186,20 @@ button {
   box-sizing: border-box;
 }
 .players-cards {
-  display: flex;
-  flex-wrap: wrap;
-  padding: 4px;
+  // display: flex;
+  // flex-wrap: wrap;
+  // padding: 4px;
+  // margin: 0 auto;
+  // max-width: 1000px;
+  display: grid;
+  gap: 5px;
+  grid-template-columns: repeat(3, 1fr);
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(1, 1fr);
+  }
+  // grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
 }
+
 input {
   color: green;
   width: 100%;
