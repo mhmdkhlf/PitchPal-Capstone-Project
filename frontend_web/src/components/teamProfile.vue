@@ -74,38 +74,35 @@ export default {
         this.$store.dispatch("stopLoading");
       }
     }
-    axios
-      .get(helpers.api + "getTeamByName/" + this.$route.params.name)
-      .then((res) => {
-        this.teamInfo = res.data;
-        Promise.all(
-          this.teamInfo.playerIds.map((id) => {
-            axios
-              .get("http://localhost:5000/api/getPlayer/" + id)
-              .then((res) => {
-                axios
-                  .get(
-                    "http://localhost:5000/api/getProfilePictureByEmail/" +
-                      res.data.email
-                  )
-                  .then((res2) => {
-                    if (res2.data) {
-                      res.data["src"] = `data:${
-                        res2.data.img.contentType
-                      };base64,${Buffer.from(
-                        res2.data.img.data,
-                        "utf-8"
-                      ).toString("base64")}`;
-                      this.players.push(res.data);
-                    } else {
-                      this.players.push(res.data);
-                    }
-                  });
-              });
-          })
+    let teamI = await axios.get(
+      helpers.api + "getTeamByName/" + this.$route.params.name
+    );
+
+    this.teamInfo = teamI.data;
+    await Promise.all(
+      this.teamInfo.playerIds.map(async (id) => {
+        let playerI = await axios.get(
+          "http://localhost:5000/api/getPlayer/" + id
         );
-        this.$store.dispatch("stopLoading");
-      });
+
+        let img = await axios.get(
+          "http://localhost:5000/api/getProfilePictureByEmail/" +
+            playerI.data.email
+        );
+
+        if (img.data) {
+          playerI.data["src"] = `data:${
+            img.data.img.contentType
+          };base64,${Buffer.from(img.data.img.data, "utf-8").toString(
+            "base64"
+          )}`;
+          this.players.push(playerI.data);
+        } else {
+          this.players.push(playerI.data);
+        }
+      })
+    );
+    this.$store.dispatch("stopLoading");
   },
   data() {
     return {
@@ -200,7 +197,7 @@ button {
   // max-width: 1000px;
   display: grid;
   gap: 5px;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   @media (max-width: 768px) {
     grid-template-columns: repeat(1, 1fr);
   }

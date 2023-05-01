@@ -22,7 +22,7 @@
         <div class="container">
           <h2>{{ playerInfo.name }}</h2>
           <p class="title">{{ playerInfo.position }}</p>
-          <p>{{ playerInfo.description }}</p>
+          <!-- <p>{{ playerInfo.description }}</p> -->
           <p>{{ playerInfo.email }}</p>
           <p>
             <button class="button" @click="goToProfile()">View Profile</button>
@@ -115,8 +115,13 @@ export default {
   background-color: green;
 }
 .image {
-  width: 380px;
-  height: 340px;
+  box-sizing: border-box;
+  // width: 380px;
+  height: 60vh;
+  @media (max-width: 768px) {
+    width: 100%;
+    height: 100%;
+  }
   img {
     width: 100%;
     height: 100%;

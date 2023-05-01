@@ -15,7 +15,7 @@ export default {
   },
   methods: {
     go() {
-      this.$router.push("/team-profile/majed team/true");
+      this.$router.push("/team-profile/majd team/true");
     },
   },
 };
