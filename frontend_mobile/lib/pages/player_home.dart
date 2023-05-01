@@ -1,11 +1,14 @@
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'create_team.dart';
 import 'view_player_profile.dart';
 import '../components/response_dialog_box.dart';
 import '../components/friend_card.dart';
+import '../components/match_card.dart';
 import '../components/sport_center_card.dart';
+import '../components/submit_button.dart';
 import '../components/team_card.dart';
 import '../data/field.dart';
 import '../data/player.dart';
@@ -34,6 +37,8 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
   List<String>? friendsIDs;
   final TextEditingController friendIdController = TextEditingController();
   final TextEditingController searchController = TextEditingController();
+  final DateFormat dateFormat = DateFormat('dd-MM-yyyy');
+  final DateFormat timeFormat = DateFormat.Hm();
 
   void _onItemTapped(int index) =>
       setState(() => _selectNavBarItemIndex = index);
@@ -292,13 +297,44 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
 
   Widget getBody() {
     if (_selectNavBarItemIndex == 0) {
-      return Center(
-        child: Text(
-          'Hello ${widget.player.name}!',
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w500,
+      return SingleChildScrollView(
+        child: SafeArea(
+          child: Column(
+            children: [
+              const SizedBox(height: 30),
+              Center(
+                child: Text(
+                  """Hello ${widget.player.name}!
+Here are your upcoming Matches:""",
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              const Divider(thickness: 2),
+              Column(
+                children: List.generate(
+                  2,
+                  (index) => Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: MatchCard(
+                      homeTeamName: 'Team #${2 * index}',
+                      awayTeamName: 'Team #${2 * index + 1}',
+                      matchDate: dateFormat.format(DateTime.now()),
+                      matchTime: timeFormat.format(DateTime.now()),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              SubmitButton(
+                text: 'Join a Public Match!',
+                onTap: () {},
+                fontSize: 16,
+              ),
+            ],
           ),
         ),
       );
