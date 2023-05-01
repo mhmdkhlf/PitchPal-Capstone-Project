@@ -15,7 +15,7 @@ export default {
   },
   methods: {
     go() {
-      this.$router.push("/team-form");
+      this.$router.push("/player-profile/327-954/false");
     },
   },
 };
