@@ -373,6 +373,7 @@ import axios from "axios";
 import loader from "./loader.vue";
 import confirmPopup from "./confirmationPopup.vue";
 import { Buffer } from "buffer";
+const helpers = require("../../helpers/authentication");
 export default {
   name: "sportCenterProfileComponent",
   components: {
@@ -384,7 +385,6 @@ export default {
       sportCenterInfo: null,
       done: false,
       isManager: this.$route.params.isManager === "true" ? true : false,
-      managerEmail: null,
       src: "",
       fields: [],
       managers: [],
@@ -403,18 +403,10 @@ export default {
   },
   async mounted() {
     await this.getManagers();
-
-    if (this.isManager) {
-      await this.getManagerData();
-      await this.isManagerForThisCenter();
-    }
-
-    if (
-      this.isManager &&
-      (sessionStorage.getItem("user") === null ||
-        !this.managerEmail ||
-        !this.validManagerVisit)
-    ) {
+    let isAuth = await helpers.isSportCenterAuthenticated(
+      this.$route.params.name
+    );
+    if (this.isManager && !isAuth) {
       this.$router.push("/login");
     } else {
       this.$store.dispatch("setLoading");
@@ -495,18 +487,6 @@ export default {
     },
   },
   methods: {
-    //confirm not player entering to manager as manager
-    async getManagerData() {
-      const firstRequest = await axios.get(
-        "http://localhost:5000/api/getManager/" + sessionStorage.getItem("user")
-      );
-      let data = firstRequest.data;
-      if (data) {
-        this.managerEmail = data.email;
-      } else {
-        this.managerEmail = null;
-      }
-    },
     async getManagers() {
       const firstRequest = await axios.get(
         "http://localhost:5000/api/getManagersBySportCenterName/" +
@@ -514,18 +494,6 @@ export default {
       );
       let data = firstRequest.data;
       this.managers = data;
-    },
-    async isManagerForThisCenter() {
-      const Request = await axios.post(
-        "http://localhost:5000/api/isManagerForSportCenter",
-        {
-          email: sessionStorage.getItem("user"),
-          sportCenterName: this.$route.params.name,
-        }
-      );
-      let data = Request.data;
-
-      this.validManagerVisit = data.result;
     },
     editSportCenter() {
       this.$router.push("/sport-center-form");

@@ -229,7 +229,7 @@ export default {
     this.$store.dispatch("setLoading");
     let res = await helpers.isManagerAuthenticated(this.$route.params.email);
     if (this.isSelfVisit) {
-      if (!helpers.isLoggedIn && !res) {
+      if (!helpers.isLoggedIn() || !res) {
         this.$store.dispatch("stopLoading");
         this.$router.push("/login");
       }
