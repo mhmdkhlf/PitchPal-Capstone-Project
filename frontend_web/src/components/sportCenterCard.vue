@@ -33,28 +33,28 @@
   </div>
 </template>
 <script>
+const helpers = require("../../helpers/authentication");
 export default {
   name: "sportCenterCardComponent",
   props: ["sportCenterInfo"],
   methods: {
-    goToProfile() {
-      // if (!this.$store.state.managerInfo) {
-      //   this.$router.push(
-      //     "/player-profile/" + this.managerInfo.email + "/false"
-      //   );
-      // } else {
-      //   if (
-      //     this.$store.state.playerInfo.playerID === this.playerInfo.playerID
-      //   ) {
-      //     this.$router.push(
-      //       "/player-profile/" + this.playerInfo.playerID + "/true"
-      //     );
-      //   } else {
-      //     this.$router.push(
-      //       "/player-profile/" + this.playerInfo.playerID + "/false"
-      //     );
-      //   }
-      // }
+    async goToProfile() {
+      this.$store.dispatch("setloading");
+      let res = await helpers.isSportCenterAuthenticated(
+        this.sportCenterInfo.name
+      );
+
+      if (res) {
+        this.$store.dispatch("stoploading");
+        this.$router.push(
+          "/sport-center-view/" + this.sportCenterInfo.name + "/true"
+        );
+      } else {
+        this.$store.dispatch("stoploading");
+        this.$router.push(
+          "/sport-center-view/" + this.sportCenterInfo.name + "/false"
+        );
+      }
     },
   },
 };

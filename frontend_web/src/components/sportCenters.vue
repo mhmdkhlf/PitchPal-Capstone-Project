@@ -12,7 +12,7 @@
               <input
                 type="text"
                 class="form-control"
-                placeholder="Search"
+                placeholder="Search By Name"
                 v-model="searchValue"
               />
               <div class="input-group-append">
@@ -32,14 +32,6 @@
             <option value="workingHours">Working Hours</option>
           </select>
         </div>
-        <!-- <div class="navbar-select">
-          <label for="filter-select">Filter by:</label>
-          <select id="filter-select" class="form-control">
-            <option value="">Select an option</option>
-            <option value="turf">Turf Grass</option>
-            <option value="grass">Grass</option>
-          </select>
-        </div> -->
       </div>
     </nav>
     <div class="sps">

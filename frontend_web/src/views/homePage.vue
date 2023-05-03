@@ -6,6 +6,7 @@
   <button @click="profile()">Your profile</button>
   <button @click="oprofile()">other</button>
   <button @click="oprofileT()">other True</button>
+  <button @click="friends()">friends</button>
 </template>
 
 <script>
@@ -36,6 +37,9 @@ export default {
     },
     oprofileT() {
       this.$router.push("/player-profile/971-754/true");
+    },
+    friends() {
+      this.$router.push("/friends");
     },
   },
 };
