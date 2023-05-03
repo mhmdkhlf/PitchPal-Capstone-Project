@@ -3,17 +3,40 @@
   <div class="all" v-if="!isLoading">
     <nav class="navbar">
       <div class="navbar-left">
-        <h1>Your Friends</h1>
+        <h1>Players</h1>
+      </div>
+      <div class="navbar-right">
+        <form class="navbar-form">
+          <div class="form-group">
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Search By Name"
+                v-model="searchValue"
+              />
+              <div class="input-group-append">
+                <i class="fa fa-search" style="color: green"></i>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div class="navbar-select">
+          <label for="sort-select">Display:</label>
+          <select id="sort-select" class="form-control" v-model="type">
+            <option value="">Select an option</option>
+            <option value="friends">Friends</option>
+            <option value="players">Players</option>
+          </select>
+        </div>
       </div>
     </nav>
-    <div class="cards">
-      <div class="players-cards">
-        <playerCard
-          v-for="(player, index) in players"
-          :player-info="player"
-          :key="index"
-        />
-      </div>
+    <div class="sps">
+      <playerCard
+        v-for="(player, index) in show"
+        :player-info="player"
+        :key="index"
+      />
     </div>
   </div>
 </template>
@@ -32,7 +55,46 @@ export default {
   data() {
     return {
       players: [],
+      friends: [],
+      show: [],
+      searchValue: "",
+      type: "",
     };
+  },
+  mounted() {
+    this.show = this.players;
+  },
+  watch: {
+    type(newv) {
+      if (newv === "players") {
+        this.show = this.players;
+      } else if (newv === "friends") {
+        this.show = this.friends;
+      } else {
+        this.show = this.players;
+      }
+    },
+    searchValue(newv) {
+      if (newv != "" && newv && this.type === "players") {
+        this.show = this.players.filter((item) => {
+          return item.name.toUpperCase().includes(newv.toUpperCase());
+        });
+      } else if (newv != "" && newv && this.type === "friends") {
+        this.show = this.friends.filter((item) => {
+          return item.name.toUpperCase().includes(newv.toUpperCase());
+        });
+      } else {
+        if (this.type === "friends") {
+          this.show = this.friends.filter((item) => {
+            return item.name.toUpperCase().includes(newv.toUpperCase());
+          });
+        } else {
+          this.show = this.players.filter((item) => {
+            return item.name.toUpperCase().includes(newv.toUpperCase());
+          });
+        }
+      }
+    },
   },
   computed: {
     isLoading() {
@@ -60,9 +122,28 @@ export default {
           };base64,${Buffer.from(img.data.img.data, "utf-8").toString(
             "base64"
           )}`;
-          this.players.push(playerI.data);
+          this.friends.push(playerI.data);
         } else {
-          this.players.push(playerI.data);
+          this.friends.push(playerI.data);
+        }
+      })
+    );
+    let players = await axios.get(helpers.api + "getAllPlayers");
+    await Promise.all(
+      players.data.map(async (player) => {
+        let img = await axios.get(
+          "http://localhost:5000/api/getProfilePictureByEmail/" + player.email
+        );
+
+        if (img.data) {
+          player["src"] = `data:${
+            img.data.img.contentType
+          };base64,${Buffer.from(img.data.img.data, "utf-8").toString(
+            "base64"
+          )}`;
+          this.players.push(player);
+        } else {
+          this.players.push(player);
         }
       })
     );
@@ -71,20 +152,6 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.players-cards {
-  // display: flex;
-  // flex-wrap: wrap;
-  // padding: 4px;
-  // margin: 0 auto;
-  // max-width: 1000px;
-  display: grid;
-  gap: 5px;
-  grid-template-columns: repeat(3, 1fr);
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(1, 1fr);
-  }
-  // grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
-}
 .navbar {
   background-color: #1e9600;
   color: white;
@@ -94,16 +161,115 @@ export default {
   padding: 10px 20px;
   font-size: 24px;
 }
+
+.navbar h1 {
+  margin: 0;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-form {
+  display: flex;
+  align-items: center;
+}
+
+.form-group {
+  margin: 0;
+}
+
+.input-group {
+  position: relative;
+}
+
+.input-group .form-control {
+  border-radius: 0;
+  border: none;
+  background-color: transparent;
+  color: white;
+  padding-right: 40px;
+}
+
+.input-group .form-control:focus {
+  box-shadow: none;
+}
+
+.input-group-append {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.sps {
+  display: grid;
+  gap: 5px;
+  grid-template-columns: repeat(3, 1fr);
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(1, 1fr);
+  }
+  padding: 20px;
+}
+
+.navbar-select {
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
+}
+
+label {
+  margin-right: 5px;
+}
+
+.form-control {
+  border-radius: 0;
+  border: none;
+  background-color: #e8f0de;
+  color: #1e9600;
+}
+
+.form-control:focus {
+  box-shadow: none;
+}
+
+select {
+  width: 150px;
+  padding: 5px;
+}
+input[type="text"] {
+  padding: 5px;
+  border: 3px solid white !important;
+  background-color: #e8f0de !important;
+  color: #1e9600 !important;
+}
+input[type="text"]::placeholder {
+  color: green;
+}
 @media only screen and (max-width: 600px) {
   .navbar {
     flex-direction: column;
   }
-  .navbar-left {
+  .navbar-left,
+  .navbar-right {
     width: 100%;
     text-align: center;
   }
-}
-.navbar h1 {
-  margin: 0;
+  .navbar-right {
+    margin-top: 10px;
+    justify-content: center;
+  }
+  .navbar-select {
+    margin: 10px 0;
+  }
+  .form-control {
+    width: 100%;
+  }
+  select {
+    width: 100%;
+  }
 }
 </style>
