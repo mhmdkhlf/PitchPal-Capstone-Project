@@ -18,12 +18,12 @@
         </form>
         <div class="navbar-select">
           <label for="sort-select">Sort by:</label>
-          <select id="sort-select" class="form-control">
+          <select id="sort-select" class="form-control" v-model="sortType">
             <option value="">Select an option</option>
             <option value="name">Name</option>
-            <option value="rating">rating</option>
-            <option value="distance-ascending">distance-ascending</option>
-            <option value="distance-descending">distance-descending</option>
+            <option value="staffRating">Staff rating</option>
+            <option value="facilityRating">facility rating</option>
+            <option value="distance">distance</option>
           </select>
         </div>
         <div class="navbar-select">
@@ -51,7 +51,7 @@ const helpers = require("../../helpers/authentication");
 import loader from "./loader.vue";
 import spCard from "./sportCenterCard.vue";
 import { Buffer } from "buffer";
-//var _ = require("lodash");
+const _ = require("lodash");
 export default {
   name: "sportCenters",
   components: {
@@ -74,6 +74,14 @@ export default {
         } else {
           sp["imgsrc"] = "";
         }
+        let dd = await axios.post(helpers.api + "calculate_distance", {
+          player_lat: this.$store.state.playerInfo.location.latitude,
+          player_lon: this.$store.state.playerInfo.location.longitude,
+          facility_lon: sp.location.longitude,
+          facility_lat: sp.location.latitude,
+        });
+        let d = dd.data.d;
+        sp["distance"] = d;
         this.objects.push(sp);
       })
     );
@@ -82,11 +90,47 @@ export default {
   data() {
     return {
       objects: [],
+      sortType: "",
     };
+  },
+  watch: {
+    sortType(newv) {
+      if (newv === "name") {
+        this.sortAlpha();
+      } else if (newv === "facilityRating") {
+        this.sortFacilityRating();
+      } else if (newv === "staffRating") {
+        this.sortStaffRating();
+      } else if (newv === "distance") {
+        this.sortDistance();
+      }
+    },
   },
   computed: {
     isLoading() {
       return this.$store.state.isLoading;
+    },
+  },
+  methods: {
+    sortAlpha() {
+      this.objects = _.orderBy(this.objects, ["name"], "asc");
+    },
+    sortFacilityRating() {
+      this.objects = _.orderBy(
+        this.objects,
+        ["facilityQualityAverageRating"],
+        "desc"
+      );
+    },
+    sortStaffRating() {
+      this.objects = _.orderBy(
+        this.objects,
+        ["staffServiceAverageRating"],
+        "desc"
+      );
+    },
+    sortDistance() {
+      this.objects = _.orderBy(this.objects, ["distance"], "desc");
     },
   },
 };

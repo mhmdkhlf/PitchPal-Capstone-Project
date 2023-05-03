@@ -1,6 +1,8 @@
 <template>
   <div class="home">Welcome Ali Solh</div>
-  <button @click="go()">team</button>
+  <button @click="go()">team Profile</button>
+  <button @click="goToForm()">team Form</button>
+  <button @click="sportCenters()">sportCenters</button>
 </template>
 
 <script>
@@ -16,6 +18,12 @@ export default {
   methods: {
     go() {
       this.$router.push("/team-profile/majd team/true");
+    },
+    goToForm() {
+      this.$router.push("/team-form");
+    },
+    sportCenters() {
+      this.$router.push("/sport-centers");
     },
   },
 };
