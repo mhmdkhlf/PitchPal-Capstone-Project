@@ -9,7 +9,12 @@
         <form class="navbar-form">
           <div class="form-group">
             <div class="input-group">
-              <input type="text" class="form-control" placeholder="Search" />
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Search"
+                v-model="searchValue"
+              />
               <div class="input-group-append">
                 <i class="fa fa-search" style="color: green"></i>
               </div>
@@ -38,11 +43,7 @@
       </div>
     </nav>
     <div class="sps">
-      <spCard
-        v-for="(sp, index) in objects"
-        :sportCenterInfo="sp"
-        :key="index"
-      />
+      <spCard v-for="(sp, index) in show" :sportCenterInfo="sp" :key="index" />
     </div>
   </div>
 </template>
@@ -93,6 +94,7 @@ export default {
         if (hours < 0) hours = hours + 24;
         sp["wh"] = (hours <= 9 ? "0" : "") + hours;
         this.objects.push(sp);
+        this.show.push(sp);
       })
     );
     this.$store.dispatch("stopLoading");
@@ -100,7 +102,9 @@ export default {
   data() {
     return {
       objects: [],
+      show: [],
       sortType: "",
+      searchValue: "",
     };
   },
   watch: {
@@ -117,6 +121,15 @@ export default {
         this.sortHours();
       }
     },
+    searchValue(newv) {
+      if (newv != "" && newv) {
+        this.show = this.objects.filter((item) => {
+          return item.name.toUpperCase().includes(newv.toUpperCase());
+        });
+      } else {
+        this.show = this.objects;
+      }
+    },
   },
   computed: {
     isLoading() {
@@ -125,27 +138,27 @@ export default {
   },
   methods: {
     sortAlpha() {
-      this.objects = _.orderBy(this.objects, ["name"], "asc");
+      this.show = _.orderBy(this.objects, ["name"], "asc");
     },
     sortFacilityRating() {
-      this.objects = _.orderBy(
+      this.show = _.orderBy(
         this.objects,
         ["facilityQualityAverageRating"],
         "desc"
       );
     },
     sortStaffRating() {
-      this.objects = _.orderBy(
+      this.show = _.orderBy(
         this.objects,
         ["staffServiceAverageRating"],
         "desc"
       );
     },
     sortDistance() {
-      this.objects = _.orderBy(this.objects, ["distance"], "desc");
+      this.show = _.orderBy(this.objects, ["distance"], "desc");
     },
     sortHours() {
-      this.objects = _.orderBy(this.objects, ["wh"], "desc");
+      this.show = _.orderBy(this.objects, ["wh"], "desc");
     },
   },
 };
@@ -252,6 +265,7 @@ input[type="text"] {
   padding: 5px;
   border: 3px solid white !important;
   background-color: #e8f0de !important;
+  color: #1e9600 !important;
 }
 input[type="text"]::placeholder {
   color: green;
