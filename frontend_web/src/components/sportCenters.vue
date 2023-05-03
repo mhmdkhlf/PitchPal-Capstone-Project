@@ -24,16 +24,17 @@
             <option value="staffRating">Staff rating</option>
             <option value="facilityRating">facility rating</option>
             <option value="distance">distance</option>
+            <option value="workingHours">Working Hours</option>
           </select>
         </div>
-        <div class="navbar-select">
+        <!-- <div class="navbar-select">
           <label for="filter-select">Filter by:</label>
           <select id="filter-select" class="form-control">
             <option value="">Select an option</option>
             <option value="turf">Turf Grass</option>
             <option value="grass">Grass</option>
           </select>
-        </div>
+        </div> -->
       </div>
     </nav>
     <div class="sps">
@@ -82,6 +83,15 @@ export default {
         });
         let d = dd.data.d;
         sp["distance"] = d;
+        let start = sp.workingHours.startTime.split(":");
+        let end = sp.workingHours.endTime.split(":");
+        var startDate = new Date(0, 0, 0, start[0], start[1], 0);
+        var endDate = new Date(0, 0, 0, end[0], end[1], 0);
+        var diff = endDate.getTime() - startDate.getTime();
+        var hours = Math.floor(diff / 1000 / 60 / 60);
+        diff -= hours * 1000 * 60 * 60;
+        if (hours < 0) hours = hours + 24;
+        sp["wh"] = (hours <= 9 ? "0" : "") + hours;
         this.objects.push(sp);
       })
     );
@@ -103,6 +113,8 @@ export default {
         this.sortStaffRating();
       } else if (newv === "distance") {
         this.sortDistance();
+      } else if (newv === "workingHours") {
+        this.sortHours();
       }
     },
   },
@@ -131,6 +143,9 @@ export default {
     },
     sortDistance() {
       this.objects = _.orderBy(this.objects, ["distance"], "desc");
+    },
+    sortHours() {
+      this.objects = _.orderBy(this.objects, ["wh"], "desc");
     },
   },
 };
