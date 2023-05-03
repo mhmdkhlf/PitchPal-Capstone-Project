@@ -14,5 +14,21 @@ router.delete(
   "/deleteSportCenter/:id",
   sportCenterController.deleteSportCenterById
 );
+router.patch(
+  "updateSportCenterStaffServiceAverageRatingInCaseOfNewEdit",
+  sportCenterController.updateSportCenterStaffServiceAverageRatingInCaseOfNewEdit
+);
+router.patch(
+  "updateSportCenterStaffServiceAverageRatingInCaseOfNewReview",
+  sportCenterController.updateSportCenterStaffServiceAverageRatingInCaseOfNewReview
+);
+router.patch(
+  "updateSportCenterFacilityQualityAverageRatingInCaseOfNewEdit",
+  sportCenterController.updateSportCenterFacilityQualityAverageRatingInCaseOfNewEdit
+);
+router.patch(
+  "updateSportCenterFacilityQualityAverageRatingInCaseOfNewReview",
+  sportCenterController.updateSportCenterFacilityQualityAverageRatingInCaseOfNewReview
+);
 
 module.exports = router;

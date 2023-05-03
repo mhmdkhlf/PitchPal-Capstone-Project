@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 const SportCenterModel = require("../models/sport-center.model.ts");
 const fieldModel = require("../models/field.model.ts");
 const managerModel = require("../models/field-manager.model.ts");
+const SportCenterReviewModel = require("../models/sport-center-review.model");
 async function newSportCenter(req: Request, res: Response) {
   const sportCenterData = new SportCenterModel({
     name: req.body.name,
@@ -86,7 +87,112 @@ async function deleteSportCenterById(req: Request, res: Response) {
   }
 }
 
+async function updateSportCenterFacilityQualityAverageRatingInCaseOfNewReview(
+  req: Request,
+  res: Response
+) {
+  let sportCenterName = req.body.sportCenterName;
+  let newReviewValue = req.body.newReviewValue;
+  let sp = await SportCenterModel.findOne({ name: sportCenterName });
+  let oldAvg = sp.data.facilityQualityAverageRating;
+  let ratings = await SportCenterReviewModel.find({ sportCenterName });
+  let newAvg =
+    (oldAvg * ratings.data.length + newReviewValue) / (ratings.data.length + 1);
+  let dbId = sp.data._id;
+  try {
+    let options = { new: true };
+    let info = await SportCenterModel.findByIdAndUpdate(
+      dbId,
+      { facilityQualityAverageRating: newAvg },
+      options
+    );
+    res.status(200).json(info);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
+async function updateSportCenterFacilityQualityAverageRatingInCaseOfNewEdit(
+  req: Request,
+  res: Response
+) {
+  let sportCenterName = req.body.sportCenterName;
+  let newReviewValue = req.body.newReviewValue;
+  let oldReviewValue = req.body.oldReviewValue;
+  let sp = await SportCenterModel.findOne({ name: sportCenterName });
+  let oldAvg = sp.data.facilityQualityAverageRating;
+  let ratings = await SportCenterReviewModel.find({ sportCenterName });
+  let newAvg =
+    (oldAvg * ratings.data.length - oldReviewValue + newReviewValue) /
+    ratings.data.length;
+  let dbId = sp.data._id;
+  try {
+    let options = { new: true };
+    let info = await SportCenterModel.findByIdAndUpdate(
+      dbId,
+      { facilityQualityAverageRating: newAvg },
+      options
+    );
+    res.status(200).json(info);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
+async function updateSportCenterStaffServiceAverageRatingInCaseOfNewReview(
+  req: Request,
+  res: Response
+) {
+  let sportCenterName = req.body.sportCenterName;
+  let newReviewValue = req.body.newReviewValue;
+  let sp = await SportCenterModel.findOne({ name: sportCenterName });
+  let oldAvg = sp.data.staffServiceAverageRating;
+  let ratings = await SportCenterReviewModel.find({ sportCenterName });
+  let newAvg =
+    (oldAvg * ratings.data.length + newReviewValue) / (ratings.data.length + 1);
+  let dbId = sp.data._id;
+  try {
+    let options = { new: true };
+    let info = await SportCenterModel.findByIdAndUpdate(
+      dbId,
+      { staffServiceAverageRating: newAvg },
+      options
+    );
+    res.status(200).json(info);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
+async function updateSportCenterStaffServiceAverageRatingInCaseOfNewEdit(
+  req: Request,
+  res: Response
+) {
+  let sportCenterName = req.body.sportCenterName;
+  let newReviewValue = req.body.newReviewValue;
+  let oldReviewValue = req.body.oldReviewValue;
+  let sp = await SportCenterModel.findOne({ name: sportCenterName });
+  let oldAvg = sp.data.staffServiceAverageRating;
+  let ratings = await SportCenterReviewModel.find({ sportCenterName });
+  let newAvg =
+    (oldAvg * ratings.data.length - oldReviewValue + newReviewValue) /
+    ratings.data.length;
+  let dbId = sp.data._id;
+  try {
+    let options = { new: true };
+    let info = await SportCenterModel.findByIdAndUpdate(
+      dbId,
+      { staffServiceAverageRating: newAvg },
+      options
+    );
+    res.status(200).json(info);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
+
 module.exports = {
+  updateSportCenterStaffServiceAverageRatingInCaseOfNewEdit,
+  updateSportCenterStaffServiceAverageRatingInCaseOfNewReview,
+  updateSportCenterFacilityQualityAverageRatingInCaseOfNewEdit,
+  updateSportCenterFacilityQualityAverageRatingInCaseOfNewReview,
   newSportCenter,
   getAllSportCenters,
   updateSportCenterById,

@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 let playerModel = require("../models/player.model.ts");
 let friendsModel = require("../models/friends.model");
 let managerModel = require("../models/field-manager.model");
+let playerReviewModel = require("../models/player-review.model");
 
 async function randomNumberGenerator(): Promise<Number> {
   var playerID = Math.floor(100000 + Math.random() * 900000);
@@ -100,6 +101,107 @@ async function deletePlayer(req: Request, res: Response) {
     res.status(400).json(error.message);
   }
 }
+//should be called before adding the new Review
+async function updatePlayerAverageMoralityRatingInCaseOfNewReview(
+  req: Request,
+  res: Response
+) {
+  let playerID = req.body.playerID;
+  let newReviewValue = req.body.newReviewValue;
+  let player = await playerModel.findOne({ playerID });
+  let oldAvg = player.data.averageMoralityRating;
+  let ratings = await playerReviewModel.find({ playerID });
+  let newAvg =
+    (oldAvg * ratings.data.length + newReviewValue) / (ratings.data.length + 1);
+  let dbId = player.data._id;
+  try {
+    let options = { new: true };
+    let info = await playerModel.findByIdAndUpdate(
+      dbId,
+      { averageMoralityRating: newAvg },
+      options
+    );
+    res.status(200).json(info);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
+async function updatePlayerAverageMoralityRatingInCaseOfNewEdit(
+  req: Request,
+  res: Response
+) {
+  let playerID = req.body.playerID;
+  let oldReviewValue = req.body.oldReviewValue;
+  let newReviewValue = req.body.newReviewValue;
+  let player = await playerModel.findOne({ playerID });
+  let oldAvg = player.data.averageMoralityRating;
+  let ratings = await playerReviewModel.find({ playerID });
+  let newAvg =
+    (oldAvg * ratings.data.length - oldReviewValue + newReviewValue) /
+    ratings.data.length;
+  let dbId = player.data._id;
+  try {
+    let options = { new: true };
+    let info = await playerModel.findByIdAndUpdate(
+      dbId,
+      { averageMoralityRating: newAvg },
+      options
+    );
+    res.status(200).json(info);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
+async function updatePlayerAverageSkillRatingInCaseOfNewReview(
+  req: Request,
+  res: Response
+) {
+  let playerID = req.body.playerID;
+  let newReviewValue = req.body.newReviewValue;
+  let player = await playerModel.findOne({ playerID });
+  let oldAvg = player.data.averageSkillRating;
+  let ratings = await playerReviewModel.find({ playerID });
+  let newAvg =
+    (oldAvg * ratings.data.length + newReviewValue) / (ratings.data.length + 1);
+  let dbId = player.data._id;
+  try {
+    let options = { new: true };
+    let info = await playerModel.findByIdAndUpdate(
+      dbId,
+      { averageSkillRating: newAvg },
+      options
+    );
+    res.status(200).json(info);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
+async function updatePlayerAverageSkillRatingInCaseOfNewEdit(
+  req: Request,
+  res: Response
+) {
+  let playerID = req.body.playerID;
+  let oldReviewValue = req.body.oldReviewValue;
+  let newReviewValue = req.body.newReviewValue;
+  let player = await playerModel.findOne({ playerID });
+  let oldAvg = player.data.averageSkillRating;
+  let ratings = await playerReviewModel.find({ playerID });
+  let newAvg =
+    (oldAvg * ratings.data.length - oldReviewValue + newReviewValue) /
+    ratings.data.length;
+  let dbId = player.data._id;
+  try {
+    let options = { new: true };
+    let info = await playerModel.findByIdAndUpdate(
+      dbId,
+      { averageSkillRating: newAvg },
+      options
+    );
+    res.status(200).json(info);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
 
 module.exports = {
   createProfileInformation,
@@ -108,4 +210,8 @@ module.exports = {
   updatePlayerById,
   getPlayerInformationByEmail,
   deletePlayer,
+  updatePlayerAverageMoralityRatingInCaseOfNewReview,
+  updatePlayerAverageSkillRatingInCaseOfNewReview,
+  updatePlayerAverageSkillRatingInCaseOfNewEdit,
+  updatePlayerAverageMoralityRatingInCaseOfNewEdit,
 };
