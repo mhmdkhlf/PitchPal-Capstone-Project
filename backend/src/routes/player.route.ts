@@ -13,19 +13,12 @@ router.get(
 router.get("/getAllPlayers", playerController.getAllPlayers);
 router.delete("/deletePlayer/:email", playerController.deletePlayer);
 router.patch(
-  "/updatePlayerAverageMoralityRatingInCaseOfNewReview",
-  playerController.updatePlayerAverageMoralityRatingInCaseOfNewReview
+  "/updatePlayerAverageRatingInCaseOfNewReview",
+  playerController.updatePlayerAverageRatingInCaseOfNewReview
 );
 router.patch(
-  "/updatePlayerAverageSkillRatingInCaseOfNewReview",
-  playerController.updatePlayerAverageSkillRatingInCaseOfNewReview
+  "/updatePlayerAverageRatingInCaseOfNewEdit",
+  playerController.updatePlayerAverageRatingInCaseOfNewEdit
 );
-router.patch(
-  "/updatePlayerAverageSkillRatingInCaseOfNewEdit",
-  playerController.updatePlayerAverageSkillRatingInCaseOfNewEdit
-);
-router.patch(
-  "/updatePlayerAverageMoralityRatingInCaseOfNewEdit",
-  playerController.updatePlayerAverageMoralityRatingInCaseOfNewEdit
-);
+
 module.exports = router;

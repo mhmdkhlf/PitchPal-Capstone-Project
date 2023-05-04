@@ -15,20 +15,12 @@ router.delete(
   sportCenterController.deleteSportCenterById
 );
 router.patch(
-  "updateSportCenterStaffServiceAverageRatingInCaseOfNewEdit",
-  sportCenterController.updateSportCenterStaffServiceAverageRatingInCaseOfNewEdit
+  "/updateSportCenterQualityAverageRatingInCaseOfNewEdit",
+  sportCenterController.updateSportCenterQualityAverageRatingInCaseOfNewEdit
 );
 router.patch(
-  "updateSportCenterStaffServiceAverageRatingInCaseOfNewReview",
-  sportCenterController.updateSportCenterStaffServiceAverageRatingInCaseOfNewReview
-);
-router.patch(
-  "updateSportCenterFacilityQualityAverageRatingInCaseOfNewEdit",
-  sportCenterController.updateSportCenterFacilityQualityAverageRatingInCaseOfNewEdit
-);
-router.patch(
-  "updateSportCenterFacilityQualityAverageRatingInCaseOfNewReview",
-  sportCenterController.updateSportCenterFacilityQualityAverageRatingInCaseOfNewReview
+  "/updateSportCenterFacilityAverageRatingInCaseOfNewReview",
+  sportCenterController.updateSportCenterFacilityAverageRatingInCaseOfNewReview
 );
 
 module.exports = router;

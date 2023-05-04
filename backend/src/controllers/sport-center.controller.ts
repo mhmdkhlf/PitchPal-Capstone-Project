@@ -3,7 +3,6 @@ import { Request, Response } from "express";
 const SportCenterModel = require("../models/sport-center.model.ts");
 const fieldModel = require("../models/field.model.ts");
 const managerModel = require("../models/field-manager.model.ts");
-const SportCenterReviewModel = require("../models/sport-center-review.model");
 async function newSportCenter(req: Request, res: Response) {
   const sportCenterData = new SportCenterModel({
     name: req.body.name,
@@ -87,23 +86,33 @@ async function deleteSportCenterById(req: Request, res: Response) {
   }
 }
 
-async function updateSportCenterFacilityQualityAverageRatingInCaseOfNewReview(
+async function updateSportCenterFacilityAverageRatingInCaseOfNewReview(
   req: Request,
   res: Response
 ) {
   let sportCenterName = req.body.sportCenterName;
-  let newReviewValue = req.body.newReviewValue;
+  let newQualityReviewValue = req.body.newQualityReviewValue;
+  let newStaffReviewValue = req.body.newStaffReviewValue;
   let sp = await SportCenterModel.findOne({ name: sportCenterName });
-  let oldAvg = sp.data.facilityQualityAverageRating;
-  let ratings = await SportCenterReviewModel.find({ sportCenterName });
-  let newAvg =
-    (oldAvg * ratings.data.length + newReviewValue) / (ratings.data.length + 1);
+  let oldQualityAvg = sp.data.facilityQualityAverageRating;
+  let oldStaffAvg = sp.data.staffServiceAverageRating;
+  let numberOfReviews = sp.data.nbOfRatings;
+  let newStaffAvg =
+    (oldStaffAvg * numberOfReviews + newStaffReviewValue) /
+    (numberOfReviews + 1);
+  let newQualityAvg =
+    (oldQualityAvg * numberOfReviews + newQualityReviewValue) /
+    (numberOfReviews + 1);
   let dbId = sp.data._id;
   try {
     let options = { new: true };
     let info = await SportCenterModel.findByIdAndUpdate(
       dbId,
-      { facilityQualityAverageRating: newAvg },
+      {
+        facilityQualityAverageRating: newQualityAvg,
+        staffServiceAverageRating: newStaffAvg,
+        nbOfRatings: numberOfReviews + 1,
+      },
       options
     );
     res.status(200).json(info);
@@ -111,75 +120,38 @@ async function updateSportCenterFacilityQualityAverageRatingInCaseOfNewReview(
     res.status(400).json(error.message);
   }
 }
-async function updateSportCenterFacilityQualityAverageRatingInCaseOfNewEdit(
+async function updateSportCenterQualityAverageRatingInCaseOfNewEdit(
   req: Request,
   res: Response
 ) {
   let sportCenterName = req.body.sportCenterName;
-  let newReviewValue = req.body.newReviewValue;
-  let oldReviewValue = req.body.oldReviewValue;
+  let newStaffReviewValue = req.body.newStaffReviewValue;
+  let newQualityReviewValue = req.body.newQualityReviewValue;
+  let oldStaffReviewValue = req.body.oldStaffReviewValue;
+  let oldQualityReviewValue = req.body.oldQualityReviewValue;
   let sp = await SportCenterModel.findOne({ name: sportCenterName });
-  let oldAvg = sp.data.facilityQualityAverageRating;
-  let ratings = await SportCenterReviewModel.find({ sportCenterName });
-  let newAvg =
-    (oldAvg * ratings.data.length - oldReviewValue + newReviewValue) /
-    ratings.data.length;
+  let oldQualityAvg = sp.data.facilityQualityAverageRating;
+  let oldStaffAvg = sp.data.staffServiceAverageRating;
+  let numberOfReviews = sp.data.nbOfRatings;
+  let newStaffAvg =
+    (oldStaffAvg * numberOfReviews -
+      oldStaffReviewValue +
+      newStaffReviewValue) /
+    numberOfReviews;
+  let newQualityAvg =
+    (oldQualityAvg * numberOfReviews -
+      oldQualityReviewValue +
+      newQualityReviewValue) /
+    numberOfReviews;
   let dbId = sp.data._id;
   try {
     let options = { new: true };
     let info = await SportCenterModel.findByIdAndUpdate(
       dbId,
-      { facilityQualityAverageRating: newAvg },
-      options
-    );
-    res.status(200).json(info);
-  } catch (error) {
-    res.status(400).json(error.message);
-  }
-}
-async function updateSportCenterStaffServiceAverageRatingInCaseOfNewReview(
-  req: Request,
-  res: Response
-) {
-  let sportCenterName = req.body.sportCenterName;
-  let newReviewValue = req.body.newReviewValue;
-  let sp = await SportCenterModel.findOne({ name: sportCenterName });
-  let oldAvg = sp.data.staffServiceAverageRating;
-  let ratings = await SportCenterReviewModel.find({ sportCenterName });
-  let newAvg =
-    (oldAvg * ratings.data.length + newReviewValue) / (ratings.data.length + 1);
-  let dbId = sp.data._id;
-  try {
-    let options = { new: true };
-    let info = await SportCenterModel.findByIdAndUpdate(
-      dbId,
-      { staffServiceAverageRating: newAvg },
-      options
-    );
-    res.status(200).json(info);
-  } catch (error) {
-    res.status(400).json(error.message);
-  }
-}
-async function updateSportCenterStaffServiceAverageRatingInCaseOfNewEdit(
-  req: Request,
-  res: Response
-) {
-  let sportCenterName = req.body.sportCenterName;
-  let newReviewValue = req.body.newReviewValue;
-  let oldReviewValue = req.body.oldReviewValue;
-  let sp = await SportCenterModel.findOne({ name: sportCenterName });
-  let oldAvg = sp.data.staffServiceAverageRating;
-  let ratings = await SportCenterReviewModel.find({ sportCenterName });
-  let newAvg =
-    (oldAvg * ratings.data.length - oldReviewValue + newReviewValue) /
-    ratings.data.length;
-  let dbId = sp.data._id;
-  try {
-    let options = { new: true };
-    let info = await SportCenterModel.findByIdAndUpdate(
-      dbId,
-      { staffServiceAverageRating: newAvg },
+      {
+        facilityQualityAverageRating: newQualityAvg,
+        staffServiceAverageRating: newStaffAvg,
+      },
       options
     );
     res.status(200).json(info);
@@ -189,10 +161,8 @@ async function updateSportCenterStaffServiceAverageRatingInCaseOfNewEdit(
 }
 
 module.exports = {
-  updateSportCenterStaffServiceAverageRatingInCaseOfNewEdit,
-  updateSportCenterStaffServiceAverageRatingInCaseOfNewReview,
-  updateSportCenterFacilityQualityAverageRatingInCaseOfNewEdit,
-  updateSportCenterFacilityQualityAverageRatingInCaseOfNewReview,
+  updateSportCenterQualityAverageRatingInCaseOfNewEdit,
+  updateSportCenterFacilityAverageRatingInCaseOfNewReview,
   newSportCenter,
   getAllSportCenters,
   updateSportCenterById,

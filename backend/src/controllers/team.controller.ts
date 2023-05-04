@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 const teamModel = require("../models/team.model.ts");
-const teamReviewModel = require("../models/team-review.model");
 async function newTeam(req: Request, res: Response) {
   const teamData = new teamModel({
     name: req.body.name,
@@ -91,23 +90,31 @@ async function updateTeam(req: Request, res: Response) {
   }
 }
 //should be called before adding the new Review
-async function updateTeamAverageMoralRatingInCaseOfNewReview(
+async function updateTeamAverageRatingInCaseOfNewReview(
   req: Request,
   res: Response
 ) {
   let teamName = req.body.teamName;
-  let newReviewValue = req.body.newReviewValue;
+  let newReviewSkillValue = req.body.newReviewSkillValue;
+  let newReviewMoralValue = req.body.newReviewMoralValue;
   let team = await teamModel.findOne({ name: teamName });
-  let oldAvg = team.data.averageMoralRating;
-  let ratings = await teamReviewModel.find({ teamName });
-  let newAvg =
-    (oldAvg * ratings.data.length + newReviewValue) / (ratings.data.length + 1);
+  let oldSkillAvg = team.data.averageSkillRating;
+  let oldMoralAvg = team.data.averageMoralRating;
+  let nbOfReviews = team.data.numberOfReviews;
+  let newSkillAvg =
+    (oldSkillAvg * nbOfReviews + newReviewSkillValue) / (nbOfReviews + 1);
+  let newMoralAvg =
+    (oldMoralAvg * nbOfReviews + newReviewMoralValue) / (nbOfReviews + 1);
   let dbId = team.data._id;
   try {
     let options = { new: true };
     let info = await teamModel.findByIdAndUpdate(
       dbId,
-      { averageMoralRating: newAvg },
+      {
+        averageMoralRating: newMoralAvg,
+        averageSkillRating: newSkillAvg,
+        numberOfReviews: nbOfReviews + 1,
+      },
       options
     );
     res.status(200).json(info);
@@ -115,75 +122,35 @@ async function updateTeamAverageMoralRatingInCaseOfNewReview(
     res.status(400).json(error.message);
   }
 }
-async function updateTeamAverageMoralRatingInCaseOfNewEdit(
+async function updatePlayerAverageRatingInCaseOfNewEdit(
   req: Request,
   res: Response
 ) {
   let teamName = req.body.teamName;
-  let oldReviewValue = req.body.oldReviewValue;
-  let newReviewValue = req.body.newReviewValue;
+  let oldSkillReviewValue = req.body.oldSkillReviewValue;
+  let oldMoralReviewValue = req.body.oldMoralReviewValue;
+  let newSkillReviewValue = req.body.newSkillReviewValue;
+  let newMoralReviewValue = req.body.newMoralReviewValue;
   let team = await teamModel.findOne({ name: teamName });
-  let oldAvg = team.data.averageMoralRating;
-  let ratings = await teamReviewModel.find({ teamName });
-  let newAvg =
-    (oldAvg * ratings.data.length - oldReviewValue + newReviewValue) /
-    ratings.data.length;
+  let oldSkillAvg = team.data.averageSkillRating;
+  let oldMoralAvg = team.data.averageMoralRating;
+  let numberOfReviews = team.numberOfReviews;
+  let newSkillAvg =
+    (oldSkillAvg * numberOfReviews -
+      oldSkillReviewValue +
+      newSkillReviewValue) /
+    numberOfReviews;
+  let newMoralAvg =
+    (oldMoralAvg * numberOfReviews -
+      oldMoralReviewValue +
+      newMoralReviewValue) /
+    numberOfReviews;
   let dbId = team.data._id;
   try {
     let options = { new: true };
     let info = await teamModel.findByIdAndUpdate(
       dbId,
-      { averageMoralRating: newAvg },
-      options
-    );
-    res.status(200).json(info);
-  } catch (error) {
-    res.status(400).json(error.message);
-  }
-}
-async function updateTeamAverageSkillRatingInCaseOfNewReview(
-  req: Request,
-  res: Response
-) {
-  let teamName = req.body.teamName;
-  let newReviewValue = req.body.newReviewValue;
-  let team = await teamModel.findOne({ name: teamName });
-  let oldAvg = team.data.averageSkillRating;
-  let ratings = await teamReviewModel.find({ teamName });
-  let newAvg =
-    (oldAvg * ratings.data.length + newReviewValue) / (ratings.data.length + 1);
-  let dbId = team.data._id;
-  try {
-    let options = { new: true };
-    let info = await teamModel.findByIdAndUpdate(
-      dbId,
-      { averageSkillRating: newAvg },
-      options
-    );
-    res.status(200).json(info);
-  } catch (error) {
-    res.status(400).json(error.message);
-  }
-}
-async function updatePlayerAverageSkillRatingInCaseOfNewEdit(
-  req: Request,
-  res: Response
-) {
-  let teamName = req.body.teamName;
-  let oldReviewValue = req.body.oldReviewValue;
-  let newReviewValue = req.body.newReviewValue;
-  let team = await teamModel.findOne({ name: teamName });
-  let oldAvg = team.data.averageSkillRating;
-  let ratings = await teamReviewModel.find({ teamName });
-  let newAvg =
-    (oldAvg * ratings.data.length - oldReviewValue + newReviewValue) /
-    ratings.data.length;
-  let dbId = team.data._id;
-  try {
-    let options = { new: true };
-    let info = await teamModel.findByIdAndUpdate(
-      dbId,
-      { averageSkillRating: newAvg },
+      { averageSkillRating: newSkillAvg, averageMoralRating: newMoralAvg },
       options
     );
     res.status(200).json(info);
@@ -193,10 +160,8 @@ async function updatePlayerAverageSkillRatingInCaseOfNewEdit(
 }
 
 module.exports = {
-  updatePlayerAverageSkillRatingInCaseOfNewEdit,
-  updateTeamAverageSkillRatingInCaseOfNewReview,
-  updateTeamAverageMoralRatingInCaseOfNewEdit,
-  updateTeamAverageMoralRatingInCaseOfNewReview,
+  updatePlayerAverageRatingInCaseOfNewEdit,
+  updateTeamAverageRatingInCaseOfNewReview,
   newTeam,
   getTeamByName,
   getTeamsByCaptain,
