@@ -23,5 +23,9 @@ router.patch(
   "updateSportCenterReview",
   sportCenterReviewController.updateSportCenterReview
 );
+router.post(
+  "/getReviewBySportCenterNameAndReviewerId",
+  sportCenterReviewController.getReviewBySportCenterNameAndReviewerId
+);
 
 module.exports = router;

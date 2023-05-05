@@ -67,6 +67,16 @@ async function deletePlayerReviewById(req: Request, res: Response) {
     res.status(400).json({ message: error.message });
   }
 }
+async function getReviewByPlayerIdandReviewerId(req: Request, res: Response) {
+  let playerID = req.body.playerID;
+  let ReviewerID = req.body.reviewerID;
+  try {
+    let review = await PlayerReviewModel.findOne({ playerID, ReviewerID });
+    res.status(200).json(review);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
 
 module.exports = {
   getAllPlayerReviews,
@@ -74,4 +84,5 @@ module.exports = {
   newPlayerReview,
   updateReview,
   deletePlayerReviewById,
+  getReviewByPlayerIdandReviewerId,
 };

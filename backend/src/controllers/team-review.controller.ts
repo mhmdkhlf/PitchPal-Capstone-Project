@@ -63,6 +63,19 @@ async function updateTeamReview(req: Request, res: Response) {
     res.status(400).json(Error.message);
   }
 }
+async function getTeamReviewByTeamNameAndReviewerName(
+  req: Request,
+  res: Response
+) {
+  let teamName = req.body.teamName;
+  let reviewerName = req.body.reviewerName;
+  try {
+    let review = await teamReviewModel.findOne({ teamName, reviewerName });
+    res.status(200).json({ review });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
 
 module.exports = {
   getAllTeamReviews,
@@ -70,4 +83,5 @@ module.exports = {
   getATeamsReviews,
   newTeamReview,
   deleteTeamReviewById,
+  getTeamReviewByTeamNameAndReviewerName,
 };

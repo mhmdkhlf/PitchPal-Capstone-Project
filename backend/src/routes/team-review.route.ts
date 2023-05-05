@@ -14,5 +14,9 @@ router.delete(
   teamReviewController.deleteTeamReviewById
 );
 router.patch("/updateTeamReview", teamReviewController.updateTeamReview);
+router.post(
+  "/getTeamReviewByTeamNameAndReviewerName",
+  teamReviewController.getTeamReviewByTeamNameAndReviewerName
+);
 
 module.exports = router;

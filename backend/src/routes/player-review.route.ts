@@ -14,5 +14,9 @@ router.delete(
   playerReviewController.deletePlayerReviewById
 );
 router.patch("updateReview/:id", playerReviewController.updateReview);
+router.post(
+  "/getReviewByPlayerIdandReviewerId",
+  playerReviewController.getReviewByPlayerIdandReviewerId
+);
 
 module.exports = router;

@@ -67,6 +67,22 @@ async function deleteSportCenterReviewById(req: Request, res: Response) {
     res.status(400).json({ message: error.message });
   }
 }
+async function getReviewBySportCenterNameAndReviewerId(
+  req: Request,
+  res: Response
+) {
+  let sportCenterName = req.body.sportCenterName;
+  let reviewerID = req.body.reviewerID;
+  try {
+    let review = await SportCenterReviewModel.findOne({
+      sportCenterName,
+      reviewerID,
+    });
+    res.status(200).json(review);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
 
 module.exports = {
   getAllSportCenterReviews,
@@ -74,4 +90,5 @@ module.exports = {
   getASportCentersReviews,
   newSportCenterReview,
   deleteSportCenterReviewById,
+  getReviewBySportCenterNameAndReviewerId,
 };
