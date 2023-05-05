@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 let playerModel = require("../models/player.model.ts");
 let friendsModel = require("../models/friends.model");
 let managerModel = require("../models/field-manager.model");
-
 async function randomNumberGenerator(): Promise<Number> {
   var playerID = Math.floor(100000 + Math.random() * 900000);
   let user = await playerModel.findOne({ playerID });
@@ -100,6 +99,72 @@ async function deletePlayer(req: Request, res: Response) {
     res.status(400).json(error.message);
   }
 }
+async function updatePlayerAverageRatingInCaseOfNewEdit(
+  req: Request,
+  res: Response
+) {
+  let playerID = req.body.playerID;
+  let oldSkillReviewValue = req.body.oldSkillReviewValue;
+  let oldMoralReviewValue = req.body.oldMoralReviewValue;
+  let newSkillReviewValue = req.body.newSkillReviewValue;
+  let newMoralReviewValue = req.body.newMoralReviewValue;
+  let player = await playerModel.findOne({ playerID });
+  let oldSkillAvg = player.data.averageSkillRating;
+  let oldMoralAvg = player.data.averageMoralityRating;
+  let nbOfReviews = player.data.numberOfReviews;
+  let newSkillAvg =
+    (oldSkillAvg * nbOfReviews - oldSkillReviewValue + newSkillReviewValue) /
+    nbOfReviews;
+  let newMoralAvg =
+    (oldMoralAvg * nbOfReviews - oldMoralReviewValue + newMoralReviewValue) /
+    nbOfReviews;
+  let dbId = player.data._id;
+  try {
+    let options = { new: true };
+    let info = await playerModel.findByIdAndUpdate(
+      dbId,
+      { averageMoralityRating: newMoralAvg, averageSkillRating: newSkillAvg },
+      options
+    );
+    res.status(200).json(info);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
+async function updatePlayerAverageRatingInCaseOfNewReview(
+  req: Request,
+  res: Response
+) {
+  let playerID = req.body.playerID;
+  let newSkillReviewValue = req.body.newSkillReviewValue;
+  let newMoralReviewValue = req.body.newMoralReviewValue;
+  let player = await playerModel.findOne({ playerID });
+  let oldSkillAvg = player.data.averageSkillRating;
+  let oldMoralAvg = player.data.averageMoralityRating;
+  let oldNumberOfReviews = player.data.numberOfReviews;
+  let newSkillAvg =
+    (oldSkillAvg * oldNumberOfReviews + newSkillReviewValue) /
+    (oldNumberOfReviews + 1);
+  let newMoralAvg =
+    (oldMoralAvg * oldNumberOfReviews + newMoralReviewValue) /
+    (oldNumberOfReviews + 1);
+  let dbId = player.data._id;
+  try {
+    let options = { new: true };
+    let info = await playerModel.findByIdAndUpdate(
+      dbId,
+      {
+        averageSkillRating: newSkillAvg,
+        averageMoralityRating: newMoralAvg,
+        oldNumberOfReviews: oldNumberOfReviews + 1,
+      },
+      options
+    );
+    res.status(200).json(info);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
 
 module.exports = {
   createProfileInformation,
@@ -108,4 +173,6 @@ module.exports = {
   updatePlayerById,
   getPlayerInformationByEmail,
   deletePlayer,
+  updatePlayerAverageRatingInCaseOfNewReview,
+  updatePlayerAverageRatingInCaseOfNewEdit,
 };

@@ -9,7 +9,12 @@
         <form class="navbar-form">
           <div class="form-group">
             <div class="input-group">
-              <input type="text" class="form-control" placeholder="Search" />
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Search By Name"
+                v-model="searchValue"
+              />
               <div class="input-group-append">
                 <i class="fa fa-search" style="color: green"></i>
               </div>
@@ -18,30 +23,19 @@
         </form>
         <div class="navbar-select">
           <label for="sort-select">Sort by:</label>
-          <select id="sort-select" class="form-control">
+          <select id="sort-select" class="form-control" v-model="sortType">
             <option value="">Select an option</option>
             <option value="name">Name</option>
-            <option value="rating">rating</option>
-            <option value="distance-ascending">distance-ascending</option>
-            <option value="distance-descending">distance-descending</option>
-          </select>
-        </div>
-        <div class="navbar-select">
-          <label for="filter-select">Filter by:</label>
-          <select id="filter-select" class="form-control">
-            <option value="">Select an option</option>
-            <option value="turf">Turf Grass</option>
-            <option value="grass">Grass</option>
+            <option value="staffRating">Staff rating</option>
+            <option value="facilityRating">facility rating</option>
+            <option value="distance">distance</option>
+            <option value="workingHours">Working Hours</option>
           </select>
         </div>
       </div>
     </nav>
     <div class="sps">
-      <spCard
-        v-for="(sp, index) in objects"
-        :sportCenterInfo="sp"
-        :key="index"
-      />
+      <spCard v-for="(sp, index) in show" :sportCenterInfo="sp" :key="index" />
     </div>
   </div>
 </template>
@@ -51,7 +45,7 @@ const helpers = require("../../helpers/authentication");
 import loader from "./loader.vue";
 import spCard from "./sportCenterCard.vue";
 import { Buffer } from "buffer";
-//var _ = require("lodash");
+const _ = require("lodash");
 export default {
   name: "sportCenters",
   components: {
@@ -74,7 +68,25 @@ export default {
         } else {
           sp["imgsrc"] = "";
         }
+        let dd = await axios.post(helpers.api + "calculate_distance", {
+          player_lat: this.$store.state.playerInfo.location.latitude,
+          player_lon: this.$store.state.playerInfo.location.longitude,
+          facility_lon: sp.location.longitude,
+          facility_lat: sp.location.latitude,
+        });
+        let d = dd.data.d;
+        sp["distance"] = d;
+        let start = sp.workingHours.startTime.split(":");
+        let end = sp.workingHours.endTime.split(":");
+        var startDate = new Date(0, 0, 0, start[0], start[1], 0);
+        var endDate = new Date(0, 0, 0, end[0], end[1], 0);
+        var diff = endDate.getTime() - startDate.getTime();
+        var hours = Math.floor(diff / 1000 / 60 / 60);
+        diff -= hours * 1000 * 60 * 60;
+        if (hours < 0) hours = hours + 24;
+        sp["wh"] = (hours <= 9 ? "0" : "") + hours;
         this.objects.push(sp);
+        this.show.push(sp);
       })
     );
     this.$store.dispatch("stopLoading");
@@ -82,11 +94,63 @@ export default {
   data() {
     return {
       objects: [],
+      show: [],
+      sortType: "",
+      searchValue: "",
     };
+  },
+  watch: {
+    sortType(newv) {
+      if (newv === "name") {
+        this.sortAlpha();
+      } else if (newv === "facilityRating") {
+        this.sortFacilityRating();
+      } else if (newv === "staffRating") {
+        this.sortStaffRating();
+      } else if (newv === "distance") {
+        this.sortDistance();
+      } else if (newv === "workingHours") {
+        this.sortHours();
+      }
+    },
+    searchValue(newv) {
+      if (newv != "" && newv) {
+        this.show = this.objects.filter((item) => {
+          return item.name.toUpperCase().includes(newv.toUpperCase());
+        });
+      } else {
+        this.show = this.objects;
+      }
+    },
   },
   computed: {
     isLoading() {
       return this.$store.state.isLoading;
+    },
+  },
+  methods: {
+    sortAlpha() {
+      this.show = _.orderBy(this.objects, ["name"], "asc");
+    },
+    sortFacilityRating() {
+      this.show = _.orderBy(
+        this.objects,
+        ["facilityQualityAverageRating"],
+        "desc"
+      );
+    },
+    sortStaffRating() {
+      this.show = _.orderBy(
+        this.objects,
+        ["staffServiceAverageRating"],
+        "desc"
+      );
+    },
+    sortDistance() {
+      this.show = _.orderBy(this.objects, ["distance"], "desc");
+    },
+    sortHours() {
+      this.show = _.orderBy(this.objects, ["wh"], "desc");
     },
   },
 };
@@ -193,6 +257,7 @@ input[type="text"] {
   padding: 5px;
   border: 3px solid white !important;
   background-color: #e8f0de !important;
+  color: #1e9600 !important;
 }
 input[type="text"]::placeholder {
   color: green;

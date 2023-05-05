@@ -386,7 +386,7 @@ export default {
     }
     let res = await helpers.isPlayerAuthenticated(this.$route.params.id);
     if (this.isSelfVisit) {
-      if (!helpers.isLoggedIn && !res) {
+      if (!helpers.isLoggedIn() || !res) {
         this.$store.dispatch("stopLoading");
         this.$router.push("/login");
       }

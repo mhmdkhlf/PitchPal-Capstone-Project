@@ -86,7 +86,83 @@ async function deleteSportCenterById(req: Request, res: Response) {
   }
 }
 
+async function updateSportCenterFacilityAverageRatingInCaseOfNewReview(
+  req: Request,
+  res: Response
+) {
+  let sportCenterName = req.body.sportCenterName;
+  let newQualityReviewValue = req.body.newQualityReviewValue;
+  let newStaffReviewValue = req.body.newStaffReviewValue;
+  let sp = await SportCenterModel.findOne({ name: sportCenterName });
+  let oldQualityAvg = sp.data.facilityQualityAverageRating;
+  let oldStaffAvg = sp.data.staffServiceAverageRating;
+  let numberOfReviews = sp.data.nbOfRatings;
+  let newStaffAvg =
+    (oldStaffAvg * numberOfReviews + newStaffReviewValue) /
+    (numberOfReviews + 1);
+  let newQualityAvg =
+    (oldQualityAvg * numberOfReviews + newQualityReviewValue) /
+    (numberOfReviews + 1);
+  let dbId = sp.data._id;
+  try {
+    let options = { new: true };
+    let info = await SportCenterModel.findByIdAndUpdate(
+      dbId,
+      {
+        facilityQualityAverageRating: newQualityAvg,
+        staffServiceAverageRating: newStaffAvg,
+        nbOfRatings: numberOfReviews + 1,
+      },
+      options
+    );
+    res.status(200).json(info);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
+async function updateSportCenterQualityAverageRatingInCaseOfNewEdit(
+  req: Request,
+  res: Response
+) {
+  let sportCenterName = req.body.sportCenterName;
+  let newStaffReviewValue = req.body.newStaffReviewValue;
+  let newQualityReviewValue = req.body.newQualityReviewValue;
+  let oldStaffReviewValue = req.body.oldStaffReviewValue;
+  let oldQualityReviewValue = req.body.oldQualityReviewValue;
+  let sp = await SportCenterModel.findOne({ name: sportCenterName });
+  let oldQualityAvg = sp.data.facilityQualityAverageRating;
+  let oldStaffAvg = sp.data.staffServiceAverageRating;
+  let numberOfReviews = sp.data.nbOfRatings;
+  let newStaffAvg =
+    (oldStaffAvg * numberOfReviews -
+      oldStaffReviewValue +
+      newStaffReviewValue) /
+    numberOfReviews;
+  let newQualityAvg =
+    (oldQualityAvg * numberOfReviews -
+      oldQualityReviewValue +
+      newQualityReviewValue) /
+    numberOfReviews;
+  let dbId = sp.data._id;
+  try {
+    let options = { new: true };
+    let info = await SportCenterModel.findByIdAndUpdate(
+      dbId,
+      {
+        facilityQualityAverageRating: newQualityAvg,
+        staffServiceAverageRating: newStaffAvg,
+      },
+      options
+    );
+    res.status(200).json(info);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
+
 module.exports = {
+  updateSportCenterQualityAverageRatingInCaseOfNewEdit,
+  updateSportCenterFacilityAverageRatingInCaseOfNewReview,
   newSportCenter,
   getAllSportCenters,
   updateSportCenterById,

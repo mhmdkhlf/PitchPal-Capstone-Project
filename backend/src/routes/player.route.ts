@@ -12,4 +12,13 @@ router.get(
 );
 router.get("/getAllPlayers", playerController.getAllPlayers);
 router.delete("/deletePlayer/:email", playerController.deletePlayer);
+router.patch(
+  "/updatePlayerAverageRatingInCaseOfNewReview",
+  playerController.updatePlayerAverageRatingInCaseOfNewReview
+);
+router.patch(
+  "/updatePlayerAverageRatingInCaseOfNewEdit",
+  playerController.updatePlayerAverageRatingInCaseOfNewEdit
+);
+
 module.exports = router;

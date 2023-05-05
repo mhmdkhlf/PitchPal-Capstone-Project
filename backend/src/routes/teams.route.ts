@@ -11,4 +11,13 @@ router.get("/getAllTeams", teamController.getAllTeams);
 router.post("/addPlayerToTeam", teamController.addPlayerToTeam);
 router.delete("/deleteTeam/:name", teamController.deleteTeam);
 router.patch("/updateTeam/:id", teamController.updateTeam);
+router.patch(
+  "/updatePlayerAverageRatingInCaseOfNewEdit",
+  teamController.updatePlayerAverageRatingInCaseOfNewEdit
+);
+router.patch(
+  "/updateTeamAverageRatingInCaseOfNewReview",
+  teamController.updateTeamAverageRatingInCaseOfNewReview
+);
+
 module.exports = router;

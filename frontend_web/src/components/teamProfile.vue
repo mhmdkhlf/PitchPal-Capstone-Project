@@ -34,7 +34,7 @@
         <button @click="rateTeam()">Rate</button>
       </div>
     </div>
-    <div class="butons"></div>
+
     <div class="cards">
       <div class="players-cards">
         <playerCard
