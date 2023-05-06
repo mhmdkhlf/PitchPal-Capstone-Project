@@ -109,16 +109,16 @@ async function updatePlayerAverageRatingInCaseOfNewEdit(
   let newSkillReviewValue = req.body.newSkillReviewValue;
   let newMoralReviewValue = req.body.newMoralReviewValue;
   let player = await playerModel.findOne({ playerID });
-  let oldSkillAvg = player.data.averageSkillRating;
-  let oldMoralAvg = player.data.averageMoralityRating;
-  let nbOfReviews = player.data.numberOfReviews;
+  let oldSkillAvg = player.averageSkillRating;
+  let oldMoralAvg = player.averageMoralityRating;
+  let nbOfReviews = player.numberOfReviews;
   let newSkillAvg =
     (oldSkillAvg * nbOfReviews - oldSkillReviewValue + newSkillReviewValue) /
     nbOfReviews;
   let newMoralAvg =
     (oldMoralAvg * nbOfReviews - oldMoralReviewValue + newMoralReviewValue) /
     nbOfReviews;
-  let dbId = player.data._id;
+  let dbId = player._id;
   try {
     let options = { new: true };
     let info = await playerModel.findByIdAndUpdate(
@@ -139,16 +139,16 @@ async function updatePlayerAverageRatingInCaseOfNewReview(
   let newSkillReviewValue = req.body.newSkillReviewValue;
   let newMoralReviewValue = req.body.newMoralReviewValue;
   let player = await playerModel.findOne({ playerID });
-  let oldSkillAvg = player.data.averageSkillRating;
-  let oldMoralAvg = player.data.averageMoralityRating;
-  let oldNumberOfReviews = player.data.numberOfReviews;
+  let oldSkillAvg = player.averageSkillRating;
+  let oldMoralAvg = player.averageMoralityRating;
+  let oldNumberOfReviews = player.numberOfReviews;
   let newSkillAvg =
     (oldSkillAvg * oldNumberOfReviews + newSkillReviewValue) /
     (oldNumberOfReviews + 1);
   let newMoralAvg =
     (oldMoralAvg * oldNumberOfReviews + newMoralReviewValue) /
     (oldNumberOfReviews + 1);
-  let dbId = player.data._id;
+  let dbId = player._id;
   try {
     let options = { new: true };
     let info = await playerModel.findByIdAndUpdate(
@@ -156,7 +156,7 @@ async function updatePlayerAverageRatingInCaseOfNewReview(
       {
         averageSkillRating: newSkillAvg,
         averageMoralityRating: newMoralAvg,
-        oldNumberOfReviews: oldNumberOfReviews + 1,
+        numberOfReviews: oldNumberOfReviews + 1,
       },
       options
     );

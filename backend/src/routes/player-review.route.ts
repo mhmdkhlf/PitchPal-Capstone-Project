@@ -13,7 +13,7 @@ router.delete(
   "/deletePlayerReview/:id",
   playerReviewController.deletePlayerReviewById
 );
-router.patch("updateReview/:id", playerReviewController.updateReview);
+router.patch("/updateReview/:id", playerReviewController.updateReview);
 router.post(
   "/getReviewByPlayerIdandReviewerId",
   playerReviewController.getReviewByPlayerIdandReviewerId
