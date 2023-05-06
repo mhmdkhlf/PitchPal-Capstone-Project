@@ -156,7 +156,7 @@ async function updatePlayerAverageRatingInCaseOfNewReview(
       {
         averageSkillRating: newSkillAvg,
         averageMoralityRating: newMoralAvg,
-        oldNumberOfReviews: oldNumberOfReviews + 1,
+        numberOfReviews: oldNumberOfReviews + 1,
       },
       options
     );

@@ -6,10 +6,18 @@
   <!-- <logo /> -->
   <loader v-if="isLoading && !done" />
   <confirmPopup :Message="confirmationMessage" v-if="confirmationMessage" />
+  <rate
+    v-if="rate"
+    :for="`player`"
+    :ratingOne="rateOne"
+    :ratingTwo="rateTwo"
+    :text="reviewText"
+    @done="getRateData"
+  />
   <div
     class="body"
-    v-if="done && !isLoading"
-    :class="{ hidden: confirmationMessage }"
+    v-if="done && !isLoading && !rate"
+    :class="{ hidden: confirmationMessage || rate }"
   >
     <div class="main-content">
       <div class="container-fluid mt--7">
@@ -52,6 +60,7 @@
                     href="#"
                     class="btn btn-sm btn-default float-right common"
                     v-if="!isSelfVisit"
+                    @click="rateMethod()"
                     >Rate</a
                   >
                 </div>
@@ -296,12 +305,14 @@ import axios from "axios";
 import loader from "./loader.vue";
 import confirmPopup from "./confirmationPopup.vue";
 import { Buffer } from "buffer";
+import rate from "./ratingPopup.vue";
 const helpers = require("../../helpers/authentication.js");
 export default {
   name: "playerProfileComponent",
   components: {
     loader,
     confirmPopup,
+    rate,
   },
   data() {
     return {
@@ -315,6 +326,13 @@ export default {
       confirmationMessage: null,
       buttonState: "Connect",
       isButtonDisabled: false,
+      rate: false,
+      rateData: null,
+      rateOne: 0,
+      rateTwo: 0,
+      reviewText: "",
+      firstRate: true,
+      rateId: "",
     };
   },
   watch: {
@@ -326,6 +344,55 @@ export default {
     },
   },
   methods: {
+    async getRateData(done) {
+      this.$store.dispatch("setLoading");
+      this.rateData = done;
+      console.log(done);
+      let date = new Date();
+      if (this.firstRate) {
+        await axios.post(helpers.api + "newPlayerReview", {
+          playerID: this.playerInfo.playerID,
+          reviewerID: this.$store.state.playerInfo.playerID,
+          moralityScore: {
+            value: this.rateData.newRateTwo,
+          },
+          skillScore: {
+            value: this.rateData.newRateOne,
+          },
+          commentText: this.rateData.text,
+          submissionDate: date.toJSON(),
+        });
+        await axios.patch(
+          helpers.api + "updatePlayerAverageRatingInCaseOfNewReview",
+          {
+            playerID: this.playerInfo.playerID,
+            newSkillReviewValue: this.rateData.newRateOne,
+            newMoralReviewValue: this.rateData.newRateTwo,
+          }
+        );
+      } else {
+        await axios.patch(helpers.api + "updateReview/" + this.rateId, {
+          moralityScore: { value: this.rateData.newRateTwo },
+          skillScore: { value: this.rateData.newRateOne },
+          commentText: this.rateData.text,
+          submissionDate: date.toJSON(),
+        });
+        await axios.patch(
+          helpers.api + "updatePlayerAverageRatingInCaseOfNewEdit",
+          {
+            playerID: this.playerInfo.playerID,
+            oldSkillReviewValue: this.rateOne,
+            oldMoralReviewValue: this.rateTwo,
+            newSkillReviewValue: this.rateData.newRateOne,
+            newMoralReviewValue: this.rateData.newRateTwo,
+          }
+        );
+      }
+      this.rate = false;
+      this.$forceUpdate();
+      // this.$router.push(this.$router.currentRoute);
+      this.$store.dispatch("stopLoading");
+    },
     async followPlayer(e) {
       e.preventDefault();
       if (!this.isButtonDisabled) {
@@ -351,6 +418,9 @@ export default {
     },
     rmvPlayer() {
       this.confirmationMessage = "Are you sure to de activate your Account?";
+    },
+    rateMethod() {
+      this.rate = true;
     },
     async remover() {
       this.$store.dispatch("setLoading");
@@ -382,6 +452,20 @@ export default {
       if (arefriends.data.status) {
         this.buttonState = "Connected";
         this.isButtonDisabled = true;
+      }
+      let review = await axios.post(
+        helpers.api + "getReviewByPlayerIdandReviewerId",
+        {
+          playerID: this.$route.params.id,
+          reviewerID: this.$store.state.playerInfo.playerID,
+        }
+      );
+      if (review.data) {
+        this.rateOne = review.data.skillScore.value;
+        this.rateTwo = review.data.moralityScore.value;
+        this.reviewText = review.data.commentText;
+        this.rateId = review.data._id;
+        this.firstRate = false;
       }
     }
     let res = await helpers.isPlayerAuthenticated(this.$route.params.id);
