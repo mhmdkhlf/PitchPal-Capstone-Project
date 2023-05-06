@@ -98,14 +98,14 @@ async function updateTeamAverageRatingInCaseOfNewReview(
   let newReviewSkillValue = req.body.newReviewSkillValue;
   let newReviewMoralValue = req.body.newReviewMoralValue;
   let team = await teamModel.findOne({ name: teamName });
-  let oldSkillAvg = team.data.averageSkillRating;
-  let oldMoralAvg = team.data.averageMoralRating;
-  let nbOfReviews = team.data.numberOfReviews;
+  let oldSkillAvg = team.averageSkillRating;
+  let oldMoralAvg = team.averageMoralRating;
+  let nbOfReviews = team.numberOfReviews;
   let newSkillAvg =
     (oldSkillAvg * nbOfReviews + newReviewSkillValue) / (nbOfReviews + 1);
   let newMoralAvg =
     (oldMoralAvg * nbOfReviews + newReviewMoralValue) / (nbOfReviews + 1);
-  let dbId = team.data._id;
+  let dbId = team._id;
   try {
     let options = { new: true };
     let info = await teamModel.findByIdAndUpdate(
@@ -132,8 +132,8 @@ async function updatePlayerAverageRatingInCaseOfNewEdit(
   let newSkillReviewValue = req.body.newSkillReviewValue;
   let newMoralReviewValue = req.body.newMoralReviewValue;
   let team = await teamModel.findOne({ name: teamName });
-  let oldSkillAvg = team.data.averageSkillRating;
-  let oldMoralAvg = team.data.averageMoralRating;
+  let oldSkillAvg = team.averageSkillRating;
+  let oldMoralAvg = team.averageMoralRating;
   let numberOfReviews = team.numberOfReviews;
   let newSkillAvg =
     (oldSkillAvg * numberOfReviews -
@@ -145,7 +145,7 @@ async function updatePlayerAverageRatingInCaseOfNewEdit(
       oldMoralReviewValue +
       newMoralReviewValue) /
     numberOfReviews;
-  let dbId = team.data._id;
+  let dbId = team._id;
   try {
     let options = { new: true };
     let info = await teamModel.findByIdAndUpdate(

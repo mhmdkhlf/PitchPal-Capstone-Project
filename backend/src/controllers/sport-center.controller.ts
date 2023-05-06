@@ -94,16 +94,16 @@ async function updateSportCenterFacilityAverageRatingInCaseOfNewReview(
   let newQualityReviewValue = req.body.newQualityReviewValue;
   let newStaffReviewValue = req.body.newStaffReviewValue;
   let sp = await SportCenterModel.findOne({ name: sportCenterName });
-  let oldQualityAvg = sp.data.facilityQualityAverageRating;
-  let oldStaffAvg = sp.data.staffServiceAverageRating;
-  let numberOfReviews = sp.data.nbOfRatings;
+  let oldQualityAvg = sp.facilityQualityAverageRating;
+  let oldStaffAvg = sp.staffServiceAverageRating;
+  let numberOfReviews = sp.nbOfRatings;
   let newStaffAvg =
     (oldStaffAvg * numberOfReviews + newStaffReviewValue) /
     (numberOfReviews + 1);
   let newQualityAvg =
     (oldQualityAvg * numberOfReviews + newQualityReviewValue) /
     (numberOfReviews + 1);
-  let dbId = sp.data._id;
+  let dbId = sp._id;
   try {
     let options = { new: true };
     let info = await SportCenterModel.findByIdAndUpdate(
@@ -130,9 +130,9 @@ async function updateSportCenterQualityAverageRatingInCaseOfNewEdit(
   let oldStaffReviewValue = req.body.oldStaffReviewValue;
   let oldQualityReviewValue = req.body.oldQualityReviewValue;
   let sp = await SportCenterModel.findOne({ name: sportCenterName });
-  let oldQualityAvg = sp.data.facilityQualityAverageRating;
-  let oldStaffAvg = sp.data.staffServiceAverageRating;
-  let numberOfReviews = sp.data.nbOfRatings;
+  let oldQualityAvg = sp.facilityQualityAverageRating;
+  let oldStaffAvg = sp.staffServiceAverageRating;
+  let numberOfReviews = sp.nbOfRatings;
   let newStaffAvg =
     (oldStaffAvg * numberOfReviews -
       oldStaffReviewValue +
@@ -143,7 +143,7 @@ async function updateSportCenterQualityAverageRatingInCaseOfNewEdit(
       oldQualityReviewValue +
       newQualityReviewValue) /
     numberOfReviews;
-  let dbId = sp.data._id;
+  let dbId = sp._id;
   try {
     let options = { new: true };
     let info = await SportCenterModel.findByIdAndUpdate(
