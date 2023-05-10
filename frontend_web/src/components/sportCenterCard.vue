@@ -39,13 +39,13 @@ export default {
   props: ["sportCenterInfo"],
   methods: {
     async goToProfile() {
-      this.$store.dispatch("setloading");
+      this.$store.dispatch("setLoading");
       let res = await helpers.isSportCenterAuthenticated(
         this.sportCenterInfo.name
       );
 
       if (res) {
-        this.$store.dispatch("stoploading");
+        this.$store.dispatch("stopLoading");
         this.$router.push(
           "/sport-center-view/" + this.sportCenterInfo.name + "/true"
         );

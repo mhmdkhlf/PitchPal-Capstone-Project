@@ -108,7 +108,7 @@
                       >Remove Sport Center</a
                     >
                   </div>
-                  <hr class="my-4" v-if="isSelfVisit" />
+                  <hr class="my-4" v-if="isManager" />
                   <div class="reviews-comments">
                     <h4>Sport Center Reviews</h4>
 
@@ -586,7 +586,7 @@ export default {
         await axios.patch(
           helpers.api + "updateSportCenterQualityAverageRatingInCaseOfNewEdit",
           {
-            sportCenterName: this.sportCenterInfo.sportCenterName,
+            sportCenterName: this.sportCenterInfo.name,
             oldQualityReviewValue: this.rateOne,
             oldStaffReviewValue: this.rateTwo,
             newQualityReviewValue: this.rateData.newRateOne,
