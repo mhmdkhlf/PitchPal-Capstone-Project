@@ -20,7 +20,7 @@ router.delete(
   sportCenterReviewController.deleteSportCenterReviewById
 );
 router.patch(
-  "updateSportCenterReview/:id",
+  "/updateSportCenterReview/:id",
   sportCenterReviewController.updateSportCenterReview
 );
 router.post(
