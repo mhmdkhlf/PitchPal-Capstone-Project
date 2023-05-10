@@ -117,7 +117,7 @@
                       >Deactivate Your Account</a
                     >
                   </div>
-                  <hr class="my-4" />
+                  <hr class="my-4" v-if="isSelfVisit" />
                   <div class="reviews-comments">
                     <h4 v-if="!isSelfVisit">Player Reviews</h4>
                     <h4 v-if="isSelfVisit">Your Reviews</h4>
@@ -498,7 +498,6 @@ export default {
         date: review.submissionDate.substring(0, 10),
       };
     });
-    console.log(this.reviews);
     axios
       .get("http://localhost:5000/api/getPlayer/" + this.$route.params.id)
       .then((res) => {
@@ -556,6 +555,7 @@ export default {
 }
 .reviews-comments {
   overflow: auto;
+  height: 260px;
 }
 .common {
   color: white !important;

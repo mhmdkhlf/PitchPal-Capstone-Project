@@ -1,5 +1,5 @@
 <template>
-  <div class="review-list">
+  <div class="review-list" v-if="reviewsExist">
     <div class="card" v-for="(review, index) in reviews" :key="index">
       <div class="card-header">
         <h3>{{ review.date }}</h3>
@@ -9,11 +9,17 @@
       </div>
     </div>
   </div>
+  <h2 v-else>No Reviews Exist</h2>
 </template>
 <script>
 export default {
   name: "viewReviews",
   props: ["reviews"],
+  computed: {
+    reviewsExist() {
+      return this.reviews.length > 0;
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>
@@ -21,7 +27,6 @@ export default {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  height: 260px;
 }
 
 .card {
