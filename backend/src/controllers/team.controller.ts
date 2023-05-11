@@ -98,9 +98,10 @@ async function updateTeamAverageRatingInCaseOfNewReview(
   let newReviewSkillValue = req.body.newReviewSkillValue;
   let newReviewMoralValue = req.body.newReviewMoralValue;
   let team = await teamModel.findOne({ name: teamName });
+  console.log(team);
   let oldSkillAvg = team.averageSkillRating;
   let oldMoralAvg = team.averageMoralRating;
-  let nbOfReviews = team.numberOfReviews;
+  let nbOfReviews = team.numberOfRatings;
   let newSkillAvg =
     (oldSkillAvg * nbOfReviews + newReviewSkillValue) / (nbOfReviews + 1);
   let newMoralAvg =
@@ -113,7 +114,7 @@ async function updateTeamAverageRatingInCaseOfNewReview(
       {
         averageMoralRating: newMoralAvg,
         averageSkillRating: newSkillAvg,
-        numberOfReviews: nbOfReviews + 1,
+        numberOfRatings: nbOfReviews + 1,
       },
       options
     );
@@ -122,7 +123,7 @@ async function updateTeamAverageRatingInCaseOfNewReview(
     res.status(400).json(error.message);
   }
 }
-async function updatePlayerAverageRatingInCaseOfNewEdit(
+async function updateTeamAverageRatingInCaseOfNewEdit(
   req: Request,
   res: Response
 ) {
@@ -134,7 +135,7 @@ async function updatePlayerAverageRatingInCaseOfNewEdit(
   let team = await teamModel.findOne({ name: teamName });
   let oldSkillAvg = team.averageSkillRating;
   let oldMoralAvg = team.averageMoralRating;
-  let numberOfReviews = team.numberOfReviews;
+  let numberOfReviews = team.numberOfRatings;
   let newSkillAvg =
     (oldSkillAvg * numberOfReviews -
       oldSkillReviewValue +
@@ -160,7 +161,7 @@ async function updatePlayerAverageRatingInCaseOfNewEdit(
 }
 
 module.exports = {
-  updatePlayerAverageRatingInCaseOfNewEdit,
+  updateTeamAverageRatingInCaseOfNewEdit,
   updateTeamAverageRatingInCaseOfNewReview,
   newTeam,
   getTeamByName,

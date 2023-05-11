@@ -12,8 +12,8 @@ router.post("/addPlayerToTeam", teamController.addPlayerToTeam);
 router.delete("/deleteTeam/:name", teamController.deleteTeam);
 router.patch("/updateTeam/:id", teamController.updateTeam);
 router.patch(
-  "/updatePlayerAverageRatingInCaseOfNewEdit",
-  teamController.updatePlayerAverageRatingInCaseOfNewEdit
+  "/updateTeamAverageRatingInCaseOfNewEdit",
+  teamController.updateTeamAverageRatingInCaseOfNewEdit
 );
 router.patch(
   "/updateTeamAverageRatingInCaseOfNewReview",

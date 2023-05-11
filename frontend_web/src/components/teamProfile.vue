@@ -1,7 +1,19 @@
 <template>
   <loader v-if="isLoading" />
   <confirmPopup :Message="confirmationMessage" v-if="confirmationMessage" />
-  <div class="all" v-if="!isLoading" :class="{ hidden: confirmationMessage }">
+  <rate
+    v-if="rate"
+    :for="`team`"
+    :ratingOne="rateOne"
+    :ratingTwo="rateTwo"
+    :text="reviewText"
+    @done="getRateData"
+  />
+  <div
+    class="all"
+    v-if="!isLoading && !rate"
+    :class="{ hidden: confirmationMessage || rate }"
+  >
     <div class="info">
       <div class="group">
         <label for="name">Team Name</label>
@@ -25,6 +37,11 @@
           :value="teamInfo.averageSkillRating"
           disabled
         />
+      </div>
+      <div class="group reviews-comments">
+        <label>Team Reviews</label>
+
+        <viewReviews :reviews="reviews" />
       </div>
       <div class="group buttons" v-if="isSelfVisit">
         <button @click="deleteTeam()" id="delete-btn">Delete The Team</button>
@@ -52,6 +69,8 @@ const helpers = require("../../helpers/authentication.js");
 import loader from "./loader.vue";
 import playerCard from "./playerCard.vue";
 import { Buffer } from "buffer";
+import rate from "./ratingPopup.vue";
+import viewReviews from "./viewReviews.vue";
 import confirmPopup from "./confirmationPopup.vue";
 export default {
   name: "teamView",
@@ -59,6 +78,8 @@ export default {
     loader,
     playerCard,
     confirmPopup,
+    rate,
+    viewReviews,
   },
   async created() {
     this.$store.dispatch("setLoading");
@@ -98,6 +119,33 @@ export default {
         }
       })
     );
+    if (!this.isSelfVisit) {
+      let review = await axios.post(
+        helpers.api + "getTeamReviewByTeamNameAndReviewerID",
+        {
+          teamName: this.$route.params.name,
+          reviewerID: this.$store.state.playerInfo.playerID,
+        }
+      );
+      if (review.data) {
+        this.rateOne = review.data.skillLevel.value;
+        this.rateTwo = review.data.moralityScore.value;
+        this.reviewText = review.data.reviewText;
+        this.rateId = review.data._id;
+        this.firstRate = false;
+      }
+    }
+    let reviews = await axios.get(
+      helpers.api + "getATeamReviews/" + this.$route.params.name
+    );
+
+    this.reviews = reviews.data.map((review) => {
+      return {
+        description: review.reviewText,
+        date: review.submissionDate.substring(0, 10),
+      };
+    });
+
     this.$store.dispatch("stopLoading");
   },
   data() {
@@ -107,6 +155,14 @@ export default {
       players: [],
       isConfirmed: false,
       confirmationMessage: null,
+      rate: false,
+      rateData: null,
+      rateOne: 0,
+      rateTwo: 0,
+      reviewText: "",
+      firstRate: true,
+      rateId: "",
+      reviews: null,
     };
   },
   watch: {
@@ -118,6 +174,57 @@ export default {
     },
   },
   methods: {
+    rateTeam() {
+      this.rate = true;
+    },
+    async getRateData(done) {
+      this.$store.dispatch("setLoading");
+      this.rateData = done;
+      let date = new Date();
+      if (this.firstRate) {
+        await axios.post(helpers.api + "newTeamReview", {
+          teamName: this.$route.params.name,
+          reviewerID: this.$store.state.playerInfo.playerID,
+          moralityScore: {
+            value: this.rateData.newRateTwo,
+          },
+          skillLevel: {
+            value: this.rateData.newRateOne,
+          },
+          reviewText: this.rateData.text,
+          submissionDate: date.toJSON(),
+        });
+        await axios.patch(
+          helpers.api + "updateTeamAverageRatingInCaseOfNewReview",
+          {
+            teamName: this.$route.params.name,
+            newReviewSkillValue: this.rateData.newRateOne,
+            newReviewMoralValue: this.rateData.newRateTwo,
+          }
+        );
+      } else {
+        await axios.patch(helpers.api + "updateTeamReview/" + this.rateId, {
+          moralityScore: { value: this.rateData.newRateTwo },
+          skillLevel: { value: this.rateData.newRateOne },
+          reviewText: this.rateData.text,
+          submissionDate: date.toJSON(),
+        });
+        await axios.patch(
+          helpers.api + "updateTeamAverageRatingInCaseOfNewEdit",
+          {
+            teamName: this.$route.params.name,
+            oldSkillReviewValue: this.rateOne,
+            oldMoralReviewValue: this.rateTwo,
+            newSkillReviewValue: this.rateData.newRateOne,
+            newMoralReviewValue: this.rateData.newRateTwo,
+          }
+        );
+      }
+      this.rate = false;
+      this.$forceUpdate();
+      // this.$router.push(this.$router.currentRoute);
+      this.$store.dispatch("stopLoading");
+    },
     deleteTeam() {
       this.confirmationMessage = "Are you sure to delete this team?";
     },

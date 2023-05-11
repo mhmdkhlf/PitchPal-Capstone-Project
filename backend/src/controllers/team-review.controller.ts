@@ -5,7 +5,7 @@ const teamReviewModel = require("../models/team-review.model.ts");
 async function newTeamReview(req: Request, res: Response) {
   const teamReviewData = new teamReviewModel({
     teamName: req.body.teamName,
-    reviewerName: req.body.reviewerName,
+    reviewerID: req.body.reviewerID,
     moralityScore: req.body.moralityScore,
     skillLevel: req.body.skillLevel,
     reviewText: req.body.reviewText,
@@ -63,15 +63,15 @@ async function updateTeamReview(req: Request, res: Response) {
     res.status(400).json(Error.message);
   }
 }
-async function getTeamReviewByTeamNameAndReviewerName(
+async function getTeamReviewByTeamNameAndReviewerID(
   req: Request,
   res: Response
 ) {
   let teamName = req.body.teamName;
-  let reviewerName = req.body.reviewerName;
+  let reviewerID = req.body.reviewerID;
   try {
-    let review = await teamReviewModel.findOne({ teamName, reviewerName });
-    res.status(200).json({ review });
+    let review = await teamReviewModel.findOne({ teamName, reviewerID });
+    res.status(200).json(review);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -83,5 +83,5 @@ module.exports = {
   getATeamsReviews,
   newTeamReview,
   deleteTeamReviewById,
-  getTeamReviewByTeamNameAndReviewerName,
+  getTeamReviewByTeamNameAndReviewerID,
 };
