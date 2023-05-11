@@ -107,6 +107,8 @@
                   <p>
                     {{ playerInfo.description }}
                   </p>
+
+                  <hr class="my-4" />
                   <div class="flex-links">
                     <a @click="editProfile()" v-if="isSelfVisit"
                       >Edit Your Profile</a
@@ -115,10 +117,17 @@
                       >Deactivate Your Account</a
                     >
                   </div>
+                  <hr class="my-4" v-if="isSelfVisit" />
+                  <div class="reviews-comments">
+                    <h4 v-if="!isSelfVisit">Player Reviews</h4>
+                    <h4 v-if="isSelfVisit">Your Reviews</h4>
+                    <viewReviews :reviews="reviews" />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+
           <div class="col-xl-8 order-xl-1">
             <div class="card bg-secondary shadow">
               <div class="card-header bg-white border-0">
@@ -306,6 +315,7 @@ import loader from "./loader.vue";
 import confirmPopup from "./confirmationPopup.vue";
 import { Buffer } from "buffer";
 import rate from "./ratingPopup.vue";
+import viewReviews from "./viewReviews.vue";
 const helpers = require("../../helpers/authentication.js");
 export default {
   name: "playerProfileComponent",
@@ -313,6 +323,7 @@ export default {
     loader,
     confirmPopup,
     rate,
+    viewReviews,
   },
   data() {
     return {
@@ -333,6 +344,7 @@ export default {
       reviewText: "",
       firstRate: true,
       rateId: "",
+      reviews: null,
     };
   },
   watch: {
@@ -444,6 +456,13 @@ export default {
   },
   async mounted() {
     this.$store.dispatch("setLoading");
+    let res = await helpers.isPlayerAuthenticated(this.$route.params.id);
+    if (this.isSelfVisit) {
+      if (!helpers.isLoggedIn() || !res) {
+        this.$store.dispatch("stopLoading");
+        this.$router.push("/login");
+      }
+    }
     if (!this.isSelfVisit) {
       let arefriends = await axios.post(helpers.api + "areFriends", {
         playerID1: this.$store.state.playerInfo.playerID,
@@ -468,14 +487,17 @@ export default {
         this.firstRate = false;
       }
     }
-    let res = await helpers.isPlayerAuthenticated(this.$route.params.id);
-    if (this.isSelfVisit) {
-      if (!helpers.isLoggedIn() || !res) {
-        this.$store.dispatch("stopLoading");
-        this.$router.push("/login");
-      }
-    }
 
+    let reviews = await axios.get(
+      helpers.api + "getAPlayersReviews/" + this.$route.params.id
+    );
+
+    this.reviews = reviews.data.map((review) => {
+      return {
+        description: review.commentText,
+        date: review.submissionDate.substring(0, 10),
+      };
+    });
     axios
       .get("http://localhost:5000/api/getPlayer/" + this.$route.params.id)
       .then((res) => {
@@ -530,6 +552,10 @@ export default {
 <style lang="scss" scoped>
 * {
   color: #2dce89 !important;
+}
+.reviews-comments {
+  overflow: auto;
+  height: 260px;
 }
 .common {
   color: white !important;

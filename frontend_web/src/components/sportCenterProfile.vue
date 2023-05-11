@@ -6,10 +6,18 @@
   <!-- <logo /> -->
   <loader v-if="isLoading && !done" />
   <confirmPopup :Message="confirmationMessage" v-if="confirmationMessage" />
+  <rate
+    v-if="rate"
+    :for="`sportCenter`"
+    :ratingOne="rateOne"
+    :ratingTwo="rateTwo"
+    :text="reviewText"
+    @done="getRateData"
+  />
   <div
     class="body"
-    v-if="done && !isLoading"
-    :class="{ hidden: confirmationMessage }"
+    v-if="done && !isLoading && !rate"
+    :class="{ hidden: confirmationMessage || rate }"
   >
     <div class="main-content">
       <div class="container-fluid mt--7">
@@ -36,7 +44,7 @@
                   </div>
                 </div>
               </div>
-              <!-- <div
+              <div
                 class="card-header text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4"
               >
                 <div class="d-flex justify-content-between">
@@ -44,16 +52,17 @@
                     href="#"
                     class="btn btn-sm btn-info mr-4 common"
                     v-if="!isManager"
-                    >Connect</a
+                    >Play</a
                   >
                   <a
                     href="#"
-                    class="btn btn-sm btn-default float-right common"
+                    class="btn btn-sm btn-info float-right common"
                     v-if="!isManager"
+                    @click="rateMethod()"
                     >Rate</a
                   >
                 </div>
-              </div> -->
+              </div>
               <div class="card-body pt-0 pt-md-4">
                 <div class="row">
                   <div class="col">
@@ -98,6 +107,12 @@
                     <a @click="rmvSportCenter()" id="rmv" v-if="isManager"
                       >Remove Sport Center</a
                     >
+                  </div>
+                  <hr class="my-4" v-if="isManager" />
+                  <div class="reviews-comments">
+                    <h4>Sport Center Reviews</h4>
+
+                    <viewReviews :reviews="reviews" />
                   </div>
                 </div>
               </div>
@@ -373,12 +388,16 @@ import axios from "axios";
 import loader from "./loader.vue";
 import confirmPopup from "./confirmationPopup.vue";
 import { Buffer } from "buffer";
+import rate from "./ratingPopup.vue";
+import viewReviews from "./viewReviews.vue";
 const helpers = require("../../helpers/authentication");
 export default {
   name: "sportCenterProfileComponent",
   components: {
     loader,
     confirmPopup,
+    rate,
+    viewReviews,
   },
   data() {
     return {
@@ -391,6 +410,14 @@ export default {
       validManagerVisit: false,
       isConfirmed: false,
       confirmationMessage: null,
+      rate: false,
+      rateData: null,
+      rateOne: 0,
+      rateTwo: 0,
+      reviewText: "",
+      firstRate: true,
+      rateId: "",
+      reviews: null,
     };
   },
   watch: {
@@ -441,9 +468,6 @@ export default {
                         "utf-8"
                       ).toString("base64")}`;
                     }
-                    this.done = true;
-
-                    this.$store.dispatch("stopLoading");
                   });
               },
               (errr) => {
@@ -452,7 +476,34 @@ export default {
               }
             );
         });
+      let review = await axios.post(
+        helpers.api + "getReviewBySportCenterNameAndReviewerId",
+        {
+          sportCenterName: this.$route.params.name,
+          reviewerID: this.$store.state.playerInfo.playerID,
+        }
+      );
+      if (review.data) {
+        this.rateOne = review.data.facilityQualityScore.value;
+        this.rateTwo = review.data.staffServiceScore.value;
+        this.reviewText = review.data.reviewText;
+        this.rateId = review.data._id;
+        this.firstRate = false;
+      }
     }
+    let reviews = await axios.get(
+      helpers.api + "getASportCentersReviews/" + this.$route.params.name
+    );
+
+    this.reviews = reviews.data.map((review) => {
+      return {
+        description: review.reviewText,
+        date: review.submissionDate.substring(0, 10),
+      };
+    });
+    this.done = true;
+
+    this.$store.dispatch("stopLoading");
   },
 
   computed: {
@@ -494,6 +545,62 @@ export default {
       );
       let data = firstRequest.data;
       this.managers = data;
+    },
+    async getRateData(done) {
+      this.$store.dispatch("setLoading");
+      this.rateData = done;
+      console.log(done);
+      let date = new Date();
+      if (this.firstRate) {
+        await axios.post(helpers.api + "newSportCenterReview", {
+          sportCenterName: this.sportCenterInfo.name,
+          reviewerID: this.$store.state.playerInfo.playerID,
+          staffServiceScore: {
+            value: this.rateData.newRateTwo,
+          },
+          facilityQualityScore: {
+            value: this.rateData.newRateOne,
+          },
+          reviewText: this.rateData.text,
+          submissionDate: date.toJSON(),
+        });
+        await axios.patch(
+          helpers.api +
+            "updateSportCenterFacilityAverageRatingInCaseOfNewReview",
+          {
+            sportCenterName: this.sportCenterInfo.name,
+            newQualityReviewValue: this.rateData.newRateOne,
+            newStaffReviewValue: this.rateData.newRateTwo,
+          }
+        );
+      } else {
+        await axios.patch(
+          helpers.api + "updateSportCenterReview/" + this.rateId,
+          {
+            staffServiceScore: { value: this.rateData.newRateTwo },
+            facilityQualityScore: { value: this.rateData.newRateOne },
+            reviewText: this.rateData.text,
+            submissionDate: date.toJSON(),
+          }
+        );
+        await axios.patch(
+          helpers.api + "updateSportCenterQualityAverageRatingInCaseOfNewEdit",
+          {
+            sportCenterName: this.sportCenterInfo.name,
+            oldQualityReviewValue: this.rateOne,
+            oldStaffReviewValue: this.rateTwo,
+            newQualityReviewValue: this.rateData.newRateOne,
+            newStaffReviewValue: this.rateData.newRateTwo,
+          }
+        );
+      }
+      this.rate = false;
+      this.$forceUpdate();
+      // this.$router.push(this.$router.currentRoute);
+      this.$store.dispatch("stopLoading");
+    },
+    rateMethod() {
+      this.rate = true;
     },
     editSportCenter() {
       this.$router.push("/sport-center-form");
@@ -540,6 +647,10 @@ export default {
 }
 #rmv {
   color: red !important;
+}
+.reviews-comments {
+  overflow: auto;
+  height: 260px;
 }
 .hidden {
   opacity: 0.07;
@@ -942,6 +1053,24 @@ a > code {
   flex-basis: 0;
   flex-grow: 1;
 }
+.btn {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5;
+  display: inline-block;
+  padding: 0.625rem 1.25rem;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  border-radius: 0.375rem;
+}
 
 .col-8 {
   max-width: 66.66667%;
@@ -952,6 +1081,9 @@ a > code {
   .col-md-12 {
     max-width: 100%;
     flex: 0 0 100%;
+  }
+  .pb-md-4 {
+    padding-bottom: 1.5rem !important;
   }
 }
 
@@ -1122,6 +1254,86 @@ button.bg-white:focus {
 
 .bg-white {
   background-color: #fff !important;
+}
+.pt-8 {
+  padding-top: 8rem !important;
+}
+.pb-0 {
+  padding-bottom: 0 !important;
+}
+.justify-content-between {
+  justify-content: space-between !important;
+}
+.btn-sm {
+  font-size: 0.75rem;
+}
+.btn-info {
+  color: #fff;
+  border-color: green;
+  background-color: green;
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.btn-info:hover {
+  color: #fff;
+  border-color: green;
+  background-color: green;
+}
+
+.btn-info:focus {
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08),
+    0 0 0 0 rgba(17, 205, 239, 0.5);
+}
+
+.btn-info:disabled {
+  color: #fff;
+  border-color: green;
+  background-color: green;
+}
+.btn-info:not(:disabled):not(.disabled):active {
+  color: #fff;
+  border-color: green;
+  background-color: green;
+}
+
+.btn-info:not(:disabled):not(.disabled):active:focus {
+  box-shadow: none, 0 0 0 0 rgba(17, 205, 239, 0.5);
+}
+.mr-4 {
+  margin-right: 1.5rem !important;
+}
+.btn-default {
+  color: #fff;
+  border-color: #172b4d;
+  background-color: #172b4d;
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.btn-default:hover {
+  color: #fff;
+  border-color: #172b4d;
+  background-color: #172b4d;
+}
+
+.btn-default:focus {
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08),
+    0 0 0 0 rgba(23, 43, 77, 0.5);
+}
+
+.btn-default:disabled {
+  color: #fff;
+  border-color: #172b4d;
+  background-color: #172b4d;
+}
+
+.btn-default:not(:disabled):not(.disabled):active {
+  color: #fff;
+  border-color: #172b4d;
+  background-color: #0b1526;
+}
+
+.btn-default:not(:disabled):not(.disabled):active:focus {
+  box-shadow: none, 0 0 0 0 rgba(23, 43, 77, 0.5);
 }
 
 .border-0 {

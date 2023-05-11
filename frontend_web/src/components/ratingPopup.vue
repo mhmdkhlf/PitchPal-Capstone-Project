@@ -8,8 +8,8 @@
       <vue3StarRatings v-model="rate2" />
       <h2>Review Text</h2>
       <textarea v-model="textInput"></textarea>
-      <div class="flex">
-        <button type="submit" @click="close()">Done</button>
+      <div>
+        <button type="submit" class="right" @click="close()">Done</button>
         <button type="button" @click="cancel()">cancel</button>
       </div>
     </div>
@@ -77,10 +77,8 @@ textarea {
     color: green !important;
   }
 }
-.flex {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
+.right {
+  margin-right: 50px;
 }
 .popup {
   position: fixed;
