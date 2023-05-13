@@ -193,14 +193,7 @@ export default {
       this.$router.push("/sport-center-view");
     },
     editManager() {
-      this.$router.push({
-        path: "/first-manager-profile",
-        query: {
-          info: JSON.stringify({
-            managerInfo: this.managerInfo,
-          }),
-        },
-      });
+      this.$router.push("/first-manager-profile");
     },
     rmvManager() {
       this.confirmationMessage = "Are you sure to de activate your Account?";

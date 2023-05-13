@@ -4,7 +4,7 @@
     rel="stylesheet"
   />
   <!-- <logo /> -->
-  <loader v-if="isLoading && !done" />
+  <loader v-if="isLoading" />
   <confirmPopup :Message="confirmationMessage" v-if="confirmationMessage" />
   <rate
     v-if="rate"
@@ -16,7 +16,7 @@
   />
   <div
     class="body"
-    v-if="done && !isLoading && !rate"
+    v-if="!isLoading && !rate"
     :class="{ hidden: confirmationMessage || rate }"
   >
     <div class="main-content">
@@ -329,7 +329,7 @@ export default {
     return {
       playerInfo: null,
       numberOfFriends: 0,
-      done: false,
+      // done: false,
       isSelfVisit: this.$route.params.isSelfVisit === "true" ? true : false,
       src: "",
       playerdata: null,
@@ -359,7 +359,6 @@ export default {
     async getRateData(done) {
       this.$store.dispatch("setLoading");
       this.rateData = done;
-      console.log(done);
       let date = new Date();
       if (this.firstRate) {
         await axios.post(helpers.api + "newPlayerReview", {
@@ -400,10 +399,38 @@ export default {
           }
         );
       }
-      this.rate = false;
-      this.$forceUpdate();
-      // this.$router.push(this.$router.currentRoute);
+
+      let updated = await axios.get(
+        helpers.api + "getPlayer/" + this.$route.params.id
+      );
+      this.playerInfo = updated.data;
+      let review = await axios.post(
+        helpers.api + "getReviewByPlayerIdandReviewerId",
+        {
+          playerID: this.$route.params.id,
+          reviewerID: this.$store.state.playerInfo.playerID,
+        }
+      );
+      if (review.data) {
+        this.rateOne = review.data.skillScore.value;
+        this.rateTwo = review.data.moralityScore.value;
+        this.reviewText = review.data.commentText;
+        this.rateId = review.data._id;
+        this.firstRate = false;
+      }
+
+      let reviews = await axios.get(
+        helpers.api + "getAPlayersReviews/" + this.$route.params.id
+      );
+
+      this.reviews = reviews.data.map((review) => {
+        return {
+          description: review.commentText,
+          date: review.submissionDate.substring(0, 10),
+        };
+      });
       this.$store.dispatch("stopLoading");
+      this.rate = false;
     },
     async followPlayer(e) {
       e.preventDefault();
@@ -419,14 +446,7 @@ export default {
       }
     },
     editProfile() {
-      this.$router.push({
-        path: "/first-player-profile",
-        query: {
-          info: JSON.stringify({
-            playerInfo: this.playerInfo,
-          }),
-        },
-      });
+      this.$router.push("/first-player-profile");
     },
     rmvPlayer() {
       this.confirmationMessage = "Are you sure to de activate your Account?";
@@ -454,7 +474,7 @@ export default {
       }
     },
   },
-  async mounted() {
+  async beforeMount() {
     this.$store.dispatch("setLoading");
     let res = await helpers.isPlayerAuthenticated(this.$route.params.id);
     if (this.isSelfVisit) {
@@ -525,7 +545,7 @@ export default {
               .then((res3) => {
                 this.numberOfFriends = res3.data.numberOfFriends;
 
-                this.done = true;
+                // this.done = true;
 
                 this.$store.dispatch("stopLoading");
               });

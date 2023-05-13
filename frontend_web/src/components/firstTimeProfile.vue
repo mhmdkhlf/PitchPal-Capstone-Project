@@ -69,7 +69,7 @@
                         class="form-control form-control-alternative"
                         v-model="email"
                         required
-                        :disabled="this.$route.query.info"
+                        :disabled="this.$store.state.playerInfo"
                       />
                     </div>
                   </div>
@@ -234,7 +234,7 @@
                 </div>
               </div>
               <button
-                v-if="!this.$route.query.info"
+                v-if="!this.$store.state.playerInfo"
                 class="continue-button"
                 type="submit"
                 @click="createPlayer($event)"
@@ -242,7 +242,7 @@
                 Contniue
               </button>
               <button
-                v-if="this.$route.query.info"
+                v-if="this.$store.state.playerInfo"
                 class="continue-button"
                 type="submit"
                 @click="updatePlayer($event)"
@@ -274,42 +274,39 @@ export default {
   },
   data() {
     return {
-      name: this.$route.query.info
-        ? JSON.parse(this.$route.query.info).playerInfo.name
+      name: this.$store.state.playerInfo
+        ? this.$store.state.playerInfo.name
         : "",
       email: sessionStorage.getItem("user")
         ? sessionStorage.getItem("user")
         : "",
-      phoneNumber: this.$route.query.info
-        ? JSON.parse(this.$route.query.info).playerInfo.phoneNumber
+      phoneNumber: this.$store.state.playerInfo
+        ? this.$store.state.playerInfo.phoneNumber
         : "",
-      location: this.$route.query.info
-        ? JSON.parse(this.$route.query.info).playerInfo.location
+      location: this.$store.state.playerInfo
+        ? this.$store.state.playerInfo.location
         : null,
-      dateOfBirth: this.$route.query.info
-        ? JSON.parse(this.$route.query.info).playerInfo.dateOfBirth.substring(
-            0,
-            10
-          )
+      dateOfBirth: this.$store.state.playerInfo
+        ? this.$store.state.playerInfo.dateOfBirth.substring(0, 10)
         : "",
-      height: this.$route.query.info
-        ? JSON.parse(this.$route.query.info).playerInfo.height
+      height: this.$store.state.playerInfo
+        ? this.$store.state.playerInfo.height
         : 0,
-      weight: this.$route.query.info
-        ? JSON.parse(this.$route.query.info).playerInfo.weight
+      weight: this.$store.state.playerInfo
+        ? this.$store.state.playerInfo.weight
         : 0,
-      sex: this.$route.query.info
-        ? JSON.parse(this.$route.query.info).playerInfo.sex
+      sex: this.$store.state.playerInfo
+        ? this.$store.state.playerInfo.sex
         : "M",
-      position: this.$route.query.info
-        ? JSON.parse(this.$route.query.info).playerInfo.position
+      position: this.$store.state.playerInfo
+        ? this.$store.state.playerInfo.position
         : "",
-      description: this.$route.query.info
-        ? JSON.parse(this.$route.query.info).playerInfo.description
+      description: this.$store.state.playerInfo
+        ? this.$store.state.playerInfo.description
         : "",
       locationLoader: false,
-      address: this.$route.query.info
-        ? JSON.parse(this.$route.query.info).playerInfo.location.place
+      address: this.$store.state.playerInfo
+        ? this.$store.state.playerInfo.location.place
         : "",
       error: null,
       image: null,
@@ -331,7 +328,7 @@ export default {
   },
   mounted() {
     this.$store.dispatch("setLoading");
-    if (this.$route.query.info) {
+    if (this.$store.state.playerInfo) {
       axios
         .get("http://localhost:5000/api/getProfilePictureByEmail/" + this.email)
         .then((res2) => {
@@ -500,7 +497,7 @@ export default {
         axios
           .patch(
             "http://localhost:5000/api/updatePlayerInformation/" +
-              JSON.parse(this.$route.query.info).playerInfo._id,
+              this.$store.state.playerInfo._id,
             {
               name,
               phoneNumber,

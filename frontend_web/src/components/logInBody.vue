@@ -29,6 +29,7 @@
 </template>
 
 <script>
+const helpers = require("../../helpers/authentication.js");
 import axios from "axios";
 import errorPopup from "./errorPopup.vue";
 import loader from "./loader.vue";
@@ -101,6 +102,10 @@ export default {
                         )
                         .then((res) => {
                           this.$store.dispatch("setPlayerInfo", res.data);
+                          sessionStorage.setItem(
+                            "playerInfo",
+                            JSON.stringify(res.data)
+                          );
                         });
                       this.$router.push("/");
                     }
@@ -124,6 +129,41 @@ export default {
                         )
                         .then((res) => {
                           this.$store.dispatch("setManagerInfo", res.data);
+                          sessionStorage.setItem(
+                            "managerInfo",
+                            JSON.stringify(res.data)
+                          );
+                          axios
+                            .get(
+                              helpers.api +
+                                "getSportCenter/" +
+                                res.data.sportCenterName
+                            )
+                            .then((res2) => {
+                              this.$store.dispatch(
+                                "setSportCenterInfo",
+                                res2.data
+                              );
+                              sessionStorage.setItem(
+                                "sportCenterInfo",
+                                JSON.stringify(res2.data)
+                              );
+                              axios
+                                .get(
+                                  "http://localhost:5000/api/getFields/" +
+                                    res.data.sportCenterName
+                                )
+                                .then((res3) => {
+                                  this.$store.dispatch(
+                                    "setSportCenterFields",
+                                    res3.data
+                                  );
+                                  sessionStorage.setItem(
+                                    "sportCenterFields",
+                                    JSON.stringify(res3.data)
+                                  );
+                                });
+                            });
                         });
                       this.$router.push("/manager-home-page");
                     }

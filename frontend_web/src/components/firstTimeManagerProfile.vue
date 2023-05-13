@@ -12,7 +12,7 @@
         <label for="name">Profile Picture</label>
         <profilePicture
           @pictureUploaded="getImage"
-          v-if="!this.$route.query.info"
+          v-if="!this.$store.state.managerInfo"
         />
         <profilePicture
           :editvalue="imgEditValue"
@@ -35,7 +35,7 @@
           type="email"
           id="email"
           v-model="email"
-          :disabled="this.$route.query.info"
+          :disabled="this.$store.state.managerInfo"
         />
       </div>
 
@@ -50,10 +50,10 @@
           type="text"
           id="center-name"
           v-model="centerName"
-          :disabled="this.$route.query.info"
+          :disabled="this.$store.state.managerInfo"
         />
       </div>
-      <div class="form-group" v-if="!this.$route.query.info">
+      <div class="form-group" v-if="!this.$store.state.managerInfo">
         <h3>
           If the sport center is not registered before in the system. Please
           Register it
@@ -64,7 +64,7 @@
         </h3>
       </div>
       <button
-        v-if="!this.$route.query.info"
+        v-if="!this.$store.state.managerInfo"
         class="submit-button"
         type="button"
         @click="createManager($event)"
@@ -72,7 +72,7 @@
         Contniue
       </button>
       <button
-        v-if="this.$route.query.info"
+        v-if="this.$store.state.managerInfo"
         class="submit-button"
         type="button"
         @click="updateManager($event)"
@@ -98,17 +98,17 @@ export default {
   },
   data() {
     return {
-      name: this.$route.query.info
-        ? JSON.parse(this.$route.query.info).managerInfo.name
+      name: this.$store.state.managerInfo
+        ? this.$store.state.managerInfo.name
         : "",
       email: sessionStorage.getItem("user")
         ? sessionStorage.getItem("user")
         : "",
-      phone: this.$route.query.info
-        ? JSON.parse(this.$route.query.info).managerInfo.mobileNumber
+      phone: this.$store.state.managerInfo
+        ? this.$store.state.managerInfo.mobileNumber
         : "",
-      centerName: this.$route.query.info
-        ? JSON.parse(this.$route.query.info).managerInfo.sportCenterName
+      centerName: this.$store.state.managerInfo
+        ? this.$store.state.managerInfo.sportCenterName
         : "",
       error: null,
       image: null,
@@ -181,7 +181,7 @@ export default {
         axios
           .patch(
             "http://localhost:5000/api/updateManager/" +
-              JSON.parse(this.$route.query.info).managerInfo._id,
+              this.$store.state.managerInfo._id,
             {
               mobileNumber: phone,
               name,
@@ -224,7 +224,7 @@ export default {
   },
   mounted() {
     this.$store.dispatch("setLoading");
-    if (this.$route.query.info) {
+    if (this.$store.state.managerInfo) {
       axios
         .get("http://localhost:5000/api/getProfilePictureByEmail/" + this.email)
         .then((res2) => {

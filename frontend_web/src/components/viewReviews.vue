@@ -35,7 +35,7 @@ export default {
   border-radius: 0.5rem;
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 400px;
+  // max-width: 400px;
 }
 
 .card-header {

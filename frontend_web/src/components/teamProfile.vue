@@ -220,8 +220,39 @@ export default {
           }
         );
       }
+      let teamI = await axios.get(
+        helpers.api + "getTeamByName/" + this.$route.params.name
+      );
+
+      this.teamInfo = teamI.data;
+      let review = await axios.post(
+        helpers.api + "getTeamReviewByTeamNameAndReviewerID",
+        {
+          teamName: this.$route.params.name,
+          reviewerID: this.$store.state.playerInfo.playerID,
+        }
+      );
+      if (review.data) {
+        this.rateOne = review.data.skillLevel.value;
+        this.rateTwo = review.data.moralityScore.value;
+        this.reviewText = review.data.reviewText;
+        this.rateId = review.data._id;
+        this.firstRate = false;
+      }
+
+      let reviews = await axios.get(
+        helpers.api + "getATeamReviews/" + this.$route.params.name
+      );
+
+      this.reviews = reviews.data.map((review) => {
+        return {
+          description: review.reviewText,
+          date: review.submissionDate.substring(0, 10),
+        };
+      });
+
       this.rate = false;
-      this.$forceUpdate();
+
       // this.$router.push(this.$router.currentRoute);
       this.$store.dispatch("stopLoading");
     },

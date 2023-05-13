@@ -1,6 +1,6 @@
 <template>
   <div class="row">
-    <div class="profile-picture">
+    <div class="profile-picture" @click="goToProfile()">
       <img :src="imageSrc" alt="Profile Picture" v-if="imageSrc" />
       <img
         src="../assets/images/image.jpg"
@@ -8,7 +8,7 @@
         v-if="!imageSrc"
       />
     </div>
-    <div class="user-info">
+    <div class="user-info" @click="goToProfile()">
       <h2 class="user-name" v-if="!isCaptain">{{ userName }}</h2>
       <h2 class="user-name" v-if="isCaptain">{{ userName }} (C)</h2>
 
@@ -21,6 +21,7 @@
 </template>
 
 <script>
+const helpers = require("../../helpers/authentication");
 export default {
   name: "userRaw",
   props: {
@@ -45,6 +46,13 @@ export default {
     deletePlayer(e) {
       e.preventDefault();
       this.$emit("delete");
+    },
+    goToProfile() {
+      if (helpers.isPlayerAuthenticated(this.userName)) {
+        this.$router.push("/player-profile/" + this.userId + "/true");
+      } else {
+        this.$router.push("/player-profile/" + this.userId + "/false");
+      }
     },
   },
 };
