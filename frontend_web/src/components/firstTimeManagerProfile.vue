@@ -89,6 +89,7 @@ import errorPopup from "./errorPopup.vue";
 import loader from "./loader.vue";
 import { Buffer } from "buffer";
 import axios from "axios";
+const helpers = require("../../helpers/authentication.js");
 export default {
   name: "ManagerProfile",
   components: {
@@ -190,6 +191,8 @@ export default {
           .then(
             (res) => {
               if (res.status === 200) {
+                this.$store.dispatch("setManagerInfo", res.data);
+                sessionStorage.setItem("managerInfo", JSON.stringify(res.data));
                 if (this.image) {
                   var bodyFormData = new FormData();
                   bodyFormData.append("image", this.image);
@@ -222,7 +225,7 @@ export default {
       this.$router.push("/sport-center-form");
     },
   },
-  mounted() {
+  async mounted() {
     this.$store.dispatch("setLoading");
     if (this.$store.state.managerInfo) {
       axios
@@ -239,8 +242,16 @@ export default {
           this.$store.dispatch("stopLoading");
         });
     } else {
-      this.done = true;
-      this.$store.dispatch("stopLoading");
+      const valid = await helpers.isManagerAuthenticated(
+        sessionStorage.getItem("user")
+      );
+      if (!valid) {
+        this.$router.push("/logIn");
+        this.$store.dispatch("stopLoading");
+      } else {
+        this.done = true;
+        this.$store.dispatch("stopLoading");
+      }
     }
   },
   computed: {

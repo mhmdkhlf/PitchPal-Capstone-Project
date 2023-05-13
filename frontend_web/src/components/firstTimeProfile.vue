@@ -263,6 +263,7 @@ import errorPopUp from "./errorPopup.vue";
 import { Buffer } from "buffer";
 import loader from "./loader.vue";
 import axios from "axios";
+const helpers = require("../../helpers/authentication.js");
 export default {
   name: "FirstprofileComponent",
   //props: ["test"],
@@ -326,7 +327,7 @@ export default {
       return this.$store.state.isLoading;
     },
   },
-  mounted() {
+  async mounted() {
     this.$store.dispatch("setLoading");
     if (this.$store.state.playerInfo) {
       axios
@@ -343,8 +344,16 @@ export default {
           this.$store.dispatch("stopLoading");
         });
     } else {
-      this.done = true;
-      this.$store.dispatch("stopLoading");
+      const valid = await helpers.isPlayerAuthenticated(
+        sessionStorage.getItem("user")
+      );
+      if (!valid) {
+        this.$router.push("/logIn");
+        this.$store.dispatch("stopLoading");
+      } else {
+        this.done = true;
+        this.$store.dispatch("stopLoading");
+      }
     }
   },
   //should take email as prop or access it from session
@@ -513,6 +522,8 @@ export default {
           .then(
             (res) => {
               if (res.status === 200) {
+                this.$store.dispatch("setPlayerInfo", res.data);
+                sessionStorage.setItem("playerInfo", JSON.stringify(res.data));
                 var bodyFormData = new FormData();
                 if (this.image) {
                   bodyFormData.append("image", this.image);

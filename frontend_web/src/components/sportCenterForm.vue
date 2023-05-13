@@ -177,6 +177,7 @@ import profilePicture from "./profilePicture.vue";
 import errorPopup from "./errorPopup.vue";
 import loader from "./loader.vue";
 import axios from "axios";
+const helpers = require("../../helpers/authentication.js");
 export default {
   name: "sportCenterProfile",
   components: {
@@ -184,7 +185,7 @@ export default {
     errorPopup,
     loader,
   },
-  mounted() {
+  async mounted() {
     this.$store.dispatch("setLoading");
     if (this.$store.state.sportCenterInfo) {
       axios
@@ -204,8 +205,16 @@ export default {
           this.$store.dispatch("stopLoading");
         });
     } else {
-      this.done = true;
-      this.$store.dispatch("stopLoading");
+      const valid = await helpers.isManagerAuthenticated(
+        sessionStorage.getItem("user")
+      );
+      if (!valid) {
+        this.$router.push("/logIn");
+        this.$store.dispatch("stopLoading");
+      } else {
+        this.done = true;
+        this.$store.dispatch("stopLoading");
+      }
     }
   },
   data() {
@@ -491,6 +500,14 @@ export default {
                         (res2) => {
                           if (res2.status === 200) {
                             //image and iterate over fields and add them
+                            this.$store.dispatch(
+                              "setSportCenterInfo",
+                              res.data
+                            );
+                            sessionStorage.setItem(
+                              "sportCenterInfo",
+                              JSON.stringify(res.data)
+                            );
                             for (let i = 0; i < this.fields.length; i++) {
                               let f = this.fields[i];
                               if (f._id) {
@@ -531,6 +548,21 @@ export default {
                                   });
                               }
                             }
+                            axios
+                              .get(
+                                "http://localhost:5000/api/getFields/" +
+                                  this.name
+                              )
+                              .then((res3) => {
+                                this.$store.dispatch(
+                                  "setSportCenterFields",
+                                  res3.data
+                                );
+                                sessionStorage.setItem(
+                                  "sportCenterFields",
+                                  JSON.stringify(res3.data)
+                                );
+                              });
 
                             if (this.image) {
                               var bodyFormData = new FormData();
