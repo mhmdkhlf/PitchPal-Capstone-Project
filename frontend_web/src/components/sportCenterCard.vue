@@ -50,7 +50,7 @@ export default {
           "/sport-center-view/" + this.sportCenterInfo.name + "/true"
         );
       } else {
-        this.$store.dispatch("stoploading");
+        this.$store.dispatch("stopLoading");
         this.$router.push(
           "/sport-center-view/" + this.sportCenterInfo.name + "/false"
         );

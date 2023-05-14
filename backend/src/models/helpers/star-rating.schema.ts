@@ -1,12 +1,14 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const StarRatingSchema = new mongoose.Schema({
+const StarRatingSchema = new mongoose.Schema(
+  {
     value: {
-        type: Number,
-        required: true,
-        enum:[1,2,3,4,5]
-    }
-}, { collection: 'StarRating' }
+      type: Number,
+      required: true,
+      // enum:[1,2,3,4,5]
+    },
+  },
+  { collection: "StarRating" }
 );
 
 module.exports = StarRatingSchema;

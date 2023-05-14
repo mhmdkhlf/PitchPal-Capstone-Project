@@ -4,10 +4,18 @@ export default createStore({
   state: {
     isLoading: false,
     userEmail: "",
-    playerInfo: null,
-    managerInfo: null,
-    sportCenterInfo: null,
-    sportCenterFields: null,
+    playerInfo: sessionStorage.getItem("playerInfo")
+      ? JSON.parse(sessionStorage.getItem("playerInfo"))
+      : null,
+    managerInfo: sessionStorage.getItem("managerInfo")
+      ? JSON.parse(sessionStorage.getItem("managerInfo"))
+      : null,
+    sportCenterInfo: sessionStorage.getItem("sportCenterInfo")
+      ? JSON.parse(sessionStorage.getItem("sportCenterInfo"))
+      : null,
+    sportCenterFields: sessionStorage.getItem("sportCenterFields")
+      ? JSON.parse(sessionStorage.getItem("sportCenterFields"))
+      : null,
   },
   getters: {},
   mutations: {

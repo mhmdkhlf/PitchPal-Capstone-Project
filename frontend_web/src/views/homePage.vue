@@ -21,7 +21,7 @@ export default {
   },
   methods: {
     go() {
-      this.$router.push("/team-profile/majd team/true");
+      this.$router.push("/team-profile/majd team/false");
     },
     goToForm() {
       this.$router.push("/team-form");

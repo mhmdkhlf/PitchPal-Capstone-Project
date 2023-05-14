@@ -40,13 +40,11 @@ const routes = [
     path: "/first-player-profile",
     name: "FirstPlayerProfile",
     component: firstPlayerProfilePage,
-    query: { info: null },
   },
   {
     path: "/first-manager-profile",
     name: "FirstManagerProfile",
     component: firstManagerProfilePage,
-    query: { info: null },
   },
   {
     path: "/sport-center-form",

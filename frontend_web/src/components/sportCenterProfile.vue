@@ -4,7 +4,7 @@
     rel="stylesheet"
   />
   <!-- <logo /> -->
-  <loader v-if="isLoading && !done" />
+  <loader v-if="isLoading" />
   <confirmPopup :Message="confirmationMessage" v-if="confirmationMessage" />
   <rate
     v-if="rate"
@@ -16,7 +16,7 @@
   />
   <div
     class="body"
-    v-if="done && !isLoading && !rate"
+    v-if="!isLoading && !rate"
     :class="{ hidden: confirmationMessage || rate }"
   >
     <div class="main-content">
@@ -402,7 +402,7 @@ export default {
   data() {
     return {
       sportCenterInfo: null,
-      done: false,
+      // done: false,
       isManager: this.$route.params.isManager === "true" ? true : false,
       src: "",
       fields: [],
@@ -428,54 +428,48 @@ export default {
       }
     },
   },
-  async mounted() {
+  async beforeMount() {
+    this.$store.dispatch("setLoading");
     await this.getManagers();
     let isAuth = await helpers.isSportCenterAuthenticated(
       this.$route.params.name
     );
     if (this.isManager && !isAuth) {
+      this.$store.dispatch("stopLoading");
       this.$router.push("/login");
     } else {
-      this.$store.dispatch("setLoading");
-      axios
-        .get(
-          "http://localhost:5000/api/getSportCenter/" + this.$route.params.name
-        )
-        .then((res) => {
-          this.sportCenterInfo = res.data;
-          this.$store.dispatch("setSportCenterInfo", this.sportCenterInfo);
+      let sp = await axios.get(
+        "http://localhost:5000/api/getSportCenter/" + this.$route.params.name
+      );
 
-          axios
-            .get(
-              "http://localhost:5000/api/getFields/" + this.$route.params.name
-            )
-            .then(
-              (ress) => {
-                this.fields = ress.data;
-                this.$store.dispatch("setSportCenterFields", this.fields);
-                axios
-                  .get(
-                    "http://localhost:5000/api/getSportCenterProfilePictureByName/" +
-                      res.data.name
-                  )
-                  .then((res2) => {
-                    if (res2.data) {
-                      //no image
-                      this.src = `data:${
-                        res2.data.img.contentType
-                      };base64,${Buffer.from(
-                        res2.data.img.data,
-                        "utf-8"
-                      ).toString("base64")}`;
-                    }
-                  });
-              },
-              (errr) => {
-                this.error = errr.response.data.message;
-                this.$store.dispatch("stopLoading");
-              }
-            );
-        });
+      this.sportCenterInfo = sp.data;
+      console.log(sp);
+      this.$store.dispatch("setSportCenterInfo", this.sportCenterInfo);
+
+      let fields = await axios.get(
+        "http://localhost:5000/api/getFields/" + this.$route.params.name
+      );
+
+      this.fields = fields.data;
+      this.$store.dispatch("setSportCenterFields", this.fields);
+      let pf = await axios.get(
+        "http://localhost:5000/api/getSportCenterProfilePictureByName/" +
+          sp.data.name
+      );
+
+      if (pf.data) {
+        //no image
+        this.src = `data:${pf.data.img.contentType};base64,${Buffer.from(
+          pf.data.img.data,
+          "utf-8"
+        ).toString("base64")}`;
+      }
+
+      // (errr) => {
+      //   this.error = errr.response.data.message;
+      //   this.$store.dispatch("stopLoading");
+      // }
+
       let review = await axios.post(
         helpers.api + "getReviewBySportCenterNameAndReviewerId",
         {
@@ -501,7 +495,7 @@ export default {
         date: review.submissionDate.substring(0, 10),
       };
     });
-    this.done = true;
+    // this.done = true;
 
     this.$store.dispatch("stopLoading");
   },
@@ -594,8 +588,36 @@ export default {
           }
         );
       }
+      let updated = await axios.get(
+        helpers.api + "/getSportCenter/" + this.$route.params.name
+      );
+      this.sportCenterInfo = updated.data;
+      let reviews = await axios.get(
+        helpers.api + "getASportCentersReviews/" + this.$route.params.name
+      );
+
+      this.reviews = reviews.data.map((review) => {
+        return {
+          description: review.reviewText,
+          date: review.submissionDate.substring(0, 10),
+        };
+      });
+      let review = await axios.post(
+        helpers.api + "getReviewBySportCenterNameAndReviewerId",
+        {
+          sportCenterName: this.$route.params.name,
+          reviewerID: this.$store.state.playerInfo.playerID,
+        }
+      );
+      if (review.data) {
+        this.rateOne = review.data.facilityQualityScore.value;
+        this.rateTwo = review.data.staffServiceScore.value;
+        this.reviewText = review.data.reviewText;
+        this.rateId = review.data._id;
+        this.firstRate = false;
+      }
       this.rate = false;
-      this.$forceUpdate();
+
       // this.$router.push(this.$router.currentRoute);
       this.$store.dispatch("stopLoading");
     },

@@ -79,6 +79,9 @@ main-loader {
   height: 100vh;
   // background-color: rgba(0, 0, 0, 0.75);
 }
+* {
+  z-index: 99999;
+}
 
 .main-fader {
   width: 100%;
