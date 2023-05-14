@@ -345,6 +345,7 @@ Here are your upcoming Matches:""",
           itemCount: sportCenters!.length,
           itemBuilder: (context, index) => SportCenterCard(
             sportCenter: sportCenters![index],
+            playerId: widget.player.playerID!,
           ),
         );
       }
@@ -357,6 +358,7 @@ Here are your upcoming Matches:""",
               itemCount: sportCenters.data!.length,
               itemBuilder: (context, index) => SportCenterCard(
                 sportCenter: sportCenters.data![index],
+                playerId: widget.player.playerID!,
               ),
             );
           }

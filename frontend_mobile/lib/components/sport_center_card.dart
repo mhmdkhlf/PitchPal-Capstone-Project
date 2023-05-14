@@ -7,12 +7,11 @@ import '../data/sport_center.dart';
 import '../constants.dart';
 
 class SportCenterCard extends StatelessWidget {
-  const SportCenterCard({
-    super.key,
-    required this.sportCenter,
-  });
+  const SportCenterCard(
+      {super.key, required this.sportCenter, required this.playerId});
 
   final SportCenter sportCenter;
+  final String playerId;
 
   @override
   Widget build(BuildContext context) {
@@ -85,8 +84,8 @@ Distance: ${sportCenter.distanceFromPlayer == null ? 'N/A' : '${sportCenter.dist
                       context,
                       MaterialPageRoute(
                         builder: (context) => ReviewSportCenter(
-                          reviewTextInput: TextEditingController(),
                           sportCenterName: sportCenter.name,
+                          playerId: playerId,
                         ),
                       ),
                     ),
