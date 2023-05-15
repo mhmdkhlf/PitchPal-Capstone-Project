@@ -213,7 +213,7 @@ export default {
           "http://localhost:5000/api/deletePicture/" +
             sessionStorage.getItem("user")
         );
-        this.$router.push("/login");
+        this.$router.push("/logIn");
         this.$store.dispatch("stopLoading");
       }
     },
@@ -224,7 +224,8 @@ export default {
     if (this.isSelfVisit) {
       if (!helpers.isLoggedIn() || !res) {
         this.$store.dispatch("stopLoading");
-        this.$router.push("/login");
+        this.$router.push("/logIn");
+        sessionStorage.clear();
       }
     }
 

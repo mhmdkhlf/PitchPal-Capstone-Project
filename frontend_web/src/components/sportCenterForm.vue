@@ -189,10 +189,7 @@ export default {
     this.$store.dispatch("setLoading");
     if (this.$store.state.sportCenterInfo) {
       axios
-        .get(
-          "http://localhost:5000/api/getSportCenterProfilePictureByName/" +
-            this.name
-        )
+        .get(helpers.api + "getSportCenterProfilePictureByName/" + this.name)
         .then((res2) => {
           if (res2.data) {
             this.imgEditValue = `data:${
@@ -205,16 +202,8 @@ export default {
           this.$store.dispatch("stopLoading");
         });
     } else {
-      const valid = await helpers.isManagerAuthenticated(
-        sessionStorage.getItem("user")
-      );
-      if (!valid) {
-        this.$router.push("/logIn");
-        this.$store.dispatch("stopLoading");
-      } else {
-        this.done = true;
-        this.$store.dispatch("stopLoading");
-      }
+      this.done = true;
+      this.$store.dispatch("stopLoading");
     }
   },
   data() {

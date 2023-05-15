@@ -86,7 +86,7 @@ async function deleteSportCenterById(req: Request, res: Response) {
   }
 }
 
-async function updateSportCenterFacilityAverageRatingInCaseOfNewReview(
+async function updateSportCenterAverageRatingInCaseOfNewReview(
   req: Request,
   res: Response
 ) {
@@ -120,7 +120,7 @@ async function updateSportCenterFacilityAverageRatingInCaseOfNewReview(
     res.status(400).json(error.message);
   }
 }
-async function updateSportCenterQualityAverageRatingInCaseOfNewEdit(
+async function updateSportCenterAverageRatingInCaseOfNewEdit(
   req: Request,
   res: Response
 ) {
@@ -161,8 +161,8 @@ async function updateSportCenterQualityAverageRatingInCaseOfNewEdit(
 }
 
 module.exports = {
-  updateSportCenterQualityAverageRatingInCaseOfNewEdit,
-  updateSportCenterFacilityAverageRatingInCaseOfNewReview,
+  updateSportCenterAverageRatingInCaseOfNewEdit,
+  updateSportCenterAverageRatingInCaseOfNewReview,
   newSportCenter,
   getAllSportCenters,
   updateSportCenterById,

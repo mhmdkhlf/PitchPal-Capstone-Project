@@ -180,7 +180,7 @@ export default {
     },
     // logout() {
     //   sessionStorage.clear();
-    //   this.$router.push('/login');
+    //   this.$router.push('/logIn');
     // }
   },
 };
