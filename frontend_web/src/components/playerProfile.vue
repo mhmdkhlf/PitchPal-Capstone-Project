@@ -71,7 +71,7 @@
                     <div
                       class="card-profile-stats d-flex justify-content-center mt-md-5"
                     >
-                      <div>
+                      <div @click="showFriends()" class="friends-div">
                         <span class="heading">{{ numberOfFriends }}</span>
                         <span class="description">Friends</span>
                       </div>
@@ -451,6 +451,9 @@ export default {
     rmvPlayer() {
       this.confirmationMessage = "Are you sure to de activate your Account?";
     },
+    showFriends() {
+      this.$router.push("/friends/" + this.playerInfo.playerID);
+    },
     rateMethod() {
       this.rate = true;
     },
@@ -469,7 +472,7 @@ export default {
           "http://localhost:5000/api/deletePicture/" +
             sessionStorage.getItem("user")
         );
-        this.$router.push("/login");
+        this.$router.push("/logIn");
         this.$store.dispatch("stopLoading");
       }
     },
@@ -480,7 +483,8 @@ export default {
     if (this.isSelfVisit) {
       if (!helpers.isLoggedIn() || !res) {
         this.$store.dispatch("stopLoading");
-        this.$router.push("/login");
+        this.$router.push("/logIn");
+        sessionStorage.clear();
       }
     }
     if (!this.isSelfVisit) {
@@ -960,6 +964,9 @@ a > code {
 .col-8 {
   max-width: 66.66667%;
   flex: 0 0 66.66667%;
+}
+.friends-div {
+  cursor: pointer;
 }
 
 @media (min-width: 768px) {

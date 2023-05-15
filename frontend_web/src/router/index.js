@@ -14,6 +14,7 @@ import teamProfile from "../views/teamProfilePage.vue";
 import teamUpdateForm from "../views/teamUpdateFormPage.vue";
 import sportcenters from "../views/sportCentersView.vue";
 import friends from "../views/friendsView.vue";
+import reservationView from "../views/reservationView.vue";
 const routes = [
   {
     path: "/",
@@ -90,9 +91,15 @@ const routes = [
     component: sportcenters,
   },
   {
-    path: "/friends",
+    path: "/friends/:id?",
     name: "friends",
     component: friends,
+  },
+  {
+    path: "/reservation/:id",
+    name: "reservation",
+    component: reservationView,
+    params: true,
   },
 ];
 

@@ -79,7 +79,7 @@ export default {
   },
   methods: {
     logIn() {
-      this.$router.push("/login");
+      this.$router.push("/logIn");
     },
     signUp(e) {
       e.preventDefault();

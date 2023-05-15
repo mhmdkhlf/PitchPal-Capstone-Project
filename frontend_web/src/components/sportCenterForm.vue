@@ -189,10 +189,7 @@ export default {
     this.$store.dispatch("setLoading");
     if (this.$store.state.sportCenterInfo) {
       axios
-        .get(
-          "http://localhost:5000/api/getSportCenterProfilePictureByName/" +
-            this.name
-        )
+        .get(helpers.api + "getSportCenterProfilePictureByName/" + this.name)
         .then((res2) => {
           if (res2.data) {
             this.imgEditValue = `data:${
@@ -205,16 +202,8 @@ export default {
           this.$store.dispatch("stopLoading");
         });
     } else {
-      const valid = await helpers.isManagerAuthenticated(
-        sessionStorage.getItem("user")
-      );
-      if (!valid) {
-        this.$router.push("/logIn");
-        this.$store.dispatch("stopLoading");
-      } else {
-        this.done = true;
-        this.$store.dispatch("stopLoading");
-      }
+      this.done = true;
+      this.$store.dispatch("stopLoading");
     }
   },
   data() {
@@ -380,6 +369,14 @@ export default {
                         (res2) => {
                           if (res2.status === 200) {
                             //image and iterate over fields and add them
+                            this.$store.dispatch(
+                              "setSportCenterInfo",
+                              res2.data
+                            );
+                            sessionStorage.setItem(
+                              "sportCenterInfo",
+                              JSON.stringify(res2.data)
+                            );
                             for (let i = 0; i < this.fields.length; i++) {
                               let f = this.fields[i];
                               axios
@@ -397,6 +394,21 @@ export default {
                                   this.error = errr.response.data.message;
                                 });
                             }
+                            axios
+                              .get(
+                                "http://localhost:5000/api/getFields/" +
+                                  this.name
+                              )
+                              .then((res3) => {
+                                this.$store.dispatch(
+                                  "setSportCenterFields",
+                                  res3.data
+                                );
+                                sessionStorage.setItem(
+                                  "sportCenterFields",
+                                  JSON.stringify(res3.data)
+                                );
+                              });
 
                             if (this.image) {
                               var bodyFormData = new FormData();
@@ -502,11 +514,11 @@ export default {
                             //image and iterate over fields and add them
                             this.$store.dispatch(
                               "setSportCenterInfo",
-                              res.data
+                              res2.data
                             );
                             sessionStorage.setItem(
                               "sportCenterInfo",
-                              JSON.stringify(res.data)
+                              JSON.stringify(res2.data)
                             );
                             for (let i = 0; i < this.fields.length; i++) {
                               let f = this.fields[i];

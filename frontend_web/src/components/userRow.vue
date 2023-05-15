@@ -9,8 +9,7 @@
       />
     </div>
     <div class="user-info" @click="goToProfile()">
-      <h2 class="user-name" v-if="!isCaptain">{{ userName }}</h2>
-      <h2 class="user-name" v-if="isCaptain">{{ userName }} (C)</h2>
+      <h2 class="user-name">{{ userName }}</h2>
 
       <p class="user-id">ID: {{ userId }}</p>
     </div>
@@ -47,12 +46,15 @@ export default {
       e.preventDefault();
       this.$emit("delete");
     },
-    goToProfile() {
-      if (helpers.isPlayerAuthenticated(this.userName)) {
+    async goToProfile() {
+      this.$store.dispatch("setLoading");
+      let auth = await helpers.isPlayerAuthenticated(this.userId);
+      if (auth) {
         this.$router.push("/player-profile/" + this.userId + "/true");
       } else {
         this.$router.push("/player-profile/" + this.userId + "/false");
       }
+      this.$store.dispatch("stopLoading");
     },
   },
 };
@@ -78,6 +80,9 @@ export default {
   border-radius: 50%;
   overflow: hidden;
   margin-right: 15px;
+}
+* {
+  cursor: pointer;
 }
 
 .profile-picture img {

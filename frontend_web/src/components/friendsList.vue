@@ -62,7 +62,7 @@ export default {
     };
   },
   mounted() {
-    this.show = this.players;
+    this.show = this.friends;
   },
   watch: {
     type(newv) {
@@ -102,7 +102,8 @@ export default {
     },
   },
   async beforeMount() {
-    let playerId = this.$store.state.playerInfo.playerID;
+    let id = this.$route.params.id;
+    let playerId = id ? id : this.$store.state.playerInfo.playerID;
     this.$store.dispatch("setLoading");
     let friends = await axios.get(helpers.api + "getFriends/" + playerId);
     await Promise.all(
