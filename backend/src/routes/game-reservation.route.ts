@@ -12,7 +12,7 @@ router.get(
 router.get(
   "/getAllReservationsBySportCenter/:sportCenterName",
   reservationController.getAllReservationsBySportCenter
-)
+);
 //done
 router.get(
   "/getAllReservationsOfTodayBysportCenterName/:sportCenterName",
@@ -47,5 +47,6 @@ router.get(
   "/getAcceptedReservationsBySportCenterNameOfTodayAndAfter/:sportCenterName",
   reservationController.getAcceptedReservationsBySportCenterNameOfTodayAndAfter
 );
+router.get("/getReservationById/:id", reservationController.getReservationById);
 
 module.exports = router;

@@ -39,7 +39,7 @@ async function makeReservation(req: Request, res: Response) {
 async function getAllReservationsBySportCenter(req: Request, res: Response) {
   try {
     const sportCenterName = req.params.sportCenterName;
-    const reservationInfo = await reservationModel.find({sportCenterName});
+    const reservationInfo = await reservationModel.find({ sportCenterName });
     res.status(200).json(reservationInfo);
   } catch (error) {
     res.status(400).json(error.message);
@@ -201,8 +201,18 @@ async function getReservationsByReserverEmail(req: Request, res: Response) {
     res.status(400).json(error.message);
   }
 }
+async function getReservationById(req: Request, res: Response) {
+  let id = req.params.id;
+  try {
+    let reservation = await reservationModel.findById(id);
+    res.status(200).json(reservation);
+  } catch (error) {
+    res.status(400).json(error);
+  }
+}
 
 module.exports = {
+  getReservationById,
   makeReservation,
   addPlayerToTeam,
   getAllReservationsBySportCenter,

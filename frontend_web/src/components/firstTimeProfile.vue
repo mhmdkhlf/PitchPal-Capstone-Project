@@ -446,6 +446,8 @@ export default {
           .then(
             (res) => {
               if (res.status === 200) {
+                this.$store.dispatch("setPlayerInfo", res.data);
+                sessionStorage.setItem("playerInfo", JSON.stringify(res.data));
                 var bodyFormData = new FormData();
                 if (this.image) {
                   bodyFormData.append("image", this.image);

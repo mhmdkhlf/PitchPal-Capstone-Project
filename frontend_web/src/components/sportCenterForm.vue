@@ -369,6 +369,14 @@ export default {
                         (res2) => {
                           if (res2.status === 200) {
                             //image and iterate over fields and add them
+                            this.$store.dispatch(
+                              "setSportCenterInfo",
+                              res2.data
+                            );
+                            sessionStorage.setItem(
+                              "sportCenterInfo",
+                              JSON.stringify(res2.data)
+                            );
                             for (let i = 0; i < this.fields.length; i++) {
                               let f = this.fields[i];
                               axios
@@ -386,6 +394,21 @@ export default {
                                   this.error = errr.response.data.message;
                                 });
                             }
+                            axios
+                              .get(
+                                "http://localhost:5000/api/getFields/" +
+                                  this.name
+                              )
+                              .then((res3) => {
+                                this.$store.dispatch(
+                                  "setSportCenterFields",
+                                  res3.data
+                                );
+                                sessionStorage.setItem(
+                                  "sportCenterFields",
+                                  JSON.stringify(res3.data)
+                                );
+                              });
 
                             if (this.image) {
                               var bodyFormData = new FormData();
@@ -491,11 +514,11 @@ export default {
                             //image and iterate over fields and add them
                             this.$store.dispatch(
                               "setSportCenterInfo",
-                              res.data
+                              res2.data
                             );
                             sessionStorage.setItem(
                               "sportCenterInfo",
-                              JSON.stringify(res.data)
+                              JSON.stringify(res2.data)
                             );
                             for (let i = 0; i < this.fields.length; i++) {
                               let f = this.fields[i];

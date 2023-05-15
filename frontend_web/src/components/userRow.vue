@@ -9,8 +9,7 @@
       />
     </div>
     <div class="user-info" @click="goToProfile()">
-      <h2 class="user-name" v-if="!isCaptain">{{ userName }}</h2>
-      <h2 class="user-name" v-if="isCaptain">{{ userName }} (C)</h2>
+      <h2 class="user-name">{{ userName }}</h2>
 
       <p class="user-id">ID: {{ userId }}</p>
     </div>
