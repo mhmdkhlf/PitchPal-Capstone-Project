@@ -87,7 +87,8 @@ export default {
 
     if (this.isSelfVisit) {
       if (!res) {
-        this.$router.push("/login");
+        this.$router.push("/logIn");
+        sessionStorage.clear();
         this.$store.dispatch("stopLoading");
       }
     }

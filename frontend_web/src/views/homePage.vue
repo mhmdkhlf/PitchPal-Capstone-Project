@@ -16,7 +16,8 @@ export default {
     //console.log(JSON.parse(localStorage.getItem("user")));
     //user is not authorized
     if (sessionStorage.getItem("user") === null) {
-      this.$router.push("/login");
+      this.$router.push("/logIn");
+      sessionStorage.clear();
     }
   },
   methods: {

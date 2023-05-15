@@ -436,7 +436,8 @@ export default {
     );
     if (this.isManager && !isAuth) {
       this.$store.dispatch("stopLoading");
-      this.$router.push("/login");
+      this.$router.push("/logIn");
+      sessionStorage.clear();
     } else {
       let sp = await axios.get(
         "http://localhost:5000/api/getSportCenter/" + this.$route.params.name
@@ -559,8 +560,7 @@ export default {
           submissionDate: date.toJSON(),
         });
         await axios.patch(
-          helpers.api +
-            "updateSportCenterFacilityAverageRatingInCaseOfNewReview",
+          helpers.api + "updateSportCenterAverageRatingInCaseOfNewReview",
           {
             sportCenterName: this.sportCenterInfo.name,
             newQualityReviewValue: this.rateData.newRateOne,
@@ -578,7 +578,7 @@ export default {
           }
         );
         await axios.patch(
-          helpers.api + "updateSportCenterQualityAverageRatingInCaseOfNewEdit",
+          helpers.api + "updateSportCenterAverageRatingInCaseOfNewEdit",
           {
             sportCenterName: this.sportCenterInfo.name,
             oldQualityReviewValue: this.rateOne,
@@ -653,7 +653,7 @@ export default {
           "http://localhost:5000/api/deleteSportCenterPicture/" +
             this.sportCenterInfo.name
         );
-        this.$router.push("/login");
+        this.$router.push("/logIn");
         this.$store.dispatch("stopLoading");
       }
     },
