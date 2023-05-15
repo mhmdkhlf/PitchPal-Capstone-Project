@@ -36,6 +36,7 @@ class ReviewSportCenter extends StatelessWidget {
           reviewText: '',
           reviewerID: '',
           sportCenterName: '',
+          submissionDate: '',
         );
       }
       return SportCenterReview.fromJson(response.data);

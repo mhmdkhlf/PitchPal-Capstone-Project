@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../data/sport_center.dart';
 import '../constants.dart';
-import '../components/average_rating_display.dart';
+import '../components/rating_display.dart';
 import '../components/copyable_link.dart';
 import '../components/facility_info.dart';
 import '../components/field_info.dart';
@@ -94,12 +94,12 @@ class ViewSportCenterProfile extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                AverageRatingDisplay(
+                RatingDisplay(
                   attribute: '  Staff Service ',
                   rating: sportCenter.staffServiceAverageRating ?? 0,
                 ),
                 const SizedBox(height: 2),
-                AverageRatingDisplay(
+                RatingDisplay(
                   attribute: 'Facility Quality',
                   rating: sportCenter.facilityQualityAverageRating ?? 0,
                 ),

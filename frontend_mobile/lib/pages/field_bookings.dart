@@ -19,10 +19,10 @@ class FieldBookings extends StatefulWidget {
 
 class _FieldBookingsState extends State<FieldBookings> {
   final SelectedField _selectedField = SelectedField(1);
-  DateTime _selectedDate = DateTime.now();
+  DateTime selectedDate = DateTime.now();
 
   void _handleDateChanged(DateTime newDate) =>
-      setState(() => _selectedDate = newDate);
+      setState(() => selectedDate = newDate);
 
   @override
   Widget build(BuildContext context) {

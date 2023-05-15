@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
-class AverageRatingDisplay extends StatelessWidget {
-  const AverageRatingDisplay({
+class RatingDisplay extends StatelessWidget {
+  const RatingDisplay({
     super.key,
     required this.attribute,
     required this.rating,

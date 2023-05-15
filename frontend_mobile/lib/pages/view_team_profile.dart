@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import '../components/average_rating_display.dart';
+import '../components/rating_display.dart';
 import '../data/player.dart';
 import '../data/team.dart';
 import '../constants.dart';
@@ -134,12 +134,12 @@ class ViewTeamProfile extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 10),
-                      AverageRatingDisplay(
+                      RatingDisplay(
                         attribute: 'Sportsmanship',
                         rating: team.averageMoralRating ?? 0,
                       ),
                       const SizedBox(height: 2),
-                      AverageRatingDisplay(
+                      RatingDisplay(
                         attribute: '    Skill Level     ',
                         rating: team.averageSkillRating ?? 0,
                       ),

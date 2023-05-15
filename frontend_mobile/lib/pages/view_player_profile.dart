@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../components/average_rating_display.dart';
+import '../components/rating_display.dart';
 import '../components/contact_info_field.dart';
 import '../data/player.dart';
 import '../constants.dart';
@@ -181,12 +181,12 @@ class ViewPlayerProfile extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 15),
-                AverageRatingDisplay(
+                RatingDisplay(
                   attribute: '  Morality ',
                   rating: player.averageMoralityRating ?? 0,
                 ),
                 const SizedBox(height: 2),
-                AverageRatingDisplay(
+                RatingDisplay(
                   attribute: 'Skill Level',
                   rating: player.averageSkillRating ?? 0,
                 ),
