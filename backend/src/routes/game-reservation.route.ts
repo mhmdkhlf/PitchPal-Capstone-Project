@@ -48,5 +48,8 @@ router.get(
   reservationController.getAcceptedReservationsBySportCenterNameOfTodayAndAfter
 );
 router.get("/getReservationById/:id", reservationController.getReservationById);
-
+router.delete(
+  "/deleteReservation/:id",
+  reservationController.deleteReservation
+);
 module.exports = router;

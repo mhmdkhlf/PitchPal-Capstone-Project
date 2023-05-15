@@ -210,8 +210,18 @@ async function getReservationById(req: Request, res: Response) {
     res.status(400).json(error);
   }
 }
+async function deleteReservation(req: Request, res: Response) {
+  let id = req.params.id;
+  try {
+    let reservation = await reservationModel.findByIdAndDelete(id);
+    res.status(200).json(reservation);
+  } catch (error) {
+    res.status(400).json(error);
+  }
+}
 
 module.exports = {
+  deleteReservation,
   getReservationById,
   makeReservation,
   addPlayerToTeam,

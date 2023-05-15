@@ -91,7 +91,7 @@ const routes = [
     component: sportcenters,
   },
   {
-    path: "/friends",
+    path: "/friends/:id?",
     name: "friends",
     component: friends,
   },

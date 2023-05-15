@@ -1,6 +1,7 @@
 <template>
   <loader v-if="isLoading" />
-  <div class="all" v-if="!isLoading">
+  <confirmPopup :Message="confirmationMessage" v-if="confirmationMessage" />
+  <div class="all" v-if="!isLoading" :class="{ hidden: confirmationMessage }">
     <div class="reservation-view">
       <div class="reservation-info">
         <div class="info-row">
@@ -20,8 +21,14 @@
           <span class="value">{{ reservationInfo.fieldNumber }}</span>
         </div>
         <div class="info-row">
+          <span class="label">Time</span>
+          <span class="value">{{ time }}</span>
+        </div>
+        <div class="info-row">
           <span class="label">Reservation Date:</span>
-          <span class="value">{{ reservationInfo.reservationDate }}</span>
+          <span class="value">{{
+            reservationInfo.reservationDate.substring(0, 10)
+          }}</span>
         </div>
         <div class="info-row">
           <span class="label">Reservation Type:</span>
@@ -29,7 +36,9 @@
         </div>
         <div class="info-row">
           <span class="label">Comments:</span>
-          <span class="value">{{ reservationInfo.comment }}</span>
+          <span class="value">{{
+            reservationInfo.comment ? reservationInfo.comment : "No comments"
+          }}</span>
         </div>
       </div>
 
@@ -46,7 +55,11 @@
               />
             </li>
           </ul>
-          <button class="button" @click="includeMeInTeam(1)" v-if="!isOwner">
+          <button
+            class="button"
+            @click="includeMeInTeam(1)"
+            v-if="!isOwner && !isIncluded"
+          >
             Include Me in the Team
           </button>
         </div>
@@ -62,14 +75,18 @@
               />
             </li>
           </ul>
-          <button class="button" @click="includeMeInTeam(2)" v-if="!isOwner">
+          <button
+            class="button"
+            @click="includeMeInTeam(2)"
+            v-if="!isOwner && !isIncluded"
+          >
             Include Me in the Team
           </button>
         </div>
       </div>
 
       <div class="button-div" v-if="isOwner">
-        <button @click="cancelReservation" class="button">
+        <button @click="deleteT()" class="button">
           Cancel This Reservation
         </button>
       </div>
@@ -81,6 +98,7 @@ import axios from "axios";
 import { Buffer } from "buffer";
 const helpers = require("../../helpers/authentication.js");
 import loader from "./loader.vue";
+import confirmPopup from "./confirmationPopup.vue";
 import playerRow from "./userRow.vue";
 export default {
   name: "ReservationView",
@@ -88,28 +106,24 @@ export default {
   components: {
     loader,
     playerRow,
+    confirmPopup,
+  },
+  watch: {
+    // whenever question changes, this function will run
+    isConfirmed(newA) {
+      if (newA) {
+        this.cancelReservation();
+      }
+    },
   },
   data() {
     return {
       reservationInfo: null,
       TeamOne: [],
       TeamTwo: [],
-      // sportCenterName: "Green Sports Center",
-      // reserverEmail: "john@example.com",
-      // fieldNumber: 1,
-      // reservationDate: "2023-05-20",
-      // reservationType: "Player",
-      // comments: "Please bring your own equipment.",
-      // team1Players: [
-      //   { id: 1, name: "John Doe" },
-      //   { id: 2, name: "Jane Smith" },
-      //   { id: 3, name: "Mike Johnson" },
-      // ],
-      // team2Players: [
-      //   { id: 4, name: "Sarah Davis" },
-      //   { id: 5, name: "Robert Williams" },
-      //   { id: 6, name: "Emily Brown" },
-      // ],
+      isIncluded: "",
+      isConfirmed: false,
+      confirmationMessage: null,
     };
   },
   async beforeMount() {
@@ -165,18 +179,105 @@ export default {
     await Promise.all(T2P).then((results) => {
       this.TeamTwo = results;
     });
+    if (
+      this.reservationInfo.teamOneIds.includes(
+        this.$store.state.playerInfo.playerID
+      )
+    ) {
+      this.isIncluded = "teamOne";
+    } else if (
+      this.reservationInfo.teamTwoIds.includes(
+        this.$store.state.playerInfo.playerID
+      )
+    ) {
+      this.isIncluded = "teamTwo";
+    } else {
+      this.isIncluded = "";
+    }
     this.$store.dispatch("stopLoading");
   },
   methods: {
-    includeMeInTeam(teamNumber) {
-      // Logic to include the current user in the selected team
-      // You can implement your own logic here
-      console.log("Included in Team:", teamNumber);
+    deleteT() {
+      this.confirmationMessage = "Are you sure to cancel this reservation?";
     },
-    cancelReservation() {
-      // Logic to cancel the reservation
-      // You can implement your own logic here
-      console.log("Reservation canceled");
+    async includeMeInTeam(teamNumber) {
+      this.$store.dispatch("setLoading");
+      let newList = [];
+      if (teamNumber === 1) {
+        newList = this.reservationInfo.teamOneIds;
+      } else {
+        newList = this.reservationInfo.teamTwoIds;
+      }
+      newList.push(this.$store.state.playerInfo.playerID);
+      await axios.post(helpers.api + "updateTeamPlayers", {
+        reservationId: this.$route.params.id,
+        teamNumber: teamNumber,
+        playerIds: newList,
+      });
+      if (teamNumber === 1) {
+        this.reservationInfo.teamOneIds = newList;
+        this.isIncluded = "teamOne";
+      } else {
+        this.reservationInfo.teamTwoIds = newList;
+        this.isIncluded = "teamTwo";
+      }
+      let T1P = this.reservationInfo.teamOneIds.map(async (id) => {
+        let res = {};
+        let playerInfo = await axios.get(helpers.api + "getPlayer/" + id);
+        let playerData = playerInfo.data;
+        res["name"] = playerData.name;
+        res["id"] = playerData.playerID;
+        let img = await axios.get(
+          helpers.api + "getProfilePictureByEmail/" + playerData.email
+        );
+        if (img.data) {
+          res["src"] = `data:${img.data.img.contentType};base64,${Buffer.from(
+            img.data.img.data,
+            "utf-8"
+          ).toString("base64")}`;
+        } else {
+          res["src"] = "";
+        }
+        return res;
+      });
+      await Promise.all(T1P).then((results) => {
+        this.TeamOne = results;
+      });
+      let T2P = this.reservationInfo.teamTwoIds.map(async (id) => {
+        let res = {};
+        let playerInfo = await axios.get(helpers.api + "getPlayer/" + id);
+        let playerData = playerInfo.data;
+        res["name"] = playerData.name;
+        res["id"] = playerData.playerID;
+        let img = await axios.get(
+          helpers.api + "getProfilePictureByEmail/" + playerData.email
+        );
+        if (img.data) {
+          res["src"] = `data:${img.data.img.contentType};base64,${Buffer.from(
+            img.data.img.data,
+            "utf-8"
+          ).toString("base64")}`;
+        } else {
+          res["src"] = "";
+        }
+        return res;
+      });
+      await Promise.all(T2P).then((results) => {
+        this.TeamTwo = results;
+      });
+      this.$store.dispatch("stopLoading");
+    },
+    async cancelReservation() {
+      this.$store.dispatch("setLoading");
+      await axios.delete(
+        helpers.api + "deleteReservation/" + this.$route.params.id
+      );
+      if (this.$store.state.playerInfo) {
+        this.$router.push("/");
+      } else {
+        this.$router.push("/manager-home-page");
+      }
+      this.$store.dispatch("stopLoading");
     },
     async goToSportCenter() {
       this.$store.dispatch("setLoading");
@@ -204,12 +305,22 @@ export default {
     isLoading() {
       return this.$store.state.isLoading;
     },
+    time() {
+      return (
+        this.reservationInfo.reservationTime.startTime +
+        "-" +
+        this.reservationInfo.reservationTime.endTime
+      );
+    },
   },
 };
 </script>
 <style lang="scss" scoped>
 * {
   color: #45a049;
+}
+.hidden {
+  opacity: 0.07;
 }
 .reservation-view {
   margin: 20px;

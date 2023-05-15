@@ -46,12 +46,15 @@ export default {
       e.preventDefault();
       this.$emit("delete");
     },
-    goToProfile() {
-      if (helpers.isPlayerAuthenticated(this.userName)) {
+    async goToProfile() {
+      this.$store.dispatch("setLoading");
+      let auth = await helpers.isPlayerAuthenticated(this.userId);
+      if (auth) {
         this.$router.push("/player-profile/" + this.userId + "/true");
       } else {
         this.$router.push("/player-profile/" + this.userId + "/false");
       }
+      this.$store.dispatch("stopLoading");
     },
   },
 };
@@ -77,6 +80,9 @@ export default {
   border-radius: 50%;
   overflow: hidden;
   margin-right: 15px;
+}
+* {
+  cursor: pointer;
 }
 
 .profile-picture img {
