@@ -7,6 +7,7 @@ class SportCenterReview {
   final String reviewText;
   final StarRating staffServiceScore;
   final StarRating facilityQualityScore;
+  String? submissionDate;
 
   SportCenterReview({
     required this.uuid,
@@ -15,6 +16,7 @@ class SportCenterReview {
     required this.reviewText,
     required this.staffServiceScore,
     required this.facilityQualityScore,
+    required this.submissionDate,
   });
 
   factory SportCenterReview.fromJson(Map<String, dynamic> json) {
@@ -25,6 +27,7 @@ class SportCenterReview {
       reviewText: json['reviewText'],
       staffServiceScore: StarRating.fromJson(json['staffServiceScore']),
       facilityQualityScore: StarRating.fromJson(json['facilityQualityScore']),
+      submissionDate: json['submissionDate'],
     );
   }
 

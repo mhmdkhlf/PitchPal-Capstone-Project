@@ -1,45 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:dio/dio.dart';
-import '../data/sport_center_review.dart';
+import '../data/player.dart';
+import '../data/player_review.dart';
 import '../data/star_rating.dart';
 import '../components/textfield_input.dart';
 import '../components/response_dialog_box.dart';
 import '../components/submit_button.dart';
 import '../constants.dart';
 
-class ReviewSportCenter extends StatelessWidget {
-  const ReviewSportCenter({
+class ReviewPlayer extends StatelessWidget {
+  const ReviewPlayer({
     super.key,
-    required this.playerId,
-    required this.sportCenterName,
+    required this.player,
+    required this.reviewerId,
   });
 
-  final String playerId;
-  final String sportCenterName;
+  final Player player;
+  final String reviewerId;
 
-  Future<SportCenterReview> getReview() async {
+  Future<PlayerReview> getReview() async {
     final Dio dio = Dio();
     try {
       final Response response = await dio.post(
-        '$apiRoute/getReviewBySportCenterNameAndReviewerId',
+        '$apiRoute/getReviewByPlayerIdandReviewerId',
         data: {
-          'sportCenterName': sportCenterName,
-          'reviewerID': playerId,
+          'playerID': player.playerID,
+          'reviewerID': reviewerId,
         },
       );
       if (response.data == null) {
-        return SportCenterReview(
-          uuid: null, // null uuid to indicate null return from response
-          facilityQualityScore: StarRating.fromInput(value: 1),
-          staffServiceScore: StarRating.fromInput(value: 1),
-          reviewText: '',
+        return PlayerReview(
+          uuid: null,
+          playerID: '',
           reviewerID: '',
-          sportCenterName: '',
+          commentText: '',
+          moralityScore: StarRating.fromInput(value: 0),
+          skillScore: StarRating.fromInput(value: 0),
           submissionDate: '',
         );
       }
-      return SportCenterReview.fromJson(response.data);
+      return PlayerReview.fromJson(response.data);
     } on DioError catch (e) {
       throw Exception(e.stackTrace);
     }
@@ -50,7 +51,7 @@ class ReviewSportCenter extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Review $sportCenterName',
+          'Review ${player.name}',
           textAlign: TextAlign.center,
         ),
       ),
@@ -60,25 +61,25 @@ class ReviewSportCenter extends StatelessWidget {
             future: getReview(),
             builder: (context, review) {
               final TextEditingController reviewTextInput;
-              final StarRating facilityQualityInput;
-              final StarRating staffServiceInput;
+              final StarRating moralityInput;
+              final StarRating skillInput;
               if (review.hasData) {
-                SportCenterReview oldReview = review.data!;
+                PlayerReview oldReview = review.data!;
                 if (oldReview.uuid != null) {
                   // there is an older review
                   reviewTextInput =
-                      TextEditingController(text: oldReview.reviewText);
-                  facilityQualityInput = StarRating.fromInput(
-                    value: oldReview.facilityQualityScore.value,
+                      TextEditingController(text: oldReview.commentText);
+                  moralityInput = StarRating.fromInput(
+                    value: oldReview.moralityScore.value,
                   );
-                  staffServiceInput = StarRating.fromInput(
-                    value: oldReview.staffServiceScore.value,
+                  skillInput = StarRating.fromInput(
+                    value: oldReview.skillScore.value,
                   );
                 } else {
                   // everything new
                   reviewTextInput = TextEditingController();
-                  facilityQualityInput = StarRating.fromInput(value: 1);
-                  staffServiceInput = StarRating.fromInput(value: 1);
+                  moralityInput = StarRating.fromInput(value: 1);
+                  skillInput = StarRating.fromInput(value: 1);
                 }
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -94,14 +95,14 @@ class ReviewSportCenter extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         const Text(
-                          'Staff Service: ',
+                          'Morality: ',
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 16,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                         RatingBar.builder(
-                          initialRating: staffServiceInput.value.toDouble(),
+                          initialRating: skillInput.value.toDouble(),
                           direction: Axis.horizontal,
                           allowHalfRating: true,
                           itemPadding:
@@ -110,8 +111,7 @@ class ReviewSportCenter extends StatelessWidget {
                             Icons.star,
                             color: Colors.amber,
                           ),
-                          onRatingUpdate: (rating) =>
-                              staffServiceInput.value = rating,
+                          onRatingUpdate: (rating) => skillInput.value = rating,
                         ),
                       ],
                     ),
@@ -120,14 +120,14 @@ class ReviewSportCenter extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         const Text(
-                          'Facility Quality: ',
+                          'Skill Level: ',
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 16,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                         RatingBar.builder(
-                          initialRating: facilityQualityInput.value.toDouble(),
+                          initialRating: moralityInput.value.toDouble(),
                           allowHalfRating: true,
                           direction: Axis.horizontal,
                           itemPadding:
@@ -137,7 +137,7 @@ class ReviewSportCenter extends StatelessWidget {
                             color: Colors.amber,
                           ),
                           onRatingUpdate: (rating) =>
-                              facilityQualityInput.value = rating,
+                              moralityInput.value = rating,
                         ),
                       ],
                     ),
@@ -156,34 +156,32 @@ class ReviewSportCenter extends StatelessWidget {
                           );
                         }
                         final Dio dio = Dio();
-                        SportCenterReview reviewToUpload =
-                            SportCenterReview.createReview(
-                          sportCenterName: sportCenterName,
-                          reviewerID: playerId,
-                          reviewText: reviewTextInput.text,
-                          staffServiceScore: staffServiceInput,
-                          facilityQualityScore: facilityQualityInput,
+                        PlayerReview reviewToUpload = PlayerReview.createReview(
+                          playerID: player.playerID!,
+                          reviewerID: reviewerId,
+                          commentText: reviewTextInput.text,
+                          skillScore: skillInput,
+                          moralityScore: moralityInput,
                         );
                         try {
                           if (oldReview.uuid == null) {
                             // new Review
                             try {
                               final Response newReviewResponse = await dio.post(
-                                '$apiRoute/newSportCenterReview',
+                                '$apiRoute/newPlayerReview',
                                 data: reviewToUpload.toJsonMap(),
                               );
                               if (newReviewResponse.statusCode != 200) {
                                 throw Exception("Invalid status code");
                               }
                               final Response updateResponse = await dio.patch(
-                                '$apiRoute/updateSportCenterAverageRatingInCaseOfNewReview',
+                                '$apiRoute/updatePlayerAverageRatingInCaseOfNewReview',
                                 data: {
-                                  'sportCenterName':
-                                      reviewToUpload.sportCenterName,
-                                  'newQualityReviewValue':
-                                      reviewToUpload.facilityQualityScore.value,
-                                  'newStaffReviewValue':
-                                      reviewToUpload.staffServiceScore.value,
+                                  'playerID': reviewToUpload.playerID,
+                                  'newSkillReviewValue':
+                                      reviewToUpload.skillScore.value,
+                                  'newMoralReviewValue':
+                                      reviewToUpload.moralityScore.value,
                                 },
                               );
                               if (updateResponse.statusCode != 200) {
@@ -193,19 +191,17 @@ class ReviewSportCenter extends StatelessWidget {
                               throw Exception(e.stackTrace);
                             }
                           } else {
-                            // there already exists a review from this player to same Sportcenter
+                            // there already exists a review from this player to same player
                             try {
                               final Response updateReviewResponse =
                                   await dio.patch(
-                                "$apiRoute/updateSportCenterReview/${oldReview.uuid}",
+                                "$apiRoute/updateReview/${oldReview.uuid}",
                                 data: {
-                                  'staffServiceScore': reviewToUpload
-                                      .staffServiceScore
-                                      .toJsonMap(),
-                                  'facilityQualityScore': reviewToUpload
-                                      .facilityQualityScore
-                                      .toJsonMap(),
-                                  'reviewText': reviewToUpload.reviewText,
+                                  'moralityScore':
+                                      reviewToUpload.moralityScore.toJsonMap(),
+                                  'skillScore':
+                                      reviewToUpload.skillScore.toJsonMap(),
+                                  'commentText': reviewToUpload.commentText,
                                   'submissionDate': DateTime.now().toString(),
                                 },
                               );
@@ -214,18 +210,17 @@ class ReviewSportCenter extends StatelessWidget {
                               }
                               final Response updateAverageResponse =
                                   await dio.patch(
-                                '$apiRoute/updateSportCenterAverageRatingInCaseOfNewEdit',
+                                '$apiRoute/updatePlayerAverageRatingInCaseOfNewEdit',
                                 data: {
-                                  'sportCenterName':
-                                      reviewToUpload.sportCenterName,
-                                  'oldQualityReviewValue':
-                                      oldReview.facilityQualityScore.value,
-                                  'oldStaffReviewValue':
-                                      oldReview.staffServiceScore.value,
-                                  'newQualityReviewValue':
-                                      reviewToUpload.facilityQualityScore.value,
-                                  'newStaffReviewValue':
-                                      reviewToUpload.staffServiceScore.value,
+                                  'playerID': reviewToUpload.playerID,
+                                  'oldSkillReviewValue':
+                                      oldReview.skillScore.value,
+                                  'oldMoralReviewValue':
+                                      oldReview.moralityScore.value,
+                                  'newSkillReviewValue':
+                                      reviewToUpload.skillScore.value,
+                                  'newMoralReviewValue':
+                                      reviewToUpload.moralityScore.value,
                                 },
                               );
                               if (updateAverageResponse.statusCode != 200) {

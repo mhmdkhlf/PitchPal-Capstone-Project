@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
-import '../components/average_rating_display.dart';
+import '../components/rating_display.dart';
 import '../components/contact_info_field.dart';
+import '../pages/view_player_reviews.dart';
 import '../data/player.dart';
+import '../data/player_review.dart';
 import '../constants.dart';
 
-class ViewPlayerProfile extends StatelessWidget {
+class ViewPlayerProfile extends StatefulWidget {
   const ViewPlayerProfile({
     super.key,
     required this.player,
@@ -13,10 +16,43 @@ class ViewPlayerProfile extends StatelessWidget {
 
   final Player player;
 
+  @override
+  State<ViewPlayerProfile> createState() => _ViewPlayerProfileState();
+}
+
+class _ViewPlayerProfileState extends State<ViewPlayerProfile> {
+  String reviewsButtonsText = 'Display Reviews';
+  bool reviewsDisplayed = false;
+  List<PlayerReview>? playerReviews;
+
+  void toggleButton() async {
+    playerReviews ??= await getReviews();
+    setState(() {
+      if (reviewsDisplayed) {
+        reviewsDisplayed = false;
+        reviewsButtonsText = 'Display Reviews';
+      } else {
+        reviewsDisplayed = true;
+        reviewsButtonsText = 'Hide Reviews';
+      }
+    });
+  }
+
+  Future<List<PlayerReview>> getReviews() async {
+    Dio dio = Dio();
+    final response = await dio.get(
+      '$apiRoute/getAPlayersReviews/${widget.player.playerID}',
+    );
+    List<dynamic> reviewsData = response.data;
+    List<PlayerReview> reviews =
+        reviewsData.map((e) => PlayerReview.fromJson(e)).toList();
+    return reviews;
+  }
+
   int _getAge() {
     try {
       DateTime dateOfBirth = DateFormat("yyyy-MM-ddTHH:mm:ssZ")
-          .parse(player.dateOfBirth, false)
+          .parse(widget.player.dateOfBirth, false)
           .toLocal();
       DateTime dateToday = DateTime.now();
       Duration difference = dateToday.difference(dateOfBirth);
@@ -45,8 +81,8 @@ class ViewPlayerProfile extends StatelessWidget {
                   backgroundColor: kDarkColor,
                   child: CircleAvatar(
                     radius: 80.0,
-                    backgroundImage: player.imageByteArray != null
-                        ? Image.memory(player.imageByteArray!).image
+                    backgroundImage: widget.player.imageByteArray != null
+                        ? Image.memory(widget.player.imageByteArray!).image
                         : const AssetImage(defaultProfilePath),
                   ),
                 ),
@@ -57,14 +93,14 @@ class ViewPlayerProfile extends StatelessWidget {
                     style: const TextStyle(fontSize: 18),
                     children: <TextSpan>[
                       TextSpan(
-                        text: player.name,
+                        text: widget.player.name,
                         style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       TextSpan(
-                          text: ' #${player.playerID}',
+                          text: ' #${widget.player.playerID}',
                           style: const TextStyle(
                             fontSize: 18,
                           )),
@@ -72,12 +108,12 @@ class ViewPlayerProfile extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                if (player.description != null &&
-                    player.description!.isNotEmpty)
+                if (widget.player.description != null &&
+                    widget.player.description!.isNotEmpty)
                   Column(
                     children: [
                       Text(
-                        player.description!,
+                        widget.player.description!,
                         style: const TextStyle(fontSize: 16),
                         textAlign: TextAlign.center,
                         maxLines: 5,
@@ -97,17 +133,17 @@ class ViewPlayerProfile extends StatelessWidget {
                 const SizedBox(height: 15),
                 ContactInfoField(
                   field: 'Phone Number',
-                  value: player.phoneNumber,
+                  value: widget.player.phoneNumber,
                 ),
                 const SizedBox(height: 10),
                 ContactInfoField(
                   field: 'Email',
-                  value: player.email,
+                  value: widget.player.email,
                 ),
                 const SizedBox(height: 10),
                 ContactInfoField(
                   field: 'Address',
-                  value: player.location.place,
+                  value: widget.player.location.place,
                 ),
                 const SizedBox(height: 10),
                 const Divider(color: kDarkColor),
@@ -130,7 +166,7 @@ class ViewPlayerProfile extends StatelessWidget {
                           'Sex: ',
                           style: TextStyle(fontSize: 18),
                         ),
-                        player.sex == Sex.female
+                        widget.player.sex == Sex.female
                             ? const Icon(Icons.female)
                             : const Icon(Icons.male),
                       ],
@@ -140,7 +176,7 @@ class ViewPlayerProfile extends StatelessWidget {
                       style: const TextStyle(fontSize: 18),
                     ),
                     Text(
-                      'Position: ${_capitalizeFirstLetter(player.position.value)}',
+                      'Position: ${_capitalizeFirstLetter(widget.player.position.value)}',
                       style: const TextStyle(fontSize: 18),
                     ),
                   ],
@@ -150,11 +186,11 @@ class ViewPlayerProfile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
-                      'Weight: ${player.weight} KG',
+                      'Weight: ${widget.player.weight == 0 ? '_' : '${widget.player.weight} KG'}',
                       style: const TextStyle(fontSize: 18),
                     ),
                     Text(
-                      'Height: ${player.height} CM',
+                      'Height: ${widget.player.height == 0 ? '_' : '${widget.player.height} CM'}',
                       style: const TextStyle(fontSize: 18),
                     ),
                   ],
@@ -174,23 +210,40 @@ class ViewPlayerProfile extends StatelessWidget {
                         ),
                       ),
                       TextSpan(
-                        text: '(${player.numberOfReviews} reviews)',
+                        text: '(${widget.player.numberOfReviews} reviews)',
                         style: const TextStyle(fontSize: 14),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 15),
-                AverageRatingDisplay(
+                RatingDisplay(
                   attribute: '  Morality ',
-                  rating: player.averageMoralityRating ?? 0,
+                  rating: widget.player.averageMoralityRating ?? 0,
                 ),
                 const SizedBox(height: 2),
-                AverageRatingDisplay(
+                RatingDisplay(
                   attribute: 'Skill Level',
-                  rating: player.averageSkillRating ?? 0,
+                  rating: widget.player.averageSkillRating ?? 0,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 5),
+                const Divider(color: kDarkColor),
+                ElevatedButton(
+                  onPressed: toggleButton,
+                  child: Text(
+                    reviewsButtonsText,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+                if (reviewsDisplayed)
+                  ViewPlayerReviews(
+                    player: widget.player,
+                    reviews: playerReviews!,
+                  ),
+                const SizedBox(height: 20),
               ],
             ),
           ),

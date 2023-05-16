@@ -126,7 +126,7 @@ class _CreateTeamState extends State<CreateTeam> {
         automaticallyImplyLeading: false,
         title: const Center(
           child: Text(
-            'New Team Form',
+            'Create a new Team',
             style: TextStyle(fontSize: 22),
           ),
         ),

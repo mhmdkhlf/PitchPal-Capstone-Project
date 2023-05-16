@@ -7,8 +7,11 @@ import '../data/sport_center.dart';
 import '../constants.dart';
 
 class SportCenterCard extends StatelessWidget {
-  const SportCenterCard(
-      {super.key, required this.sportCenter, required this.playerId});
+  const SportCenterCard({
+    super.key,
+    required this.sportCenter,
+    required this.playerId,
+  });
 
   final SportCenter sportCenter;
   final String playerId;

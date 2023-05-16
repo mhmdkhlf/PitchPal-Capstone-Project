@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:frontend_mobile/pages/view_field_manager_profile.dart';
 import 'package:frontend_mobile/pages/view_sport_center_profile.dart';
 import 'package:frontend_mobile/pages/field_bookings.dart';
+import 'package:frontend_mobile/pages/view_sport_center_reviews.dart';
 import '../data/field.dart';
 import '../data/field_manager.dart';
 import '../data/reservation.dart';
 import '../data/sport_center.dart';
+import '../data/sport_center_review.dart';
 import '../constants.dart';
 
 class FieldManagerHomePage extends StatefulWidget {
@@ -26,6 +28,7 @@ class _FieldManagerHomePageState extends State<FieldManagerHomePage> {
   int _selectNavBarItemIndex = 0;
   SportCenter? sportCenter;
   List<Reservation>? sportCenterReservations;
+  List<SportCenterReview>? sportCenterReviews;
 
   Future<SportCenter> getSportCenter() async {
     final Dio dio = Dio();
@@ -52,6 +55,18 @@ class _FieldManagerHomePageState extends State<FieldManagerHomePage> {
     return sportCenter!;
   }
 
+  Future<List<SportCenterReview>> getReviews() async {
+    Dio dio = Dio();
+    final response = await dio.get(
+      '$apiRoute/getASportCentersReviews/${sportCenter!.name}',
+    );
+    List<dynamic> reviewsData = response.data;
+    List<SportCenterReview> reviews =
+        reviewsData.map((e) => SportCenterReview.fromJson(e)).toList();
+    sportCenterReviews = reviews;
+    return reviews;
+  }
+
   Future<Map<String, dynamic>> getSportCenterAndReservations() async {
     Map<String, dynamic> output = {};
     sportCenter ??= await getSportCenter();
@@ -64,6 +79,7 @@ class _FieldManagerHomePageState extends State<FieldManagerHomePage> {
     List<Reservation> reservations =
         reservationsData.map((e) => Reservation.fromJson(e)).toList();
     output['reservations'] = reservations;
+    sportCenterReservations = reservations;
     return output;
   }
 
@@ -78,7 +94,21 @@ class _FieldManagerHomePageState extends State<FieldManagerHomePage> {
         )),
       );
     }
-
+    if (_selectNavBarItemIndex == 1) {
+      return AppBar(
+        automaticallyImplyLeading: false,
+        title: Center(
+          child: Text(
+            "${sportCenter!.name}'s reviews",
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+      );
+    }
     return null;
   }
 
@@ -107,60 +137,43 @@ class _FieldManagerHomePageState extends State<FieldManagerHomePage> {
       );
     }
     if (_selectNavBarItemIndex == 1) {
-      return SafeArea(
-        child: Column(
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(15),
-              child: Text(
-                "Viewing the sport center's reviews (to be developped)",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Column(
-              children: List.generate(
-                5,
-                (index) => Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Card(
-                    elevation: 4,
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 3),
-                        Text(
-                          'Review #$index',
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        const Divider(),
-                        const Text(
-                          'Review description',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        const SizedBox(height: 10),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+      if (sportCenter != null && sportCenterReviews != null) {
+        return ViewSportCenterReviews(
+          sportCenter: sportCenter!,
+          reviews: sportCenterReviews!,
+        );
+      }
+      return FutureBuilder(
+        future: getReviews(),
+        builder: (context, reviews) {
+          if (reviews.hasData) {
+            return ViewSportCenterReviews(
+              sportCenter: sportCenter!,
+              reviews: reviews.data!,
+            );
+          }
+          if (reviews.hasError) {
+            return Center(child: Text(reviews.error.toString()));
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
       );
     }
     if (_selectNavBarItemIndex == 2) {
       if (sportCenter != null) {
-        return ViewSportCenterProfile(sportCenter: sportCenter!);
+        return ViewSportCenterProfile(
+          sportCenter: sportCenter!,
+          isPlayerApp: false,
+        );
       }
       return FutureBuilder(
         future: getSportCenter(),
         builder: (context, sportCenter) {
           if (sportCenter.hasData) {
-            return ViewSportCenterProfile(sportCenter: sportCenter.data!);
+            return ViewSportCenterProfile(
+              sportCenter: sportCenter.data!,
+              isPlayerApp: false,
+            );
           }
           if (sportCenter.hasError) {
             return Center(child: Text(sportCenter.error.toString()));
