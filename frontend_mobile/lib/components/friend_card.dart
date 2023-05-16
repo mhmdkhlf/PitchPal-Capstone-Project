@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:frontend_mobile/main.dart';
+import 'package:frontend_mobile/pages/review_player.dart';
 import 'package:frontend_mobile/pages/view_player_profile.dart';
 import 'package:dio/dio.dart';
 import '../data/player.dart';
@@ -9,9 +11,11 @@ class FriendCard extends StatelessWidget {
   const FriendCard({
     super.key,
     required this.friendId,
+    required this.userId,
   });
 
   final String friendId;
+  final String userId;
 
   Future<Player> getPlayer() async {
     final Dio dio = Dio();
@@ -39,32 +43,58 @@ class FriendCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: getPlayer(),
-      builder: (context, player) {
-        if (player.hasData) {
+      builder: (context, friend) {
+        if (friend.hasData) {
           return Padding(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             child: Card(
               elevation: 3,
               shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10))),
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const SizedBox(height: 3),
-                  Row(
+                  Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       const SizedBox(width: 5),
-                      Text(
-                        player.data!.name,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            alignment: Alignment.center,
+                            child: friend.data!.imageByteArray != null
+                                ? Image.memory(
+                                    friend.data!.imageByteArray!,
+                                    height: 30,
+                                    width: 30,
+                                  )
+                                : Image.asset(
+                                    defaultProfilePath,
+                                    height: 30,
+                                    width: 30,
+                                  ),
+                          ),
+                          const SizedBox(width: 10),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              friend.data!.name,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 15),
+                        ],
                       ),
-                      const SizedBox(width: 5),
+                      const Divider(),
                       ButtonTheme(
                         child: ButtonBar(
+                          alignment: MainAxisAlignment.center,
                           children: [
                             ElevatedButton(
                               child: const Text('View Profile'),
@@ -73,13 +103,26 @@ class FriendCard extends StatelessWidget {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => ViewPlayerProfile(
-                                      player: player.data!,
+                                      player: friend.data!,
                                     ),
                                   ),
                                 );
                               },
                             ),
-                            const SizedBox(width: 5),
+                            ElevatedButton(
+                              child: const Text('Review Player'),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ReviewPlayer(
+                                      player: friend.data!,
+                                      reviewerId: userId,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
                           ],
                         ),
                       ),
@@ -91,8 +134,8 @@ class FriendCard extends StatelessWidget {
             ),
           );
         }
-        if (player.hasError) {
-          return Center(child: Text(player.error.toString()));
+        if (friend.hasError) {
+          return Center(child: Text(friend.error.toString()));
         }
         return const Center(child: CircularProgressIndicator());
       },

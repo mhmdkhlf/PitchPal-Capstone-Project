@@ -94,7 +94,21 @@ class _FieldManagerHomePageState extends State<FieldManagerHomePage> {
         )),
       );
     }
-
+    if (_selectNavBarItemIndex == 1) {
+      return AppBar(
+        automaticallyImplyLeading: false,
+        title: Center(
+          child: Text(
+            "${sportCenter!.name}'s reviews",
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+      );
+    }
     return null;
   }
 
@@ -147,13 +161,19 @@ class _FieldManagerHomePageState extends State<FieldManagerHomePage> {
     }
     if (_selectNavBarItemIndex == 2) {
       if (sportCenter != null) {
-        return ViewSportCenterProfile(sportCenter: sportCenter!);
+        return ViewSportCenterProfile(
+          sportCenter: sportCenter!,
+          isPlayerApp: false,
+        );
       }
       return FutureBuilder(
         future: getSportCenter(),
         builder: (context, sportCenter) {
           if (sportCenter.hasData) {
-            return ViewSportCenterProfile(sportCenter: sportCenter.data!);
+            return ViewSportCenterProfile(
+              sportCenter: sportCenter.data!,
+              isPlayerApp: false,
+            );
           }
           if (sportCenter.hasError) {
             return Center(child: Text(sportCenter.error.toString()));

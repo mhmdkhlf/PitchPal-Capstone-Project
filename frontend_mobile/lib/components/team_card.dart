@@ -27,9 +27,10 @@ class TeamCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(10),
       child: Card(
-        elevation: 10,
+        elevation: 5,
         shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20))),
+          borderRadius: BorderRadius.all(Radius.circular(15)),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

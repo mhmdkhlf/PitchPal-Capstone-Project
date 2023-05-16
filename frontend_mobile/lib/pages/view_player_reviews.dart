@@ -1,20 +1,29 @@
 import 'package:flutter/material.dart';
 import '../components/rating_display.dart';
-import '../data/sport_center.dart';
-import '../data/sport_center_review.dart';
+import '../data/player.dart';
+import '../data/player_review.dart';
 
-class ViewSportCenterReviews extends StatelessWidget {
-  const ViewSportCenterReviews({
+class ViewPlayerReviews extends StatelessWidget {
+  const ViewPlayerReviews({
     super.key,
-    required this.sportCenter,
+    required this.player,
     required this.reviews,
   });
 
-  final SportCenter sportCenter;
-  final List<SportCenterReview> reviews;
+  final Player player;
+  final List<PlayerReview> reviews;
 
   @override
   Widget build(BuildContext context) {
+    if (reviews.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.all(10),
+        child: Text(
+          'No reviews to display...',
+          style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
+        ),
+      );
+    }
     return SingleChildScrollView(
       child: SafeArea(
         child: Column(
@@ -22,16 +31,17 @@ class ViewSportCenterReviews extends StatelessWidget {
             reviews.length,
             (index) => Column(
               children: [
-                const SizedBox(height: 15),
+                const SizedBox(height: 5),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Card(
-                    elevation: 5,
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(7.0),
-                          child: Text.rich(
+                    elevation: 10,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 3),
+                          Text.rich(
                             TextSpan(
                               children: [
                                 const TextSpan(
@@ -61,20 +71,17 @@ class ViewSportCenterReviews extends StatelessWidget {
                             ),
                             textAlign: TextAlign.center,
                           ),
-                        ),
-                        const Divider(),
-                        RatingDisplay(
-                          attribute: 'Facility Quality',
-                          rating: reviews[index].facilityQualityScore.value,
-                        ),
-                        RatingDisplay(
-                          attribute: 'Staff service',
-                          rating: reviews[index].staffServiceScore.value,
-                        ),
-                        const Divider(),
-                        Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Text.rich(
+                          const Divider(),
+                          RatingDisplay(
+                            attribute: 'Skill Level',
+                            rating: reviews[index].skillScore.value,
+                          ),
+                          RatingDisplay(
+                            attribute: 'Morality',
+                            rating: reviews[index].moralityScore.value,
+                          ),
+                          const Divider(),
+                          Text.rich(
                             TextSpan(
                               children: [
                                 const TextSpan(
@@ -85,7 +92,7 @@ class ViewSportCenterReviews extends StatelessWidget {
                                   ),
                                 ),
                                 TextSpan(
-                                  text: reviews[index].reviewText,
+                                  text: reviews[index].commentText,
                                 ),
                               ],
                             ),
@@ -94,12 +101,13 @@ class ViewSportCenterReviews extends StatelessWidget {
                             ),
                             textAlign: TextAlign.center,
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                      ],
+                          const SizedBox(height: 10),
+                        ],
+                      ),
                     ),
                   ),
                 ),
+                const SizedBox(height: 10),
               ],
             ),
           ),

@@ -370,27 +370,27 @@ Here are your upcoming Matches:""",
       );
     } else if (_selectNavBarItemIndex == 2) {
       if (friendsIDs != null) {
-        return Center(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                const Text(
-                  'Your Friends',
-                  style: TextStyle(
-                    fontSize: 20,
+        return SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(height: 50),
+              const Text(
+                'Your Friends',
+                style: TextStyle(
+                    fontSize: 24,
                     fontWeight: FontWeight.w600,
-                  ),
+                    decoration: TextDecoration.underline),
+              ),
+              const SizedBox(height: 10),
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: friendsIDs!.length,
+                itemBuilder: (context, index) => FriendCard(
+                  friendId: friendsIDs![index],
+                  userId: widget.player.playerID!,
                 ),
-                const SizedBox(height: 10),
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: friendsIDs!.length,
-                  itemBuilder: (context, index) => FriendCard(
-                    friendId: friendsIDs![index],
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       }
@@ -415,6 +415,7 @@ Here are your upcoming Matches:""",
                       itemCount: friendsIDs.data!.length,
                       itemBuilder: (context, index) => FriendCard(
                         friendId: friendsIDs.data![index],
+                        userId: widget.player.playerID!,
                       ),
                     ),
                   ],
