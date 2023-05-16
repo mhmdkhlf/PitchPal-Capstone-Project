@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'create_team.dart';
 import 'view_player_profile.dart';
+import 'view_team_profile.dart';
 import '../components/response_dialog_box.dart';
 import '../components/friend_card.dart';
 import '../components/match_card.dart';
@@ -36,7 +37,9 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
   List<Team>? teamsPlayerInvolvedIn;
   List<String>? friendsIDs;
   final TextEditingController friendIdController = TextEditingController();
-  final TextEditingController searchController = TextEditingController();
+  final TextEditingController sportCenterSearchController =
+      TextEditingController();
+  final TextEditingController teamSearchController = TextEditingController();
   final DateFormat dateFormat = DateFormat('dd-MM-yyyy');
   final DateFormat timeFormat = DateFormat.Hm();
 
@@ -126,7 +129,7 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
             color: kLightColor,
             fontSize: 18,
           ),
-          controller: searchController,
+          controller: sportCenterSearchController,
           cursorColor: kPrimaryColor,
           decoration: const InputDecoration(
             fillColor: kDarkGreen,
@@ -143,40 +146,44 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
                 () => sportCenters = allSportCenters!
                     .where((sportCenter) => sportCenter.name
                         .toLowerCase()
-                        .contains(searchController.text.toLowerCase()))
+                        .contains(
+                            sportCenterSearchController.text.toLowerCase()))
                     .toList(),
               );
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.sort),
-            onPressed: () {
-              if (sportCenters == null) return;
-              setState(
-                () {
-                  isAscending = !isAscending;
-                  if (isAscending) {
-                    sportCenters!.sort(
-                      (a, b) => a.distanceFromPlayer!
-                          .compareTo(b.distanceFromPlayer as num),
-                    );
-                    allSportCenters!.sort(
-                      (a, b) => a.distanceFromPlayer!
-                          .compareTo(b.distanceFromPlayer as num),
-                    );
-                  } else {
-                    sportCenters!.sort((a, b) =>
-                        a.distanceFromPlayer!
-                            .compareTo(b.distanceFromPlayer as num) *
-                        -1);
-                    allSportCenters!.sort((a, b) =>
-                        a.distanceFromPlayer!
-                            .compareTo(b.distanceFromPlayer as num) *
-                        -1);
-                  }
-                },
-              );
-            },
+          Tooltip(
+            message: 'Sort By Distance',
+            child: IconButton(
+              icon: const Icon(Icons.sort),
+              onPressed: () {
+                if (sportCenters == null) return;
+                setState(
+                  () {
+                    isAscending = !isAscending;
+                    if (isAscending) {
+                      sportCenters!.sort(
+                        (a, b) => a.distanceFromPlayer!
+                            .compareTo(b.distanceFromPlayer as num),
+                      );
+                      allSportCenters!.sort(
+                        (a, b) => a.distanceFromPlayer!
+                            .compareTo(b.distanceFromPlayer as num),
+                      );
+                    } else {
+                      sportCenters!.sort((a, b) =>
+                          a.distanceFromPlayer!
+                              .compareTo(b.distanceFromPlayer as num) *
+                          -1);
+                      allSportCenters!.sort((a, b) =>
+                          a.distanceFromPlayer!
+                              .compareTo(b.distanceFromPlayer as num) *
+                          -1);
+                    }
+                  },
+                );
+              },
+            ),
           ),
           const SizedBox(width: 20)
         ],
@@ -267,16 +274,59 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
     } else if (_selectNavBarItemIndex == 3) {
       return AppBar(
         automaticallyImplyLeading: false,
-        title: const Center(
-          child: Text(
-            'Your Teams',
-            style: TextStyle(
-              color: kLightColor,
-              fontSize: 24,
-              fontWeight: FontWeight.w400,
-            ),
+        title: TextField(
+          style: const TextStyle(
+            color: kLightColor,
+            fontSize: 18,
+          ),
+          controller: teamSearchController,
+          cursorColor: kPrimaryColor,
+          decoration: const InputDecoration(
+            fillColor: kDarkGreen,
+            hintText: "Search for a team by it's name",
+            hintStyle: TextStyle(color: kLighterDark),
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () async {
+              final String teamNameInput = teamSearchController.text;
+              final Dio dio = Dio();
+              try {
+                final response = await dio.get(
+                  '$apiRoute/getTeamByName/$teamNameInput',
+                );
+                if (response.data != null) {
+                  Team team = Team.fromJson(response.data);
+                  if (context.mounted) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ViewTeamProfile(
+                          team: team,
+                          userId: widget.player.playerID!,
+                        ),
+                      ),
+                    );
+                  }
+                } else {
+                  if (context.mounted) {
+                    showDialog(
+                      context: context,
+                      builder: (context) => const ResponseDialogBox(
+                        text: "No team has the name you're searching for",
+                      ),
+                    );
+                  }
+                }
+              } on DioError catch (e) {
+                throw Exception(e.stackTrace);
+              }
+            },
+          ),
+          const SizedBox(width: 20),
+        ],
       );
     } else {
       return AppBar(
@@ -340,27 +390,13 @@ Here are your upcoming Matches:""",
       );
     } else if (_selectNavBarItemIndex == 1) {
       if (sportCenters != null) {
-        return ListView.builder(
-          shrinkWrap: true,
-          itemCount: sportCenters!.length,
-          itemBuilder: (context, index) => SportCenterCard(
-            sportCenter: sportCenters![index],
-            playerId: widget.player.playerID!,
-          ),
-        );
+        return _getSportCentersBody(sportCenters!);
       }
       return FutureBuilder(
         future: getSportCenters(),
         builder: (context, sportCenters) {
           if (sportCenters.hasData) {
-            return ListView.builder(
-              shrinkWrap: true,
-              itemCount: sportCenters.data!.length,
-              itemBuilder: (context, index) => SportCenterCard(
-                sportCenter: sportCenters.data![index],
-                playerId: widget.player.playerID!,
-              ),
-            );
+            return _getSportCentersBody(sportCenters.data!);
           }
           if (sportCenters.hasError) {
             return Center(child: Text(sportCenters.error.toString()));
@@ -370,58 +406,13 @@ Here are your upcoming Matches:""",
       );
     } else if (_selectNavBarItemIndex == 2) {
       if (friendsIDs != null) {
-        return SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 50),
-              const Text(
-                'Your Friends',
-                style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w600,
-                    decoration: TextDecoration.underline),
-              ),
-              const SizedBox(height: 10),
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: friendsIDs!.length,
-                itemBuilder: (context, index) => FriendCard(
-                  friendId: friendsIDs![index],
-                  userId: widget.player.playerID!,
-                ),
-              ),
-            ],
-          ),
-        );
+        return _getFriendsBody(friendsIDs!);
       }
       return FutureBuilder(
         future: getFriendsIds(),
         builder: (context, friendsIDs) {
           if (friendsIDs.hasData) {
-            return Center(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    const Text(
-                      'Your Friends',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: friendsIDs.data!.length,
-                      itemBuilder: (context, index) => FriendCard(
-                        friendId: friendsIDs.data![index],
-                        userId: widget.player.playerID!,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
+            return _getFriendsBody(friendsIDs.data!);
           }
           if (friendsIDs.hasError) {
             return Center(child: Text(friendsIDs.error.toString()));
@@ -431,27 +422,13 @@ Here are your upcoming Matches:""",
       );
     } else if (_selectNavBarItemIndex == 3) {
       if (teamsPlayerInvolvedIn != null) {
-        return ListView.builder(
-          shrinkWrap: true,
-          itemCount: teamsPlayerInvolvedIn!.length,
-          itemBuilder: (context, index) => TeamCard(
-            team: teamsPlayerInvolvedIn![index],
-            playerId: widget.player.playerID!,
-          ),
-        );
+        return _getTeamsBody(teamsPlayerInvolvedIn!);
       }
       return FutureBuilder(
         future: getTeams(),
         builder: (context, teams) {
           if (teams.hasData) {
-            return ListView.builder(
-              shrinkWrap: true,
-              itemCount: teams.data!.length,
-              itemBuilder: (context, index) => TeamCard(
-                team: teams.data![index],
-                playerId: widget.player.playerID!,
-              ),
-            );
+            return _getTeamsBody(teams.data!);
           }
           if (teams.hasError) {
             return Center(child: Text(teams.error.toString()));
@@ -462,6 +439,75 @@ Here are your upcoming Matches:""",
     } else {
       return ViewPlayerProfile(player: widget.player);
     }
+  }
+
+  Widget _getSportCentersBody(List<SportCenter> sportCenters) {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: sportCenters.length,
+      itemBuilder: (context, index) => SportCenterCard(
+        sportCenter: sportCenters[index],
+        playerId: widget.player.playerID!,
+      ),
+    );
+  }
+
+  Widget _getFriendsBody(List<String> friendsIDs) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const SizedBox(height: 50),
+          const Text(
+            'Your Friends',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w600,
+              decoration: TextDecoration.underline,
+            ),
+          ),
+          const SizedBox(height: 10),
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const ClampingScrollPhysics(),
+            itemCount: friendsIDs.length,
+            itemBuilder: (context, index) => FriendCard(
+              friendId: friendsIDs[index],
+              userId: widget.player.playerID!,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _getTeamsBody(List<Team> teams) {
+    return SingleChildScrollView(
+      child: SafeArea(
+        child: Column(
+          children: [
+            const SizedBox(height: 30),
+            const Text(
+              'Your Teams',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w600,
+                decoration: TextDecoration.underline,
+              ),
+            ),
+            const SizedBox(height: 10),
+            ListView.builder(
+              physics: const ClampingScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: teams.length,
+              itemBuilder: (context, index) => TeamCard(
+                team: teams[index],
+                playerId: widget.player.playerID!,
+              ),
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   FloatingActionButton? getFloatingActionButton() {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_mobile/pages/view_team_profile.dart';
+import '../pages/review_team.dart';
+import '../pages/view_team_profile.dart';
 import '../data/team.dart';
-import '../constants.dart';
 
 class TeamCard extends StatelessWidget {
   const TeamCard({
@@ -56,6 +56,22 @@ class TeamCard extends StatelessWidget {
               child: ButtonBar(
                 children: [
                   ElevatedButton(
+                    child: const Text(
+                      'Review Team',
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ReviewTeam(
+                            team: team,
+                            reviewerId: playerId,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  ElevatedButton(
                     child: const Text('Show More'),
                     onPressed: () {
                       Navigator.push(
@@ -63,6 +79,7 @@ class TeamCard extends StatelessWidget {
                         MaterialPageRoute(
                           builder: (context) => ViewTeamProfile(
                             team: team,
+                            userId: playerId,
                           ),
                         ),
                       );

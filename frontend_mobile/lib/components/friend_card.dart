@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:frontend_mobile/main.dart';
 import 'package:frontend_mobile/pages/review_player.dart';
 import 'package:frontend_mobile/pages/view_player_profile.dart';
 import 'package:dio/dio.dart';
@@ -68,12 +67,12 @@ class FriendCard extends StatelessWidget {
                             child: friend.data!.imageByteArray != null
                                 ? Image.memory(
                                     friend.data!.imageByteArray!,
-                                    height: 30,
+                                    height: 40,
                                     width: 30,
                                   )
                                 : Image.asset(
                                     defaultProfilePath,
-                                    height: 30,
+                                    height: 40,
                                     width: 30,
                                   ),
                           ),
@@ -91,7 +90,7 @@ class FriendCard extends StatelessWidget {
                           const SizedBox(width: 15),
                         ],
                       ),
-                      const Divider(),
+                      const Divider(thickness: 1),
                       ButtonTheme(
                         child: ButtonBar(
                           alignment: MainAxisAlignment.center,
