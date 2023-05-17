@@ -116,6 +116,7 @@ class _FieldManagerHomePageState extends State<FieldManagerHomePage> {
     if (_selectNavBarItemIndex == 0) {
       if (sportCenter != null && sportCenterReservations != null) {
         return FieldBookings(
+          fieldManager: widget.fieldManager,
           sportCenter: sportCenter!,
           reservations: sportCenterReservations!,
         );
@@ -125,6 +126,7 @@ class _FieldManagerHomePageState extends State<FieldManagerHomePage> {
         builder: (context, future) {
           if (future.hasData) {
             return FieldBookings(
+              fieldManager: widget.fieldManager,
               sportCenter: future.data!['sportCenter'],
               reservations: future.data!['reservations'],
             );
