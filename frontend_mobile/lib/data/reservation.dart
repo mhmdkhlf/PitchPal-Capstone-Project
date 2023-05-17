@@ -5,14 +5,14 @@ class Reservation {
   final String reserverEmail;
   final ReserverType reserverType;
   final String sportCenterName;
-  final bool isPublic;
   final int fieldNumber;
-  final ReservationStatus reservationStatus;
+  final bool isPublic;
+  ReservationStatus reservationStatus;
   final String reservationDate;
   final TimeSlot reservationTime;
   final List<String>? teamOneIds;
   final List<String>? teamTwoIds;
-  String? comment;
+  final String? comment;
 
   Reservation({
     required this.uuid,
@@ -53,6 +53,20 @@ class Reservation {
       comment: json['comment'],
     );
   }
+
+  Reservation.makeReservation({
+    required this.reserverEmail,
+    required this.reserverType,
+    required this.sportCenterName,
+    required this.isPublic,
+    required this.fieldNumber,
+    required this.reservationDate,
+    required this.reservationTime,
+    required this.reservationStatus,
+    required this.teamOneIds,
+    required this.teamTwoIds,
+    required this.comment,
+  });
 
   Map<String, dynamic> toJsonMap() {
     return {
