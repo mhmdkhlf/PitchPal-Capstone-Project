@@ -233,6 +233,16 @@ async function getAPlayersMatches(req: Request, res: Response) {
   }
 }
 
+async function getAllReservationsByEmail(req: Request, res: Response) {
+  const reserverEmail = req.params.reserverEmail;
+  try {
+    const reservationInfo = await reservationModel.find({ reserverEmail });
+    res.status(200).json(reservationInfo);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
+
 module.exports = {
   deleteReservation,
   getReservationById,
@@ -247,5 +257,6 @@ module.exports = {
   getAllPublicReservationsOfToday,
   getAcceptedReservationsBySportCenterNameOfTodayAndAfter,
   getAllReservationsOfTodayBysportCenterName,
-  getAPlayersMatches
+  getAPlayersMatches,
+  getAllReservationsByEmail
 };
