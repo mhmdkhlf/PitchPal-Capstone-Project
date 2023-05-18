@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/pages/view_field_manager_profile.dart';
 import 'package:frontend_mobile/pages/view_sport_center_profile.dart';
-import 'package:frontend_mobile/pages/field_bookings.dart';
+import 'package:frontend_mobile/pages/reservation_management.dart';
 import 'package:frontend_mobile/pages/view_sport_center_reviews.dart';
 import '../data/field.dart';
 import '../data/field_manager.dart';
@@ -115,7 +115,7 @@ class _FieldManagerHomePageState extends State<FieldManagerHomePage> {
   Widget getBody() {
     if (_selectNavBarItemIndex == 0) {
       if (sportCenter != null && sportCenterReservations != null) {
-        return FieldBookings(
+        return ReservationManagement(
           fieldManager: widget.fieldManager,
           sportCenter: sportCenter!,
           reservations: sportCenterReservations!,
@@ -125,7 +125,7 @@ class _FieldManagerHomePageState extends State<FieldManagerHomePage> {
         future: getSportCenterAndReservations(),
         builder: (context, future) {
           if (future.hasData) {
-            return FieldBookings(
+            return ReservationManagement(
               fieldManager: widget.fieldManager,
               sportCenter: future.data!['sportCenter'],
               reservations: future.data!['reservations'],

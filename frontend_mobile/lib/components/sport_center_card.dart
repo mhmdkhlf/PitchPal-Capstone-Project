@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 import 'package:frontend_mobile/pages/view_sport_center_profile.dart';
-import 'package:frontend_mobile/pages/make_reservation.dart';
+import 'package:frontend_mobile/pages/book_field.dart';
 import 'package:frontend_mobile/pages/review_sport_center.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../data/reservation.dart';
+import '../data/player.dart';
 import '../data/sport_center.dart';
 import '../constants.dart';
 
@@ -10,11 +13,11 @@ class SportCenterCard extends StatelessWidget {
   const SportCenterCard({
     super.key,
     required this.sportCenter,
-    required this.playerId,
+    required this.player,
   });
 
   final SportCenter sportCenter;
-  final String playerId;
+  final Player player;
 
   @override
   Widget build(BuildContext context) {
@@ -69,14 +72,37 @@ Distance: ${sportCenter.distanceFromPlayer == null ? 'N/A' : '${sportCenter.dist
                       'Book Field',
                       style: TextStyle(fontSize: 12),
                     ),
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MakeReservation(
-                          sportCenter: sportCenter,
-                        ),
-                      ),
-                    ),
+                    onPressed: () async {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        },
+                      );
+                      Dio dio = Dio();
+                      final response = await dio.get(
+                        '$apiRoute/getAllReservationsBySportCenter/${sportCenter.name}',
+                      );
+                      List<dynamic> reservationsData = response.data;
+                      List<Reservation> reservations = reservationsData
+                          .map((e) => Reservation.fromJson(e))
+                          .toList();
+                      if (context.mounted) {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BookField(
+                              sportCenter: sportCenter,
+                              reservations: reservations,
+                              playerEmail: player.email,
+                            ),
+                          ),
+                        );
+                      }
+                    },
                   ),
                   ElevatedButton(
                     child: const Text(
@@ -88,7 +114,7 @@ Distance: ${sportCenter.distanceFromPlayer == null ? 'N/A' : '${sportCenter.dist
                       MaterialPageRoute(
                         builder: (context) => ReviewSportCenter(
                           sportCenterName: sportCenter.name,
-                          playerId: playerId,
+                          playerId: player.playerID!,
                         ),
                       ),
                     ),

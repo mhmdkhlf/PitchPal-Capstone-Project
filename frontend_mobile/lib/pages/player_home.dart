@@ -447,7 +447,7 @@ Here are your upcoming Matches:""",
       itemCount: sportCenters.length,
       itemBuilder: (context, index) => SportCenterCard(
         sportCenter: sportCenters[index],
-        playerId: widget.player.playerID!,
+        player: widget.player,
       ),
     );
   }

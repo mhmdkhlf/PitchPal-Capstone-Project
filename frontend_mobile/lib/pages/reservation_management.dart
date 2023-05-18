@@ -5,10 +5,11 @@ import '../data/field_manager.dart';
 import '../data/sport_center.dart';
 import '../data/reservation.dart';
 import '../data/time_slot.dart';
+import '../components/date_navigator.dart';
 import '../constants.dart';
 
-class FieldBookings extends StatefulWidget {
-  const FieldBookings({
+class ReservationManagement extends StatefulWidget {
+  const ReservationManagement({
     super.key,
     required this.sportCenter,
     required this.reservations,
@@ -20,10 +21,10 @@ class FieldBookings extends StatefulWidget {
   final List<Reservation> reservations;
 
   @override
-  State<FieldBookings> createState() => _FieldBookingsState();
+  State<ReservationManagement> createState() => _ReservationManagementState();
 }
 
-class _FieldBookingsState extends State<FieldBookings> {
+class _ReservationManagementState extends State<ReservationManagement> {
   final SelectedField selectedField = SelectedField(1);
   DateTime selectedDate = DateTime.now();
 
@@ -32,6 +33,23 @@ class _FieldBookingsState extends State<FieldBookings> {
 
   void _handleFieldChanged(int newFieldNb) =>
       setState(() => selectedField.fieldNumber = newFieldNb);
+
+  List<String> getTimeSlots(
+    String openingTime,
+    String closingTime,
+    int timeSlotDurationInMinutes,
+  ) {
+    List<String> timeSlots = [];
+    DateTime start = DateTime.parse('2022-01-01 $openingTime:00');
+    DateTime end = DateTime.parse('2022-01-01 $closingTime:00');
+    while (start.isBefore(end) || start.isAtSameMomentAs(end)) {
+      String time =
+          '${start.hour.toString().padLeft(2, '0')}:${start.minute.toString().padLeft(2, '0')}';
+      timeSlots.add(time);
+      start = start.add(Duration(minutes: timeSlotDurationInMinutes));
+    }
+    return timeSlots;
+  }
 
   Reservation? getReservation({
     required int fieldNb,
@@ -150,8 +168,9 @@ class _FieldBookingsState extends State<FieldBookings> {
                 timeSlots.length - 1,
                 (index) => ReservationTimeSlot(
                   timeSlot: TimeSlot.fromInput(
-                      startTime: timeSlots[index],
-                      endTime: timeSlots[index + 1]),
+                    startTime: timeSlots[index],
+                    endTime: timeSlots[index + 1],
+                  ),
                   reservation: getReservation(
                     fieldNb: selectedField.fieldNumber,
                     reservationDate:
@@ -168,23 +187,6 @@ class _FieldBookingsState extends State<FieldBookings> {
         ),
       ),
     );
-  }
-
-  List<String> getTimeSlots(
-    String openingTime,
-    String closingTime,
-    int timeSlotDurationInMinutes,
-  ) {
-    List<String> timeSlots = [];
-    DateTime start = DateTime.parse('2022-01-01 $openingTime:00');
-    DateTime end = DateTime.parse('2022-01-01 $closingTime:00');
-    while (start.isBefore(end) || start.isAtSameMomentAs(end)) {
-      String time =
-          '${start.hour.toString().padLeft(2, '0')}:${start.minute.toString().padLeft(2, '0')}';
-      timeSlots.add(time);
-      start = start.add(Duration(minutes: timeSlotDurationInMinutes));
-    }
-    return timeSlots;
   }
 }
 
@@ -553,63 +555,6 @@ class _ReservationTimeSlotState extends State<ReservationTimeSlot> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class DateNavigator extends StatefulWidget {
-  final Function(DateTime) onDateChanged;
-
-  const DateNavigator({
-    super.key,
-    required this.onDateChanged,
-  });
-
-  @override
-  State<DateNavigator> createState() => _DateNavigatorState();
-}
-
-class _DateNavigatorState extends State<DateNavigator> {
-  DateTime _currentDate = DateTime(
-    DateTime.now().year,
-    DateTime.now().month,
-    DateTime.now().day,
-  );
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        IconButton(
-          onPressed: () {
-            setState(
-              () =>
-                  _currentDate = _currentDate.subtract(const Duration(days: 1)),
-            );
-            widget.onDateChanged(_currentDate);
-          },
-          icon: const Icon(Icons.arrow_back_ios),
-        ),
-        const SizedBox(width: 10.0),
-        Text(
-          DateFormat('EEE, MMM d, yyyy').format(_currentDate),
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(width: 10.0),
-        IconButton(
-          onPressed: () {
-            setState(
-              () => _currentDate = _currentDate.add(const Duration(days: 1)),
-            );
-            widget.onDateChanged(_currentDate);
-          },
-          icon: const Icon(Icons.arrow_forward_ios),
-        ),
-      ],
     );
   }
 }
