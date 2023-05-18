@@ -19,6 +19,7 @@
 <script>
 import loader from "./loader.vue";
 import card from "../components/cardForHomePage.vue";
+const helpers = require("../../helpers/authentication");
 export default {
   name: "homePage",
   components: {
@@ -30,7 +31,12 @@ export default {
       playerInfo: this.$store.state.playerInfo,
     };
   },
-  beforeMount() {},
+  beforeMount() {
+    let auth = helpers.isLoggedIn();
+    if (!auth) {
+      this.$router.push("/logIn");
+    }
+  },
   methods: {
     playerProfile() {
       this.$router.push("player-profile/" + this.playerInfo.playerID + "/true");
