@@ -68,6 +68,6 @@ export default {
   border: 2px solid yellow;
 }
 .black {
-  border: 2px solid black;
+  border: 2px solid black !important;
 }
 </style>

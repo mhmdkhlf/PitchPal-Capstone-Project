@@ -94,7 +94,6 @@ export default {
                       this.$store.dispatch("stopLoading");
                       this.$router.push("/first-player-profile");
                     } else {
-                      this.$store.dispatch("stopLoading");
                       axios
                         .get(
                           "http://localhost:5000/api/getPlayerByEmail/" +
@@ -106,8 +105,9 @@ export default {
                             "playerInfo",
                             JSON.stringify(res.data)
                           );
+                          this.$store.dispatch("stopLoading");
+                          this.$router.push("/");
                         });
-                      this.$router.push("/");
                     }
                   });
               } else {
@@ -121,7 +121,6 @@ export default {
                       this.$store.dispatch("stopLoading");
                       this.$router.push("/first-manager-profile");
                     } else {
-                      this.$store.dispatch("stopLoading");
                       axios
                         .get(
                           "http://localhost:5000/api/getManager/" +
@@ -162,10 +161,11 @@ export default {
                                     "sportCenterFields",
                                     JSON.stringify(res3.data)
                                   );
+                                  this.$router.push("/manager-home-page");
+                                  this.$store.dispatch("stopLoading");
                                 });
                             });
                         });
-                      this.$router.push("/manager-home-page");
                     }
                   });
               }

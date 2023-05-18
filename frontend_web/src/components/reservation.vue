@@ -124,15 +124,21 @@ export default {
       isIncluded: "",
       isConfirmed: false,
       confirmationMessage: null,
+      isManagerAuth: false,
     };
   },
   async beforeMount() {
     this.$store.dispatch("setLoading");
+
     let _id = this.$route.params.id;
     let reservation = await axios.get(
       helpers.api + "getReservationById/" + _id
     );
     this.reservationInfo = reservation.data;
+    let isManagerAuth = await helpers.isSportCenterAuthenticated(
+      this.reservationInfo.sportCenterName
+    );
+    this.isManagerAuth = isManagerAuth;
     console.log(reservation.data.teamTwoIds);
 
     let T1P = reservation.data.teamOneIds.map(async (id) => {
@@ -179,20 +185,22 @@ export default {
     await Promise.all(T2P).then((results) => {
       this.TeamTwo = results;
     });
-    if (
-      this.reservationInfo.teamOneIds.includes(
-        this.$store.state.playerInfo.playerID
-      )
-    ) {
-      this.isIncluded = "teamOne";
-    } else if (
-      this.reservationInfo.teamTwoIds.includes(
-        this.$store.state.playerInfo.playerID
-      )
-    ) {
-      this.isIncluded = "teamTwo";
-    } else {
-      this.isIncluded = "";
+    if (this.$store.state.playerInfo) {
+      if (
+        this.reservationInfo.teamOneIds.includes(
+          this.$store.state.playerInfo.playerID
+        )
+      ) {
+        this.isIncluded = "teamOne";
+      } else if (
+        this.reservationInfo.teamTwoIds.includes(
+          this.$store.state.playerInfo.playerID
+        )
+      ) {
+        this.isIncluded = "teamTwo";
+      } else {
+        this.isIncluded = "";
+      }
     }
     this.$store.dispatch("stopLoading");
   },
@@ -299,8 +307,21 @@ export default {
   },
   computed: {
     isOwner() {
-      //return this.isOwner === "true";
-      return true;
+      if (this.isManagerAuth) {
+        return true;
+      } else {
+        if (this.$store.state.playerInfo) {
+          if (
+            this.reservationInfo.reserverEmail ===
+            this.$store.state.playerInfo.email
+          ) {
+            return true;
+          }
+        } else {
+          return false;
+        }
+      }
+      return false;
     },
     isLoading() {
       return this.$store.state.isLoading;

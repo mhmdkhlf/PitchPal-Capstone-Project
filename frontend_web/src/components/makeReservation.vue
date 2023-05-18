@@ -203,7 +203,10 @@ export default {
   async beforeMount() {
     this.$store.dispatch("setLoading");
     let today = new Date().toJSON().slice(0, 10);
-    this.generalAddPlayer(this.$store.state.playerInfo.playerID, "one");
+    if (this.$store.state.playerInfo) {
+      this.generalAddPlayer(this.$store.state.playerInfo.playerID, "one");
+    }
+
     let sp = await axios.get(
       helpers.api + "getSportCenter/" + this.$route.params.sportCenterName
     );
@@ -523,11 +526,6 @@ h1 {
   color: white;
 }
 .time-slots {
-  /* display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  grid-gap: 10px;
-  margin-top: 20px; */
-  /* border: 3px solid green; */
   display: grid;
   gap: 15px;
   grid-template-columns: repeat(5, 1fr);
