@@ -310,8 +310,11 @@ export default {
 }
 button {
   border-color: green;
-  padding: 5px;
+  padding: 15px;
   color: green;
+  border-radius: 10px;
+  background-color: green;
+  color: white;
 }
 #delete-btn {
   border-color: red;

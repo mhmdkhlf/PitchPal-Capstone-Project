@@ -15,6 +15,11 @@ import teamUpdateForm from "../views/teamUpdateFormPage.vue";
 import sportcenters from "../views/sportCentersView.vue";
 import friends from "../views/friendsView.vue";
 import reservationView from "../views/reservationView.vue";
+import reservationForm from "../views/reservationForm.vue";
+import myTeam from "../views/myteamView";
+import publicMatches from "../views/publicMatchesView";
+import pendingReservations from "../views/pendingReservations";
+import myReservations from "../views/myReservationView";
 const routes = [
   {
     path: "/",
@@ -100,6 +105,33 @@ const routes = [
     name: "reservation",
     component: reservationView,
     params: true,
+  },
+  {
+    path: "/reservation-form/:sportCenterName?",
+    name: "reservationForm",
+    component: reservationForm,
+    params: true,
+  },
+  {
+    path: "/my-teams/:id",
+    name: "myTeams",
+    component: myTeam,
+    params: true,
+  },
+  {
+    path: "/publicMatches",
+    name: "publicMatches",
+    component: publicMatches,
+  },
+  {
+    path: "/pendingReservations",
+    name: "pendingReservations",
+    component: pendingReservations,
+  },
+  {
+    path: "/myReservations",
+    name: "myReservations",
+    component: myReservations,
   },
 ];
 
