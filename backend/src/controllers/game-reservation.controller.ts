@@ -226,6 +226,7 @@ async function getAPlayersUpcomingMatches(req: Request, res: Response) {
   let todaysDate = new Date().toJSON().slice(0, 10);
   const teamsData = await reservationModel.find({
     reservationDate: { $gte: todaysDate },
+    reservationStatus: "accepted",
     $or: [{ reserverEmail: playerEmail }, { teamOneIds : playerId }, { teamTwoIds : playerId }],
   });
   try {
