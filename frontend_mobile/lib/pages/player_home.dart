@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
+import 'package:frontend_mobile/pages/reservation_matches.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'create_team.dart';
@@ -7,9 +8,7 @@ import 'view_player_profile.dart';
 import 'view_team_profile.dart';
 import '../components/response_dialog_box.dart';
 import '../components/friend_card.dart';
-import '../components/match_card.dart';
 import '../components/sport_center_card.dart';
-import '../components/submit_button.dart';
 import '../components/team_card.dart';
 import '../data/field.dart';
 import '../data/player.dart';
@@ -112,7 +111,7 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
         automaticallyImplyLeading: false,
         title: const Center(
           child: Text(
-            'Home Page',
+            'Reservation & Matches',
             style: TextStyle(
               color: kLightColor,
               fontSize: 24,
@@ -180,6 +179,27 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
                               .compareTo(b.distanceFromPlayer as num) *
                           -1);
                     }
+                  },
+                );
+              },
+            ),
+          ),
+          Tooltip(
+            message: 'Sort by highest Ratings',
+            child: IconButton(
+              icon: const Icon(Icons.high_quality),
+              onPressed: () {
+                if (sportCenters == null) return;
+                setState(
+                  () {
+                    sportCenters!.sort((a, b) =>
+                        a.facilityQualityAverageRating!
+                            .compareTo(b.facilityQualityAverageRating as num) *
+                        -1);
+                    allSportCenters!.sort((a, b) =>
+                        a.facilityQualityAverageRating!
+                            .compareTo(b.facilityQualityAverageRating as num) *
+                        -1);
                   },
                 );
               },
@@ -347,47 +367,7 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
 
   Widget getBody() {
     if (_selectNavBarItemIndex == 0) {
-      return SingleChildScrollView(
-        child: SafeArea(
-          child: Column(
-            children: [
-              const SizedBox(height: 30),
-              Center(
-                child: Text(
-                  """Hello ${widget.player.name}!
-Here are your upcoming Matches:""",
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-              const Divider(thickness: 2),
-              Column(
-                children: List.generate(
-                  2,
-                  (index) => Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: MatchCard(
-                      homeTeamName: 'Team #${2 * index}',
-                      awayTeamName: 'Team #${2 * index + 1}',
-                      matchDate: dateFormat.format(DateTime.now()),
-                      matchTime: timeFormat.format(DateTime.now()),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              SubmitButton(
-                text: 'Join a Public Match!',
-                onTap: () {},
-                fontSize: 16,
-              ),
-            ],
-          ),
-        ),
-      );
+      return ReservationsAndMatches(player: widget.player);
     } else if (_selectNavBarItemIndex == 1) {
       if (sportCenters != null) {
         return _getSportCentersBody(sportCenters!);
