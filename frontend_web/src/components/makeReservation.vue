@@ -130,9 +130,6 @@ export default {
   },
   computed: {
     minDate() {
-      //   const today = new Date();
-      //   console.log(today);
-      //   console.log(today.toISOString());
       return new Date().toJSON().slice(0, 10);
     },
   },

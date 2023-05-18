@@ -52,6 +52,7 @@
                     href="#"
                     class="btn btn-sm btn-info mr-4 common"
                     v-if="!isManager"
+                    @click="reserve()"
                     >Play</a
                   >
                   <a
@@ -535,6 +536,9 @@ export default {
     },
   },
   methods: {
+    reserve() {
+      this.$router.push("/reservation-form/" + this.$route.params.name);
+    },
     async getManagers() {
       const firstRequest = await axios.get(
         "http://localhost:5000/api/getManagersBySportCenterName/" +
