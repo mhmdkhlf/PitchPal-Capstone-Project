@@ -19,6 +19,7 @@ import reservationForm from "../views/reservationForm.vue";
 import myTeam from "../views/myteamView";
 import publicMatches from "../views/publicMatchesView";
 import pendingReservations from "../views/pendingReservations";
+import myReservations from "../views/myReservationView";
 const routes = [
   {
     path: "/",
@@ -126,6 +127,11 @@ const routes = [
     path: "/pendingReservations",
     name: "pendingReservations",
     component: pendingReservations,
+  },
+  {
+    path: "/myReservations",
+    name: "myReservations",
+    component: myReservations,
   },
 ];
 
