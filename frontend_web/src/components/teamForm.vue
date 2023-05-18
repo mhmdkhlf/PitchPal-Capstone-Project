@@ -204,7 +204,7 @@ body {
   padding: 10px;
   border: none;
   border-radius: 5px;
-  background-color: #2dce89;
+  background-color: green;
   color: #fff;
   font-size: 16px;
   cursor: pointer;
@@ -215,7 +215,7 @@ body {
 #create-btn:hover {
   background-color: #fff;
   color: #2dce89;
-  border: 1px solid #2dce89;
+  border: 1px solid green;
 }
 .form-title {
   margin-top: 0;
@@ -261,7 +261,7 @@ button {
   float: right;
   font-weight: 500;
   font-size: 16px;
-  background-color: #0a870ac7;
+  background-color: green;
   border: none;
   color: #ffffff;
   cursor: pointer;

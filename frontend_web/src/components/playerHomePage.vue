@@ -31,7 +31,7 @@ export default {
       playerInfo: this.$store.state.playerInfo,
     };
   },
-  beforeMount() {
+  created() {
     let auth = helpers.isLoggedIn();
     if (!auth) {
       this.$router.push("/logIn");

@@ -44,7 +44,7 @@
         <viewReviews :reviews="reviews" />
       </div>
       <div class="group buttons" v-if="isSelfVisit">
-        <button @click="deleteTeam()" id="delete-btn">Delete The Team</button>
+        <button @click="deleteTeam()">Delete The Team</button>
         <button @click="editTeam()">Edit Team</button>
       </div>
       <div class="group buttons" v-else>
