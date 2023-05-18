@@ -2,7 +2,7 @@
   <loader v-if="this.$store.state.isLoading" />
   <div class="all" v-if="!this.$store.state.isLoading">
     <div class="nav">
-      <h1>Welcome {{ playerInfo.name }}</h1>
+      <h1>Welcome {{ playerInfo ? playerInfo.name : "" }}</h1>
       <a @click="playerProfile()">Your Profile</a>
       <a @click="myteams()">Your teams</a>
       <a @click="reservations()">Your Reservations</a>
@@ -31,11 +31,13 @@ export default {
       playerInfo: this.$store.state.playerInfo,
     };
   },
-  created() {
+  beforeMount() {
+    this.$store.dispatch("setLoading");
     let auth = helpers.isLoggedIn();
     if (!auth) {
       this.$router.push("/logIn");
     }
+    this.$store.dispatch("stopLoading");
   },
   methods: {
     playerProfile() {
