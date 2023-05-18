@@ -10,6 +10,10 @@ router.get(
   reservationController.getAllPublicReservationsOfToday
 );
 router.get(
+  "/getUpcomingPublicMatches",
+  reservationController.getUpcomingPublicMatches
+);
+router.get(
   "/getAllReservationsBySportCenter/:sportCenterName",
   reservationController.getAllReservationsBySportCenter
 );

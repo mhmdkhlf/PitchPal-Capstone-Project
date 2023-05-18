@@ -147,6 +147,22 @@ async function getAllPublicReservationsOfToday(req: Request, res: Response) {
     res.status(400).json(error.message);
   }
 }
+
+//for views so that any player can join
+async function getUpcomingPublicMatches(req: Request, res: Response) {
+  try {
+    let currentDate = new Date().toJSON().slice(0, 10);
+    const reservationInfo = await reservationModel.find({
+      isPublic: true,
+      reservationDate: { $gte: currentDate },
+      reservationStatus: "accepted",
+    });
+    res.status(200).json(reservationInfo);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
+
 //get all acceptedfor today by sport Center Name
 async function getAllReservationsOfTodayBysportCenterName(
   req: Request,
@@ -261,5 +277,6 @@ module.exports = {
   getAcceptedReservationsBySportCenterNameOfTodayAndAfter,
   getAllReservationsOfTodayBysportCenterName,
   getAPlayersUpcomingMatches,
-  getAllReservationsByEmail
+  getAllReservationsByEmail,
+  getUpcomingPublicMatches
 };
