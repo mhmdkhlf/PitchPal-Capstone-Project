@@ -18,6 +18,7 @@ import axios from "axios";
 let helpers = require("../../helpers/authentication");
 export default {
   name: "myTeamComponent",
+
   components: {
     tC,
     loader,
