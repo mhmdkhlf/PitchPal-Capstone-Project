@@ -52,6 +52,7 @@
                     href="#"
                     class="btn btn-sm btn-info mr-4 common"
                     v-if="!isManager"
+                    @click="reserve()"
                     >Play</a
                   >
                   <a
@@ -471,19 +472,21 @@ export default {
       //   this.$store.dispatch("stopLoading");
       // }
 
-      let review = await axios.post(
-        helpers.api + "getReviewBySportCenterNameAndReviewerId",
-        {
-          sportCenterName: this.$route.params.name,
-          reviewerID: this.$store.state.playerInfo.playerID,
+      if (!this.isManager) {
+        let review = await axios.post(
+          helpers.api + "getReviewBySportCenterNameAndReviewerId",
+          {
+            sportCenterName: this.$route.params.name,
+            reviewerID: this.$store.state.playerInfo.playerID,
+          }
+        );
+        if (review.data) {
+          this.rateOne = review.data.facilityQualityScore.value;
+          this.rateTwo = review.data.staffServiceScore.value;
+          this.reviewText = review.data.reviewText;
+          this.rateId = review.data._id;
+          this.firstRate = false;
         }
-      );
-      if (review.data) {
-        this.rateOne = review.data.facilityQualityScore.value;
-        this.rateTwo = review.data.staffServiceScore.value;
-        this.reviewText = review.data.reviewText;
-        this.rateId = review.data._id;
-        this.firstRate = false;
       }
     }
     let reviews = await axios.get(
@@ -533,6 +536,9 @@ export default {
     },
   },
   methods: {
+    reserve() {
+      this.$router.push("/reservation-form/" + this.$route.params.name);
+    },
     async getManagers() {
       const firstRequest = await axios.get(
         "http://localhost:5000/api/getManagersBySportCenterName/" +
