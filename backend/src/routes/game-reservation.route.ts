@@ -52,4 +52,10 @@ router.delete(
   "/deleteReservation/:id",
   reservationController.deleteReservation
 );
+router.post("/getAPlayersMatches", reservationController.getAPlayersMatches);
+router.get(
+  "/getAllReservationsByEmail/:reserverEmail",
+  reservationController.getAllReservationsByEmail
+);
+
 module.exports = router;

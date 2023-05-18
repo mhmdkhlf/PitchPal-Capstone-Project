@@ -220,6 +220,29 @@ async function deleteReservation(req: Request, res: Response) {
   }
 }
 
+async function getAPlayersMatches(req: Request, res: Response) {
+  const playerId = req.body.id;
+  const playerEmail = req.body.email;
+  const teamsData = await reservationModel.find({
+    $or: [{ reserverEmail: playerEmail }, { teamOneIds : playerId }, { teamTwoIds : playerId }],
+  });
+  try {
+    res.status(200).json(teamsData);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
+
+async function getAllReservationsByEmail(req: Request, res: Response) {
+  const reserverEmail = req.params.reserverEmail;
+  try {
+    const reservationInfo = await reservationModel.find({ reserverEmail });
+    res.status(200).json(reservationInfo);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
+
 module.exports = {
   deleteReservation,
   getReservationById,
@@ -234,4 +257,6 @@ module.exports = {
   getAllPublicReservationsOfToday,
   getAcceptedReservationsBySportCenterNameOfTodayAndAfter,
   getAllReservationsOfTodayBysportCenterName,
+  getAPlayersMatches,
+  getAllReservationsByEmail
 };
