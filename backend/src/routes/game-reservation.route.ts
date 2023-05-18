@@ -52,4 +52,6 @@ router.delete(
   "/deleteReservation/:id",
   reservationController.deleteReservation
 );
+router.post("/getAPlayersMatches", reservationController.getAPlayersMatches);
+
 module.exports = router;
