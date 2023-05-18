@@ -52,7 +52,7 @@ router.delete(
   "/deleteReservation/:id",
   reservationController.deleteReservation
 );
-router.post("/getAPlayersMatches", reservationController.getAPlayersMatches);
+router.post("/getAPlayersUpcomingMatches", reservationController.getAPlayersUpcomingMatches);
 router.get(
   "/getAllReservationsByEmail/:reserverEmail",
   reservationController.getAllReservationsByEmail
